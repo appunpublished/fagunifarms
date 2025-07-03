@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Faguni Organic Farm Stay</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p0t7bJw6v9PfMCzKvXo13bL9BP0pMBNk4l5v8eWcXgMB/6NSJbz9PzOzCQSn/vBnFlX8pXo4n1v95FTHvS1pxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     body {
       font-family: 'Montserrat', sans-serif;
@@ -13,22 +13,39 @@
       background-color: #f5f3ee;
       color: #333;
     }
+    nav {
+      background-color: #3c6e47;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
     header {
       background-color: #3c6e47;
       color: #fff;
-      padding: 20px;
+      padding: 40px 20px;
       text-align: center;
     }
     header h1 {
       margin: 0;
-      font-size: 2.5em;
+      font-size: 2.8em;
     }
     header p {
-      margin-top: 8px;
+      margin-top: 10px;
       font-style: italic;
     }
+    .carousel {
+      display: none;
+    }
     .section {
-      padding: 40px 20px;
+      padding: 50px 20px;
       max-width: 1000px;
       margin: auto;
     }
@@ -46,6 +63,9 @@
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       padding: 20px;
+    }
+    .photo-cards {
+      display: none;
     }
     footer {
       background-color: #3c6e47;
@@ -66,52 +86,140 @@
     .cta-button:hover {
       background-color: #72933c;
     }
+    .social-icons a {
+      color: #fff;
+      margin: 0 10px;
+      font-size: 1.2em;
+    }
   </style>
 </head>
 <body>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#products">Products</a>
+    <a href="#stay">Farm Stay</a>
+    <a href="#training">Training</a>
+    <a href="#founder">Our Story</a>
+    <a href="#village">Why Village?</a>
+    <a href="#mission">Mission</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
   <header>
     <h1>Faguni Organic Farm Stay</h1>
     <p>“Where Nature Feeds Your Soul”</p>
   </header>
 
-  <section class="section">
-    <h2>About Us</h2>
-    <p>
-      Welcome to Faguni Organic Farm Stay — a peaceful, sustainable, and educational retreat located in the lap of rural India. Here, we practice ethical and natural farming techniques, raise free-range animals, and offer guests and farmers a firsthand experience of integrated farming.
-    </p>
-  </section>
+<section class="section" id="about">
+  <h2>About Us</h2>
+  <p>
+    Faguni Organic Farm Stay is more than just a farm — it's a dream nurtured in the heart of rural Uttarakhand. What began as a simple desire to reconnect with the land and live a healthier, more intentional life has blossomed into a regenerative oasis for both people and planet.
+  </p>
+  <p>
+    Every inch of the farm is a tribute to sustainability. From the free-range Jersey cows that provide us with rich, A2 milk, to the carefully nurtured vegetables grown without synthetic inputs, everything is aligned with nature. But Faguni is more than a farming model — it's a movement. We invite you to be part of this story — whether as a guest, a collaborator, a customer, or a curious traveler.
+  </p>
+</section>
 
-  <section class="section">
-    <h2>Our Offerings</h2>
-    <div class="products">
-      <div class="card">🐄 Free-range cows and buffaloes</div>
-      <div class="card">🐓 Free-range chickens</div>
-      <div class="card">🌾 Organic vegetables and cereals</div>
-      <div class="card">🍄 Mushrooms and microgreens</div>
-      <div class="card">🍎 Small fruit orchard</div>
-      <div class="card">🧀 Farm products: cheese, curd, yogurt, eggs, chicken meat</div>
-      <div class="card">🏡 Stay & experience rustic village life with your family and kids, and enjoy farm-fresh meals</div>
-    </div>
-  </section>
+<section class="section" id="stay">
+  <h2>Farm Stay</h2>
+  <p>
+    At Faguni Organic Farm Stay, your vacation isn't about escaping reality — it's about reconnecting with what truly matters. Our eco-friendly huts are nestled amidst fruit orchards, free-range animals, and lush Napier grass fields. Unlike overcrowded tourist spots or extreme mountain treks, our village farm stay offers a balanced experience — safe, accessible, authentic.
+  </p>
+  <p>
+    Just 15 minutes from Rudrapur Railway Station, and within 30–90 minutes you can explore Jim Corbett National Park, Corbett Waterfall, Girija Devi Temple, Kainchi Dham, Hanuman Garhi, Sita Van, Haripur Dam, and more.
+  </p>
+</section>
 
-  <section class="section">
-    <h2>What We Teach</h2>
-    <div class="activities">
-      <div class="card">🌱 Organic & Natural Farming</div>
-      <div class="card">🔁 Integrated Farming Systems</div>
-      <div class="card">🪱 Vermicomposting & Soil Health</div>
-      <div class="card">📦 Farm-to-Consumer Direct Sales</div>
-    </div>
-  </section>
+<section class="section" id="training">
+  <h2>Training & Learning</h2>
+  <p>
+    We offer hands-on training for aspiring farmers, eco-entrepreneurs, and curious learners. From vermicomposting and organic vegetable farming to livestock care, biogas, and soil health — our workshops are designed to give you practical, replicable skills.
+  </p>
+</section>
 
-  <section class="section" style="text-align: center;">
-    <h2>Visit Us or Partner With Us</h2>
-    <p>We invite you to be part of a greener future — whether you're a conscious buyer, curious learner, or responsible corporate.</p>
-    <a href="mailto:contact@fagunifarm.in" class="cta-button">Get in Touch</a>
-  </section>
+<section class="section" id="founder">
+  <h2>Our Story</h2>
+  <p>
+    Faguni Organic Farm Stay began not with land, but with longing — a longing for clean air, honest food, and a life that felt truly alive. Founded by Mukul Nimker, a seasoned professional in the tech world, the farm was born out of a deep dissatisfaction with city life and a desire to reconnect with nature.
+  </p>
+  <p>
+    Mukul's story is not just his own; it's a shared journey — one he invites you to walk with him. Whether you visit for a night, volunteer for a season, or just sit under a tree and reflect, you're part of something deeply real.
+  </p>
+</section>
 
-  <footer>
-    <p>&copy; 2025 Faguni Organic Farm Stay | Designed with ❤️ in India</p>
-  </footer>
+<section class="section" id="village">
+  <h2>Why Village Over Mountains?</h2>
+  <p>
+    Mountains are beautiful, but they aren’t for everyone. From altitude sickness and long travel hours to unpredictable weather and accessibility issues — high-altitude destinations come with hidden challenges.
+  </p>
+  <p>
+    Our farm stay in the plains offers the same tranquility, farmlands, forests, and fresh air — without any risks. Families with kids, senior citizens, or people with mobility issues can all experience nature safely and comfortably.
+  </p>
+</section>
+
+<section class="section" id="mission">
+  <h2>Our Mission</h2>
+  <p>
+    We exist to empower farmers, restore soil, reconnect people with their food, and protect indigenous livestock. Every product we grow and every experience we create is rooted in our love for the earth and all her beings.
+  </p>
+</section>
+
+<section class="section" id="contact" style="text-align: center;">
+  <h2>Visit Us or Partner With Us</h2>
+  <p>
+    Whether you're a conscious buyer, an urban parent, a student, or a corporate — let’s co-create a green future. You can stay, learn, collaborate, or even start your own journey toward natural living.
+  </p>
+  <p>
+    📍 We are located near Rudrapur, Uttarakhand — just 15 minutes from the railway station.
+  </p>
+  <p>
+    🔗 Connect with us on all platforms from one place:<br>
+    <a href="https://linktr.ee/fagunifarms" target="_blank">linktr.ee/fagunifarms</a>
+  </p>
+  <p>
+    📱 Follow us:<br>
+    <a href="https://instagram.com/fagunifarms" target="_blank">Instagram</a> |
+    <a href="https://facebook.com/fagunifarms" target="_blank">Facebook</a> |
+    <a href="https://youtube.com/@fagunifarms" target="_blank">YouTube</a> |
+    <a href="https://wa.me/919999999999" target="_blank">WhatsApp</a> |
+    <a href="https://www.linkedin.com/company/fagunifarms" target="_blank">LinkedIn</a>
+  </p>
+  <p>
+    💬 <a class="cta-button" href="https://wa.me/919999999999" target="_blank">Chat with Us on WhatsApp</a>
+  </p>
+</section>
+
+<section class="section" id="testimonials">
+  <h2>What Our Visitors Say</h2>
+  <div class="activities">
+    <div class="card">“The most peaceful and educational holiday I’ve ever had. My kids milked a cow and learned about vegetables!” – Priya S., Delhi</div>
+    <div class="card">“Mukul bhaiya has created something beautiful. Truly organic, truly inspiring.” – Ramesh T., Lucknow</div>
+    <div class="card">“I never imagined a farm stay could be better than a mountain resort. This is real India.” – Sarah M., UK</div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const footer = document.querySelector("footer");
+    const countSpan = document.createElement("p");
+    let visitCount = localStorage.getItem("faguniVisitCount") || 0;
+    visitCount++;
+    localStorage.setItem("faguniVisitCount", visitCount);
+    countSpan.innerText = `👣 You are visitor number: ${visitCount}`;
+    countSpan.style.marginTop = "10px";
+    footer.appendChild(countSpan);
+  });
+</script>
+
+<footer>
+  <p>&copy; 2025 Faguni Organic Farm Stay | Designed with ❤️ in India</p>
+  <div class="social-icons">
+    <a href="https://instagram.com/fagunifarms" target="_blank"><i class="fab fa-instagram"></i></a>
+    <a href="https://facebook.com/fagunifarms" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://youtube.com/@fagunifarms" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://wa.me/919999999999" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://www.linkedin.com/company/fagunifarms" target="_blank"><i class="fab fa-linkedin"></i></a>
+  </div>
+</footer>
 </body>
 </html>
