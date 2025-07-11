@@ -26,6 +26,31 @@
   <div id="medium-posts" class="mt-4"></div>
 </div>
 
+  <script>
+fetch("https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@fagunifarms")
+  .then(response => response.json())
+  .then(data => {
+    const posts = data.items.slice(0, 3); // Show 3 latest posts
+    const container = document.getElementById("medium-posts");
+    posts.forEach(post => {
+      container.innerHTML += `
+        <div class="card mb-4 shadow-sm border-0">
+          <div class="card-body">
+            <h4 class="card-title">
+              <a href="${post.link}" target="_blank" class="text-success text-decoration-none">${post.title}</a>
+            </h4>
+            <p class="card-text">${post.description.slice(0, 200).replace(/<[^>]*>/g, '')}...</p>
+            <a href="${post.link}" target="_blank" class="btn btn-outline-success btn-sm">Read More</a>
+          </div>
+        </div>
+      `;
+    });
+  })
+  .catch(err => {
+    document.getElementById("medium-posts").innerHTML = "<p>Unable to load articles at this time.</p>";
+  });
+</script>
+
   
 
   <footer class="bg-dark text-white text-center py-3">
