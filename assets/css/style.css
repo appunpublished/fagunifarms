@@ -44,3 +44,9 @@ footer .social-icons img {
   flex-direction: column;
   justify-content: space-between;
 }
+.card-img-top {
+  object-fit: contain;
+  height: 300px;
+  padding: 10px;
+  background-color: #f8f8f8;
+}
