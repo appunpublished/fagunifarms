@@ -7,11 +7,60 @@
   <title>Faguni Farms | Organic Living</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    :root {
+      --brand-bg: #c2f6ff;
+      --brand-accent: #008c58;
+      --brand-dark: #1e1e1e;
+    }
+
+    body {
+      background-color: var(--brand-bg);
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .btn-success,
+    .btn-outline-success {
+      background-color: var(--brand-accent);
+      border-color: var(--brand-accent);
+      color: white;
+    }
+
+    .btn-outline-success:hover {
+      background-color: white;
+      color: var(--brand-accent);
+      border-color: var(--brand-accent);
+    }
+
+    .navbar {
+      background-color: var(--brand-bg) !important;
+    }
+
+    footer {
+      background-color: var(--brand-accent);
+      color: white;
+    }
+
+    header {
+      background-color: var(--brand-bg);
+    }
+
+    .navbar-brand img {
+      height: 50px;
+    }
+  </style>
 </head>
+
+
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="#">Faguni Farms</a>
+      <a class="navbar-brand fw-bold position-relative" href="#">
+  <img src="assets/img/logo.png" alt="Faguni Farms Logo"
+       style="height: 200px; margin-top: -50px;margin-bottom: -100px; position: relative; z-index: 1;">
+</a>
+
+
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -50,22 +99,17 @@
   <div class="container text-center">
     <h2 class="mb-4">About Faguni Farms</h2>
     <p class="lead mb-4">
-      Faguni Farms was born out of a simple but powerful belief — that "everyone deserves pure, chemical-free food" and a deeper connection with nature.
+      At Faguni Farms, we believe everyone deserves clean, chemical-free food and a deeper bond with nature.
     </p>
     <p>
-      In an age of over-processed groceries, artificial growth boosters, and hidden chemicals, we decided to go back to our roots — quite literally. Our team of passionate organic farmers, wellness experts, and nature lovers has turned this vision into a thriving community-driven organic ecosystem.
+      We grow and deliver fresh, organic products—like A2 milk, ghee, vegetables, and oils—crafted the natural way.
+      But we don’t stop there.
     </p>
     <p>
-      From A2 milk fresh from our happy cows, to hand-churned ghee, chemical-free vegetables, and natural oils, we produce everything the way nature intended — without shortcuts, without compromise. 
-    </p>
-    <p>
-      What makes us different? We don’t just sell organic products — we invite you into our way of life. Through immersive farm stays, hands-on training, and personalized service, we help urban families rediscover the joy of clean eating, conscious living, and farming self-reliance.
+      Through farm stays, training, and urban farming support, we’re building a community of conscious, self-reliant food lovers.
     </p>
     <p class="fw-bold text-success mt-4">
-      At Faguni Farms, we’re not building just a brand — we’re nurturing a movement.
-    </p>
-    <p class="text-muted fst-italic">
-      Let’s grow together — for your health, your family, and the planet.
+      Join us in growing a healthier life—for your family and the planet.
     </p>
   </div>
 </section>
@@ -466,14 +510,47 @@
       <div class="row">
         
         <!-- Left: Contact Form -->
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
           <div class="card p-4 shadow-sm border-0">
             <h5 class="mb-3">Send us a message</h5>
             <iframe 
               src="https://docs.google.com/forms/d/e/1FAIpQLScWF_LE-Gujc5AoX_dUR4KqePqgOYDUbZqjMLjei49Z25gXqw/viewform?embedded=true" 
               width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
           </div>
-        </div>
+        </div> -->
+
+        <!-- Contact Form (Formspree) -->
+    <div class="col-md-6">
+      <h5 class="mb-3">Send us a message</h5>
+        <form action="https://formspree.io/f/mgvzwbez" method="POST" class="p-4 shadow-sm bg-white rounded">
+  <div class="mb-3">
+    <label for="name" class="form-label">Your Name</label>
+    <input type="text" name="name" id="name" class="form-control" required placeholder="Enter your full name">
+  </div>
+
+  <div class="mb-3">
+    <label for="mobile" class="form-label">Mobile Number</label>
+    <input type="tel" name="mobile" id="mobile" class="form-control" required placeholder="Enter your mobile number" pattern="[0-9]{10}" title="Enter a valid 10-digit mobile number">
+  </div>
+
+  <div class="mb-3">
+    <label for="message" class="form-label">Your Message</label>
+    <textarea name="message" id="message" rows="4" class="form-control" required placeholder="How can we help you?"></textarea>
+  </div>
+
+  <!-- Hidden Fields (optional) -->
+  <input type="hidden" name="_subject" value="New Message from Faguni Farms Website">
+  <input type="text" name="_gotcha" style="display:none">
+
+  <button type="submit" class="btn btn-success w-100">Send Message</button>
+        </form>
+        <div id="formMessage" class="alert alert-success mt-3 d-none">
+              ✅ Thank you! Your message has been sent successfully.
+</div>
+    </div>
+<!-- Custom success message -->
+
+
   
         <!-- Right: Address + Map -->
         <div class="col-md-6">
@@ -488,7 +565,7 @@
             </p>
             <p class="mb-2">
               <strong>Email:</strong><br>
-              <a href="mailto:support@fagunifarms.in">fagunifarms@gmail.com</a>
+              <a href="mailto:support@fagunifarms.in">support@fagunifarms.in</a>
             </p>
             <p class="mb-4">
               <strong>WhatsApp:</strong><br>
@@ -568,5 +645,35 @@ class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="assets/js/script.js"></script>
+  <script>
+  const form = document.getElementById('contactForm');
+  const formMessage = document.getElementById('formMessage');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        form.reset();
+        formMessage.classList.remove('d-none');
+      } else {
+        alert('There was a problem submitting your form. Please try again.');
+      }
+    } catch (error) {
+      alert('Error submitting form. Please check your internet connection.');
+    }
+  });
+</script>
+
 </body>
 </html>
