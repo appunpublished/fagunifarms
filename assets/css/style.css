@@ -1,14 +1,3 @@
-:root {
-  --brand-bg: #c2f6ff;
-  --brand-dark: #1e1e1e;
-  --brand-accent: #008c58;
-  --brand-white: #ffffff;
-}
-
-body {
-  background-color: var(--brand-bg);
-  font-family: 'Segoe UI', sans-serif;
-}
 
 
 body {
@@ -49,4 +38,24 @@ footer .social-icons img {
   height: 300px;
   padding: 10px;
   background-color: #f8f8f8;
+}
+
+.navbar {
+  background-color: transparent !important;
+}
+
+.nav-highlight {
+  color: #fff !important;
+  padding: 6px 12px;
+  margin: 0 4px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  transition: background-color 0.3s, color 0.3s;
+  font-weight: 500;
+  
+}
+.nav-highlight:hover {
+  background-color: #ffcc00;
+  color: #000 !important;
+  text-decoration: none;
 }
