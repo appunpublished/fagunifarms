@@ -47,6 +47,23 @@
       font-weight: 500;
       padding: 8px 0;
     }
+    .logo-box {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: white;
+    padding: 0px 0px;
+    border-radius: 8px;
+    z-index: 2;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    .logo-box img {
+    height: 60px; /* You can adjust this size as needed */
+    display: block;
+  } .logo-box img {
+    height: 60px; /* You can adjust this size as needed */
+    display: block;
+  }
+  }
   </style>
 </head>
 
@@ -62,9 +79,38 @@
 
 <!-- 🔷 Full Width Background Image with Centered Logo -->
 <section class="hero-section">
-  <div class="hero-overlay"></div>
-  <img src="assets/img/logo.png" alt="Faguni Farms Logo">
+  <div class="hero-overlay"></div> <!-- Optional: you can remove this line to make image brighter -->
+  <div class="logo-box">
+    <img src="assets/img/logo.png" alt="Faguni Farms Logo" />
+  </div>
 </section>
+
+<style>
+  .hero-section {
+    position: relative;
+    background: url('assets/img/village-banner1.png') no-repeat bottom center; /* 🔼 crop from top */
+    background-size: cover;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-section img {
+    height: 180px;
+    z-index: 2;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.1); /* 🔆 Make lighter or remove */
+    z-index: 1;
+  }
+</style>
 
 <!-- 🔷 Navbar Just Below Image -->
 <nav class="navbar navbar-expand-lg navbar-custom">
