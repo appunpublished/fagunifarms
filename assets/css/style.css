@@ -1,45 +1,54 @@
-
-
+/* Global */
 body {
   font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
 }
 
-footer .social-icons img {
-  width: 30px;
-  margin: 0 10px;
+a {
+  text-decoration: none;
 }
 
-.product-img {
-  height: 200px;
-  object-fit: cover;
-}
-
-
-.card.h-100 {
+/* Hero Section */
+.hero-section {
+  position: relative;
+  background: url('assets/img/village-banner1.png') no-repeat bottom center;
+  background-size: cover;
+  height: 400px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.card-img-top {
-  height: 180px; /* fixed image height */
-  object-fit: cover;
-  border-top-left-radius: 0.375rem;
-  border-top-right-radius: 0.375rem;
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 1;
 }
 
-.card-body {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.card-img-top {
-  object-fit: contain;
-  height: 300px;
-  padding: 10px;
-  background-color: #f8f8f8;
+/* Logo Box on Banner */
+.logo-box {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 6px 10px;
+  border-radius: 8px;
+  z-index: 999;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
 }
 
+.logo-box img {
+  max-height: 60px;
+  display: block;
+}
+
+/* Navbar */
 .navbar {
   background-color: transparent !important;
 }
@@ -52,10 +61,134 @@ footer .social-icons img {
   border-radius: 6px;
   transition: background-color 0.3s, color 0.3s;
   font-weight: 500;
-  
 }
+
 .nav-highlight:hover {
   background-color: #ffcc00;
   color: #000 !important;
   text-decoration: none;
 }
+
+/* Marquee */
+.marquee {
+  background: #f4f4f4;
+  color: #333;
+  font-weight: 500;
+  padding: 8px 0;
+}
+
+/* Product Card Styling */
+.card.h-100 {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+  width: 100%;
+  padding: 0;
+  background-color: #f8f8f8;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+}
+
+.card-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Footer Social Icons */
+footer .social-icons img {
+  width: 30px;
+  margin: 0 10px;
+}
+
+/* WhatsApp Floating Button */
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+}
+
+/* Utilities */
+.text-success {
+  color: #198754 !important;
+}
+
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+.bg-white {
+  background-color: #ffffff !important;
+}
+/* Product Card Wrapper */
+.card.h-100 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 420px; /* You can adjust this height as needed */
+  max-height: 420px;
+  overflow: hidden;
+}
+
+/* Card Image */
+.card-img-top {
+  height: 180px;  /* Fixed image height */
+  object-fit: cover;
+  width: 100%;
+  padding: 10px;
+  background-color: #f8f8f8;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+}
+
+/* Card Body */
+.card-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+/* Prevent overflow from long text */
+.card-body p, 
+.card-body h5 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limits to 2 lines */
+  -webkit-box-orient: vertical;
+}
+
+/* Enforce uniform card height */
+/* Ensure all cards are of same height */
+.product-card {
+  height: 100%;
+  min-height: 360px; /* Optional: use this if your content is short */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fix the image height */
+.product-card .card-img-top {
+  height: 180px;
+  width: 100%;
+  object-fit: cover;
+  background-color: #f8f8f8;
+}
+
+/* Ensure card body grows and fills remaining space */
+.product-card .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
