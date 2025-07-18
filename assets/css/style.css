@@ -192,3 +192,11 @@ footer .social-icons img {
 }
 
 
+@font-face {
+  font-family: 'Pecita';
+  src: url('/assets/font/Pecita.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
