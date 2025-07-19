@@ -45,33 +45,87 @@
     }
 
     @font-face {
-    font-family: 'Pecita';
-    src: url('/assets/font/Pecita.otf') format('opentype');
-  }
+      font-family: 'Pecita';
+      src: url('/assets/font/Pecita.otf') format('opentype');
+    }
 
-  .pecita-line {
-    font-family: 'Pecita', cursive;
-    font-size: 24px;
-  }
+    .pecita-line {
+      font-family: 'Pecita', cursive;
+      font-size: 24px;
+    }
 
+    .marquee-bar {
+      background-color: #1e7c33;
+      color: #fff;
+      padding: 10px 0;
+      font-weight: 500;
+    }
+
+    .marquee-bar marquee {
+      font-size: 1.1rem;
+    }
+
+    .logo-img {
+      height: 120px;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-      <!-- <a class="navbar-brand pecita-line" href="index.html" >Faguni Farms</a> -->
       <a class="navbar-brand" href="index.html">
-        <img src="assets/img/logo.png" alt="Faguni Farms" height="100">
+        <img src="assets/img/logo.png" alt="Faguni Farms" class="logo-img">
       </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="mainNav">
+      <ul class="navbar-nav text-center">
+        <li class="nav-item px-3">
+          <a class="nav-link" href="index.html#about">About</a>
+        </li>
+        <li class="nav-item px-3">
+          <a class="nav-link" href="index.html#mission">Mission</a>
+        </li>
+        <li class="nav-item px-3">
+          <a class="nav-link" href="index.html#products">Products</a>
+        </li>
+        <li class="nav-item px-3">
+          <a class="nav-link" href="index.html#experiences">Experiences</a>
+        </li>
+        <!-- <li class="nav-item px-3">
+          <a class="nav-link" href="#training">Training</a>
+        </li> -->
+        <li class="nav-item px-3">
+          <a class="nav-link" href="blog.html">Blog</a>
+        </li>
+        <li class="nav-item px-3">
+          <a class="nav-link bg-warning text-dark rounded px-3 fw-semibold" href="career.html">Career</a>
+        </li>
+        <li class="nav-item px-3">
+          <a class="nav-link" href="index.html#contact">Contact</a>
+        </li>
+      </ul>
+    </div>
     </div>
   </nav>
+
+ 
+
+  <!-- Marquee -->
+  <div class="marquee-bar">
+    <marquee behavior="scroll" direction="left">
+      📣 We are open for interns and volunteers at Faguni Farms! Learn organic farming, rural life, and sustainability up close 🌱🚜
+    </marquee>
+  </div>
 
   <!-- Hero Section -->
   <section class="hero">
     <div class="container">
       <h1>Careers & Volunteering</h1>
-      <p class="lead mt-3" style="background-color:rgb(0, 0, 0);">Join the green revolution. Grow with us.</p>
+      <p class="lead mt-3" style="background-color:rgba(0,0,0,0.6); padding: 5px;">Join the green revolution. Grow with us.</p>
     </div>
   </section>
 
@@ -79,7 +133,7 @@
   <section class="py-5">
     <div class="container">
       <div class="row g-5">
-        
+
         <!-- Volunteer Section -->
         <div class="col-md-6">
           <div class="card p-4 h-100">
@@ -91,8 +145,8 @@
               <li>People seeking a mindful break</li>
               <li>Anyone eager to learn rural skills</li>
             </ul>
-            <p>Get hands-on experience in dairy farming, composting, harvesting, and much more while living in the heart of nature.</p>
-            <a href="mailto:support@fagunifarms.insubject=Volunteer%20Application" class="btn btn-green mt-3">Apply to Volunteer</a>
+            <p>Get hands-on experience in dairy farming, composting, harvesting, and more while living in the heart of nature.</p>
+            <a href="mailto:support@fagunifarms.in?subject=Volunteer%20Application" class="btn btn-green mt-3">Apply to Volunteer</a>
           </div>
         </div>
 
@@ -113,10 +167,24 @@
         </div>
 
       </div>
+
+      <!-- Internship Section -->
+      <div class="row mt-5">
+        <div class="col-12">
+          <div class="card p-4">
+            <h3 class="section-title text-success">Internship Opportunities</h3>
+            <p>Faguni Farms invites students and young professionals to join us as interns. Learn about organic food systems, sustainable living, farm marketing, content creation, and community engagement.</p>
+            <p>Internships are open year-round and can be tailored for BBA/MBA/Agri/Media students seeking academic credit or field experience.</p>
+            <a href="assets/brochures/FaguniFarms_Internship_Brochure.pdf" class="btn btn-green me-3" download>📄 Download Brochure</a>
+            <a href="mailto:support@fagunifarms.in?subject=Internship%20Request%20at%20Faguni%20Farms" class="btn btn-outline-success">✉️ Mail Us for Internship</a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <!-- Optional Footer -->
+  <!-- Footer -->
   <footer class="text-center py-4 text-muted bg-light mt-5">
     &copy; 2025 Faguni Farms. All rights reserved.
   </footer>

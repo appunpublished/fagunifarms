@@ -199,4 +199,7 @@ footer .social-icons img {
   font-style: normal;
 }
 
+html {
+  scroll-behavior: smooth;
+}
 
