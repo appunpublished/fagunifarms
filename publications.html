@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Nurtured Mind - The Luxury of Clarity. The Power of Presence.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'serif': ['Playfair Display', 'serif'],
+                        'sans': ['Lato', 'sans-serif'],
+                    },
+                    colors: {
+                        sage: '#9CAF88',
+                        beige: '#F5F1E8',
+                        ivory: '#FFFEF7',
+                        deepblue: '#2C3E50',
+                        mutedgold: '#D4AF37',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-ivory text-deepblue font-sans">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-ivory/95 backdrop-blur-sm z-50 border-b border-sage/20">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="font-serif text-2xl font-semibold text-deepblue">The Nurtured Mind</div>
+                <div class="hidden md:flex space-x-8 font-light">
+                    <a href="#books" class="hover:text-sage transition-colors">Books</a>
+                    <a href="#coaching" class="hover:text-sage transition-colors">Coaching</a>
+                    <a href="#support" class="hover:text-sage transition-colors">Support</a>
+                    <a href="#blog" class="hover:text-sage transition-colors">Journal</a>
+                    <a href="#contact" class="hover:text-sage transition-colors">Connect</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-beige via-ivory to-sage/10"></div>
+        
+        <!-- Abstract Nature SVG -->
+        <div class="absolute top-20 right-10 opacity-10">
+            <svg width="300" height="400" viewBox="0 0 300 400" class="text-sage">
+                <path d="M150 50 Q200 100 150 150 Q100 100 150 50 Z" fill="currentColor"/>
+                <path d="M150 150 Q180 200 150 250 Q120 200 150 150 Z" fill="currentColor" opacity="0.7"/>
+                <path d="M150 250 Q170 300 150 350 Q130 300 150 250 Z" fill="currentColor" opacity="0.5"/>
+                <circle cx="150" cy="380" r="8" fill="currentColor" opacity="0.3"/>
+            </svg>
+        </div>
+
+        <div class="text-center max-w-4xl mx-auto px-6 relative z-10">
+            <h1 class="font-serif text-6xl md:text-8xl font-light text-deepblue mb-8 leading-tight">
+                The Nurtured<br>
+                <span class="text-sage">Mind</span>
+            </h1>
+            <p class="font-serif text-2xl md:text-3xl text-deepblue/80 mb-12 font-light italic">
+                The Luxury of Clarity.<br>
+                The Power of Presence.
+            </p>
+            <div class="w-24 h-px bg-mutedgold mx-auto mb-12"></div>
+            <p class="text-lg text-deepblue/70 max-w-2xl mx-auto leading-relaxed">
+                Discover transformative wisdom through premium mindfulness experiences, 
+                curated for discerning individuals seeking profound personal growth.
+            </p>
+        </div>
+    </section>
+
+    <!-- Featured Books Section -->
+    <section id="books" class="py-24 bg-beige">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <h2 class="font-serif text-5xl font-light text-deepblue mb-6">Curated Wisdom</h2>
+                <div class="w-16 h-px bg-mutedgold mx-auto mb-8"></div>
+                <p class="text-lg text-deepblue/70 max-w-2xl mx-auto">
+                    A carefully selected collection of transformative literature for the modern seeker.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="group cursor-pointer">
+                    <div class="bg-ivory p-8 rounded-sm shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="w-12 h-12 bg-sage/20 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-sage" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-xl font-medium text-deepblue mb-3">
+                            <a href="https://amzn.in/d/3nIxuQs" target="_blank" class="hover:underline">
+                                Conversations With a Yogi
+                            </a>
+                        </h3>
+                        
+                        <p class="text-deepblue/60 text-sm leading-relaxed">Ancient wisdom meets modern understanding in this profound dialogue.</p>
+                    </div>
+                </div>
+
+                <div class="group cursor-pointer">
+                    <div class="bg-ivory p-8 rounded-sm shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="w-12 h-12 bg-mutedgold/20 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-mutedgold" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-xl font-medium text-deepblue mb-3">
+                            <a href="https://amzn.in/d/4JSm1Fo" target="_blank" class="hover:underline">
+                                Chronicles of Confidence
+                            </a></h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed">Unlock your inner strength and embrace authentic self-assurance.</p>
+                    </div>
+                </div>
+
+                <div class="group cursor-pointer">
+                    <div class="bg-ivory p-8 rounded-sm shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="w-12 h-12 bg-sage/20 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-sage" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-xl font-medium text-deepblue mb-3"><a href="https://amzn.in/d/1gkCZPo" target="_blank" class="hover:underline">
+                            The Heart's Alchemy
+                        </a></h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed">Transform emotional challenges into profound personal growth.</p>
+                    </div>
+                </div>
+
+                <div class="group cursor-pointer">
+                    <div class="bg-ivory p-8 rounded-sm shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="w-12 h-12 bg-mutedgold/20 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-mutedgold" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-xl font-medium text-deepblue mb-3"><a href="https://amzn.in/d/cf4PXzd" target="_blank" class="hover:underline">
+                            Echoes of Hope
+                        </a></h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed">Find light in darkness and strength in vulnerability.</p>
+                    </div>
+                </div>
+
+                <div class="group cursor-pointer">
+                    <div class="bg-ivory p-8 rounded-sm shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="w-12 h-12 bg-sage/20 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-sage" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-xl font-medium text-deepblue mb-3"><a href="https://amzn.in/d/0lRHjHA" target="_blank" class="hover:underline">
+                            Mahabharata
+                        </a></h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed">Timeless epic wisdom for contemporary life challenges.</p>
+                    </div>
+                </div>
+
+                <div class="group cursor-pointer">
+                    <div class="bg-ivory p-8 rounded-sm shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="w-12 h-12 bg-mutedgold/20 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-mutedgold" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-xl font-medium text-deepblue mb-3"><a href="https://amzn.in/d/fkuALya" target="_blank" class="hover:underline">
+                            The Clarity Code
+                            </a></h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed">Decode the path to mental clarity and purposeful living.</p>
+                    </div>
+                </div>
+                <div class="group cursor-pointer">
+                    <div class="bg-ivory p-8 rounded-sm shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="w-12 h-12 bg-mutedgold/20 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-mutedgold" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-xl font-medium text-deepblue mb-3"><a href="https://amzn.in/d/74kI8r6" target="_blank" class="hover:underline">
+                            Ella’s Adventures in Mindfulness
+                            </a></h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed">Decode the path to mental clarity and purposeful living.</p>
+                    </div>
+                </div>
+                <div class="group cursor-pointer">
+                    <div class="bg-ivory p-8 rounded-sm shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="w-12 h-12 bg-mutedgold/20 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-mutedgold" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-xl font-medium text-deepblue mb-3"><a href="https://amzn.in/d/7aUeMY5" target="_blank" class="hover:underline">
+                            Urban Garden
+                            </a></h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed">Decode the path to mental clarity and purposeful living.</p>
+                    </div>
+                </div>
+                <div class="group cursor-pointer">
+                    <div class="bg-ivory p-8 rounded-sm shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="w-12 h-12 bg-mutedgold/20 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-mutedgold" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-xl font-medium text-deepblue mb-3"><a href="https://amzn.in/d/fKCywcY" target="_blank" class="hover:underline">
+                            Mindful Moments
+                            </a></h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed">Decode the path to mental clarity and purposeful living.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coaching Section -->
+    <section id="coaching" class="py-24 bg-ivory">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="font-serif text-5xl font-light text-deepblue mb-8">Executive Presence</h2>
+                    <div class="w-16 h-px bg-mutedgold mb-8"></div>
+                    <p class="text-lg text-deepblue/70 mb-8 leading-relaxed">
+                        Bespoke coaching experiences designed for visionary leaders, 
+                        C-suite executives, and pioneering entrepreneurs who demand excellence.
+                    </p>
+                    
+                    <div class="space-y-6 mb-10">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-2 h-2 bg-sage rounded-full mt-3 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="font-medium text-deepblue mb-2">1:1 Executive Coaching</h4>
+                                <p class="text-deepblue/60 text-sm">Personalized leadership development for transformational growth.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-2 h-2 bg-mutedgold rounded-full mt-3 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="font-medium text-deepblue mb-2">Motivational Speaking</h4>
+                                <p class="text-deepblue/60 text-sm">Inspiring keynotes that elevate teams and organizations.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-2 h-2 bg-sage rounded-full mt-3 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="font-medium text-deepblue mb-2">Leadership Retreats</h4>
+                                <p class="text-deepblue/60 text-sm">Immersive experiences for profound professional transformation.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="bg-deepblue text-ivory px-8 py-4 font-light tracking-wide hover:bg-sage transition-colors duration-300">
+                        <a href="https://topmate.io/mukulnimker" target="_blank" class="hover:underline">
+                            Schedule Consultation
+                            </a>
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <!-- Abstract Leadership SVG -->
+                    <svg class="w-full h-96 text-sage/20" viewBox="0 0 400 300">
+                        <circle cx="200" cy="80" r="40" fill="currentColor"/>
+                        <path d="M160 120 L240 120 L220 200 L180 200 Z" fill="currentColor" opacity="0.7"/>
+                        <path d="M100 250 Q200 200 300 250" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
+                        <circle cx="120" cy="240" r="8" fill="currentColor" opacity="0.6"/>
+                        <circle cx="200" cy="220" r="8" fill="currentColor" opacity="0.6"/>
+                        <circle cx="280" cy="240" r="8" fill="currentColor" opacity="0.6"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Support Section -->
+    <section id="support" class="py-24 bg-beige">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="font-serif text-5xl font-light text-deepblue mb-6">Compassionate Guidance</h2>
+                <div class="w-16 h-px bg-mutedgold mx-auto mb-8"></div>
+                <p class="text-lg text-deepblue/70 max-w-3xl mx-auto leading-relaxed">
+                    Professional support for those navigating depression, anxiety, and burnout. 
+                    Your journey to wellness deserves the highest level of care and understanding.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-sage" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-serif text-xl font-medium text-deepblue mb-3">Depression Support</h3>
+                    <p class="text-deepblue/60 text-sm">Gentle guidance through darkness toward renewed hope and vitality.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-mutedgold/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-mutedgold" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-serif text-xl font-medium text-deepblue mb-3">Anxiety Relief</h3>
+                    <p class="text-deepblue/60 text-sm">Cultivate inner peace and develop tools for lasting emotional balance.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-sage" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-serif text-xl font-medium text-deepblue mb-3">Burnout Recovery</h3>
+                    <p class="text-deepblue/60 text-sm">Restore energy and rediscover passion through mindful restoration.</p>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button id="chatButton" class="bg-sage text-ivory px-10 py-4 font-light tracking-wide hover:bg-deepblue transition-colors duration-300">
+                    Chat with Us
+                </button>
+                <p class="text-sm text-deepblue/60 mt-4">Confidential support available 24/7</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-24 bg-ivory">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <h2 class="font-serif text-5xl font-light text-deepblue mb-6">Voices of Transformation</h2>
+                <div class="w-16 h-px bg-mutedgold mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-beige p-8 rounded-sm">
+                    <div class="mb-6">
+                        <svg class="w-8 h-8 text-mutedgold/50" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    </div>
+                    <p class="text-deepblue/70 italic mb-6 leading-relaxed">
+                        "The depth of insight and genuine care transformed not just my leadership style, 
+                        but my entire approach to life. Truly exceptional."
+                    </p>
+                    <div class="border-t border-sage/20 pt-4">
+                        <p class="font-medium text-deepblue">Sarah M.</p>
+                        <p class="text-sm text-deepblue/60">CEO, Tech Innovation</p>
+                    </div>
+                </div>
+
+                <div class="bg-beige p-8 rounded-sm">
+                    <div class="mb-6">
+                        <svg class="w-8 h-8 text-mutedgold/50" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    </div>
+                    <p class="text-deepblue/70 italic mb-6 leading-relaxed">
+                        "A sanctuary of wisdom in a chaotic world. The guidance I received here 
+                        has been nothing short of life-changing."
+                    </p>
+                    <div class="border-t border-sage/20 pt-4">
+                        <p class="font-medium text-deepblue">James R.</p>
+                        <p class="text-sm text-deepblue/60">Investment Director</p>
+                    </div>
+                </div>
+
+                <div class="bg-beige p-8 rounded-sm">
+                    <div class="mb-6">
+                        <svg class="w-8 h-8 text-mutedgold/50" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    </div>
+                    <p class="text-deepblue/70 italic mb-6 leading-relaxed">
+                        "Elegant, profound, and deeply personal. This is wellness elevated 
+                        to an art form. I cannot recommend highly enough."
+                    </p>
+                    <div class="border-t border-sage/20 pt-4">
+                        <p class="font-medium text-deepblue">Alexandra K.</p>
+                        <p class="text-sm text-deepblue/60">Entrepreneur</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="py-24 bg-beige">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <h2 class="font-serif text-5xl font-light text-deepblue mb-6">The Journal</h2>
+                <div class="w-16 h-px bg-mutedgold mx-auto mb-8"></div>
+                <p class="text-lg text-deepblue/70 max-w-2xl mx-auto">
+                    Thoughtful reflections on mindfulness, nature, and the art of conscious living.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <article class="group cursor-pointer">
+                    <div class="bg-ivory p-6 rounded-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="text-sm text-mutedgold mb-3 font-light">Mindfulness</div>
+                        <h3 class="font-serif text-lg font-medium text-deepblue mb-3 group-hover:text-sage transition-colors">
+                            The Art of Present Moment Awareness
+                        </h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed mb-4">
+                            Discovering the profound peace that exists in the space between thoughts...
+                        </p>
+                        <div class="text-xs text-deepblue/50">3 min read</div>
+                    </div>
+                </article>
+
+                <article class="group cursor-pointer">
+                    <div class="bg-ivory p-6 rounded-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="text-sm text-sage mb-3 font-light">Nature</div>
+                        <h3 class="font-serif text-lg font-medium text-deepblue mb-3 group-hover:text-sage transition-colors">
+                            Lessons from the Mountain Path
+                        </h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed mb-4">
+                            How nature's rhythms can guide us toward inner equilibrium and clarity...
+                        </p>
+                        <div class="text-xs text-deepblue/50">5 min read</div>
+                    </div>
+                </article>
+
+                <article class="group cursor-pointer">
+                    <div class="bg-ivory p-6 rounded-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="text-sm text-mutedgold mb-3 font-light">Growth</div>
+                        <h3 class="font-serif text-lg font-medium text-deepblue mb-3 group-hover:text-sage transition-colors">
+                            The Alchemy of Transformation
+                        </h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed mb-4">
+                            Understanding how challenges become the catalyst for our greatest evolution...
+                        </p>
+                        <div class="text-xs text-deepblue/50">4 min read</div>
+                    </div>
+                </article>
+
+                <article class="group cursor-pointer">
+                    <div class="bg-ivory p-6 rounded-sm hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="text-sm text-sage mb-3 font-light">Motivation</div>
+                        <h3 class="font-serif text-lg font-medium text-deepblue mb-3 group-hover:text-sage transition-colors">
+                            Cultivating Unshakeable Purpose
+                        </h3>
+                        <p class="text-deepblue/60 text-sm leading-relaxed mb-4">
+                            Finding your north star in a world of infinite possibilities and distractions...
+                        </p>
+                        <div class="text-xs text-deepblue/50">6 min read</div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="text-center mt-12">
+                <button class="border border-deepblue text-deepblue px-8 py-3 font-light tracking-wide hover:bg-deepblue hover:text-ivory transition-all duration-300">
+                    Explore All Articles
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-deepblue text-ivory py-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div>
+                    <h3 class="font-serif text-2xl font-light mb-6">The Nurtured Mind</h3>
+                    <p class="text-ivory/70 text-sm leading-relaxed mb-6">
+                        Elevating consciousness through premium mindfulness experiences and transformative wisdom.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-8 h-8 bg-sage/20 rounded-full flex items-center justify-center hover:bg-sage transition-colors">
+                            <span class="text-xs">f</span>
+                        </a>
+                        <a href="#" class="w-8 h-8 bg-sage/20 rounded-full flex items-center justify-center hover:bg-sage transition-colors">
+                            <span class="text-xs">t</span>
+                        </a>
+                        <a href="#" class="w-8 h-8 bg-sage/20 rounded-full flex items-center justify-center hover:bg-sage transition-colors">
+                            <span class="text-xs">in</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-medium mb-6">Connect</h4>
+                    <div class="space-y-3 text-sm text-ivory/70">
+                        <p>support@fagunifarms.in</p>
+                        <p>+91- 7838739116</p>
+                        <p>Available globally via video consultation</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-medium mb-6">Services</h4>
+                    <div class="space-y-3 text-sm text-ivory/70">
+                        <a href="#coaching" class="block hover:text-sage transition-colors">Executive Coaching</a>
+                        <a href="#support" class="block hover:text-sage transition-colors">Wellness Support</a>
+                        <a href="#books" class="block hover:text-sage transition-colors">Curated Books</a>
+                        <a href="#blog" class="block hover:text-sage transition-colors">The Journal</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-medium mb-6">Stay Connected</h4>
+                    <p class="text-sm text-ivory/70 mb-4">Receive monthly insights and exclusive content.</p>
+                    <div class="space-y-3">
+                        <input type="email" placeholder="Your email" class="w-full bg-ivory/10 border border-ivory/20 px-4 py-2 text-sm rounded-sm focus:outline-none focus:border-sage">
+                        <button class="w-full bg-sage text-deepblue px-4 py-2 text-sm font-medium rounded-sm hover:bg-mutedgold transition-colors">
+                            Subscribe
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-ivory/20 pt-8 text-center">
+                <p class="text-sm text-ivory/60">
+                    © 2024 The Nurtured Mind. All rights reserved. | Privacy Policy | Terms of Service
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Chat button functionality
+        document.getElementById('chatButton').addEventListener('click', function() {
+            alert('Thank you for your interest in connecting with us. Our support team will reach out within 24 hours to schedule a confidential consultation.');
+        });
+
+        // Newsletter subscription
+        document.querySelector('footer button').addEventListener('click', function() {
+            const email = document.querySelector('footer input[type="email"]').value;
+            if (email) {
+                alert('Thank you for subscribing! You\'ll receive our monthly insights and exclusive content.');
+                document.querySelector('footer input[type="email"]').value = '';
+            } else {
+                alert('Please enter your email address to subscribe.');
+            }
+        });
+
+        // Add scroll effect to navigation
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.classList.add('shadow-sm');
+            } else {
+                nav.classList.remove('shadow-sm');
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'971f288745cc5472',t:'MTc1NTY2NDI1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
