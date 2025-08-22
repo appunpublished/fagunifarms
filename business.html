@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faguni Farms - Premium Organic Farm | Pure, Organic, Luxurious Living</title>
+    <meta name="description" content="Faguni Farms offers premium organic products, luxury farm stays, and authentic rural experiences in Chandela Village, UP. Shop organic dairy, vegetables, and enjoy sustainable living.">
+    <meta name="keywords" content="organic farm India, luxury farm stay, buy organic dairy online, premium organic products, sustainable farming, farm retreat">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'forest-green': '#4A6741',
+                        'sage-green': '#A8C4A2',
+                        'earth-brown': '#8B6F47',
+                        'warm-beige': '#FAF8F3',
+                        'gold-accent': '#C9A96E',
+                        'cream': '#FEFDF9',
+                        'luxury-gold': '#D4C5A9',
+                        'deep-forest': '#5A7051',
+                        'pearl-white': '#FEFEFE',
+                        'charcoal': '#6B6B6B'
+                    },
+                    fontFamily: {
+                        'serif': ['Playfair Display', 'Georgia', 'serif'],
+                        'sans': ['Inter', 'sans-serif'],
+                        'luxury': ['Crimson Text', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Crimson+Text:wght@400;600&display=swap');
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .gradient-overlay {
+            background: linear-gradient(135deg, rgba(74,103,65,0.7) 0%, rgba(139,111,71,0.6) 100%);
+        }
+        
+        .section-padding {
+            padding: 100px 0;
+        }
+        
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+        
+        .luxury-shadow {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.06);
+        }
+        
+        .text-shadow-luxury {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .backdrop-luxury {
+            backdrop-filter: blur(20px) saturate(180%);
+        }
+        
+        .border-luxury {
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 smooth-scroll">
+
+    <div class="absolute inset-0">
+        <svg class="w-full h-full object-cover" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+            <!-- Farm landscape background -->
+            <defs>
+                <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#98FB98;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <rect width="1200" height="800" fill="url(#skyGradient)"/>
+            <!-- Mountains -->
+            <polygon points="0,400 200,200 400,300 600,150 800,250 1000,180 1200,220 1200,800 0,800" fill="#8FBC8F" opacity="0.7"/>
+            <!-- Fields -->
+            <rect x="0" y="500" width="1200" height="300" fill="#90EE90" opacity="0.6"/>
+            <rect x="0" y="600" width="1200" height="200" fill="#228B22" opacity="0.4"/>
+            <!-- Trees -->
+            <circle cx="150" cy="450" r="40" fill="#2D5016"/>
+            <circle cx="300" cy="420" r="35" fill="#2D5016"/>
+            <circle cx="900" cy="440" r="45" fill="#2D5016"/>
+            <circle cx="1050" cy="460" r="38" fill="#2D5016"/>
+        </svg>
+    </div>
+
+        <section id="business-partners" class="min-h-screen bg-gradient-to-br from-deep-forest via-forest-green to-sage-green text-white hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <!-- Header -->
+                <div class="text-center mb-16">
+                    <div class="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
+                        <span class="text-luxury-gold font-semibold">🤝 Business Partnerships</span>
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-serif font-bold mb-8 text-shadow-luxury">
+                        Partner with <span class="text-luxury-gold">Faguni Farms</span>
+                    </h1>
+                    <p class="text-2xl md:text-3xl mb-8 opacity-90 max-w-4xl mx-auto leading-relaxed">
+                        Scale your business with premium organic products and sustainable farming partnerships
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                        <button onclick="scrollToBusinessForm()" class="bg-luxury-gold hover:bg-gold-accent text-deep-forest px-10 py-5 rounded-full font-semibold text-xl transition-all duration-500 hover-lift luxury-shadow">
+                            Request Bulk Quote
+                        </button>
+                        <button onclick="scrollToFarmerConnect()" class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-forest-green px-10 py-5 rounded-full font-semibold text-xl transition-all duration-500 hover-lift backdrop-luxury">
+                            Join Farmer Network
+                        </button>
+                    </div>
+                </div>
+    
+                <!-- Value Propositions -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-3xl p-8 text-center hover-lift luxury-shadow">
+                        <div class="text-6xl mb-6">📈</div>
+                        <h3 class="text-2xl font-bold mb-4 text-luxury-gold">Scale Your Business</h3>
+                        <p class="opacity-90 leading-relaxed">Access premium organic products at wholesale prices with reliable supply chains and consistent quality.</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-3xl p-8 text-center hover-lift luxury-shadow">
+                        <div class="text-6xl mb-6">🌱</div>
+                        <h3 class="text-2xl font-bold mb-4 text-luxury-gold">Sustainable Impact</h3>
+                        <p class="opacity-90 leading-relaxed">Partner with us to create positive environmental and social impact while growing your business sustainably.</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-3xl p-8 text-center hover-lift luxury-shadow">
+                        <div class="text-6xl mb-6">🤝</div>
+                        <h3 class="text-2xl font-bold mb-4 text-luxury-gold">Trusted Partnership</h3>
+                        <p class="opacity-90 leading-relaxed">Join our network of successful partners with dedicated support, training, and growth opportunities.</p>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Business Solutions -->
+            <div class="bg-white/5 backdrop-blur-sm py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                        <h2 class="text-4xl md:text-5xl font-serif font-bold mb-6 text-luxury-gold">Business Solutions</h2>
+                        <p class="text-xl opacity-90 max-w-3xl mx-auto">Comprehensive partnerships designed for different business needs</p>
+                    </div>
+    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        <!-- Bulk Supply -->
+                        <div class="bg-white rounded-3xl p-10 text-gray-800 hover-lift luxury-shadow">
+                            <div class="flex items-center mb-6">
+                                <div class="text-5xl mr-4">🏢</div>
+                                <h3 class="text-3xl font-serif font-bold text-forest-green">Bulk Supply Partnership</h3>
+                            </div>
+                            <p class="text-lg mb-6 leading-relaxed">Perfect for restaurants, hotels, retail chains, and food processors requiring consistent supply of premium organic products.</p>
+                            
+                            <div class="space-y-4 mb-8">
+                                <div class="flex items-start space-x-3">
+                                    <div class="text-green-500 text-xl">✓</div>
+                                    <div>
+                                        <h4 class="font-semibold text-forest-green">Volume Discounts</h4>
+                                        <p class="text-gray-600">Competitive wholesale pricing with tiered discounts based on order volume</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="text-green-500 text-xl">✓</div>
+                                    <div>
+                                        <h4 class="font-semibold text-forest-green">Reliable Supply Chain</h4>
+                                        <p class="text-gray-600">Guaranteed supply with flexible delivery schedules and inventory management</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="text-green-500 text-xl">✓</div>
+                                    <div>
+                                        <h4 class="font-semibold text-forest-green">Quality Assurance</h4>
+                                        <p class="text-gray-600">Certified organic products with consistent quality and traceability</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="text-green-500 text-xl">✓</div>
+                                    <div>
+                                        <h4 class="font-semibold text-forest-green">Custom Packaging</h4>
+                                        <p class="text-gray-600">Private labeling and custom packaging solutions for your brand</p>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="bg-sage-green/10 rounded-xl p-6 mb-6">
+                                <h4 class="font-bold text-forest-green mb-3">Ideal For:</h4>
+                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                    <span>• Restaurants & Hotels</span>
+                                    <span>• Retail Chains</span>
+                                    <span>• Food Processors</span>
+                                    <span>• Catering Services</span>
+                                    <span>• Organic Stores</span>
+                                    <span>• Export Companies</span>
+                                </div>
+                            </div>
+    
+                            <button onclick="openBulkEnquiry()" class="w-full bg-forest-green hover:bg-sage-green text-white py-4 rounded-full font-semibold text-lg transition-all duration-500 luxury-shadow">
+                                Request Bulk Quote
+                            </button>
+                        </div>
+    
+                        <!-- Farmer Connect -->
+                        <div class="bg-white rounded-3xl p-10 text-gray-800 hover-lift luxury-shadow">
+                            <div class="flex items-center mb-6">
+                                <div class="text-5xl mr-4">🚜</div>
+                                <h3 class="text-3xl font-serif font-bold text-forest-green">Farmer Connect Program</h3>
+                            </div>
+                            <p class="text-lg mb-6 leading-relaxed">Join our network of organic farmers and grow your agricultural business with our support, training, and guaranteed market access.</p>
+                            
+                            <div class="space-y-4 mb-8">
+                                <div class="flex items-start space-x-3">
+                                    <div class="text-green-500 text-xl">✓</div>
+                                    <div>
+                                        <h4 class="font-semibold text-forest-green">Guaranteed Purchase</h4>
+                                        <p class="text-gray-600">Assured market for your organic produce at premium prices</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="text-green-500 text-xl">✓</div>
+                                    <div>
+                                        <h4 class="font-semibold text-forest-green">Technical Support</h4>
+                                        <p class="text-gray-600">Expert guidance on organic farming techniques and certification</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="text-green-500 text-xl">✓</div>
+                                    <div>
+                                        <h4 class="font-semibold text-forest-green">Input Supply</h4>
+                                        <p class="text-gray-600">Access to organic seeds, fertilizers, and farming equipment</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="text-green-500 text-xl">✓</div>
+                                    <div>
+                                        <h4 class="font-semibold text-forest-green">Training Programs</h4>
+                                        <p class="text-gray-600">Regular workshops on sustainable farming and business development</p>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="bg-yellow-50 rounded-xl p-6 mb-6">
+                                <h4 class="font-bold text-forest-green mb-3">Benefits Include:</h4>
+                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                    <span>• Premium Pricing</span>
+                                    <span>• Certification Support</span>
+                                    <span>• Quality Testing</span>
+                                    <span>• Market Linkage</span>
+                                    <span>• Financial Assistance</span>
+                                    <span>• Insurance Coverage</span>
+                                </div>
+                            </div>
+    
+                            <button onclick="openFarmerForm()" class="w-full bg-forest-green hover:bg-sage-green text-white py-4 rounded-full font-semibold text-lg transition-all duration-500 luxury-shadow">
+                                Join Farmer Network
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Success Stories -->
+            <div class="py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                        <h2 class="text-4xl md:text-5xl font-serif font-bold mb-6 text-luxury-gold">Success Stories</h2>
+                        <p class="text-xl opacity-90 max-w-3xl mx-auto">Real partnerships, real results</p>
+                    </div>
+    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 hover-lift luxury-shadow">
+                            <div class="text-4xl mb-4">🏨</div>
+                            <h3 class="text-xl font-bold mb-3 text-luxury-gold">Luxury Resort Chain</h3>
+                            <p class="opacity-90 mb-4">"Faguni Farms has been our trusted partner for 3 years, supplying fresh organic produce to our 12 properties. Their consistency and quality have elevated our farm-to-table dining experience."</p>
+                            <div class="text-sm opacity-75">- Resort Operations Manager</div>
+                        </div>
+    
+                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 hover-lift luxury-shadow">
+                            <div class="text-4xl mb-4">🚜</div>
+                            <h3 class="text-xl font-bold mb-3 text-luxury-gold">Organic Farmer Network</h3>
+                            <p class="opacity-90 mb-4">"Joining Faguni Farms' network transformed my farming business. With guaranteed purchase and premium pricing, my income increased by 40% while farming sustainably."</p>
+                            <div class="text-sm opacity-75">- Partner Farmer, UP</div>
+                        </div>
+    
+                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 hover-lift luxury-shadow">
+                            <div class="text-4xl mb-4">🏪</div>
+                            <h3 class="text-xl font-bold mb-3 text-luxury-gold">Organic Retail Chain</h3>
+                            <p class="opacity-90 mb-4">"Their diverse product range and reliable supply chain helped us expand to 25 stores. Customer satisfaction with Faguni Farms products is consistently above 95%."</p>
+                            <div class="text-sm opacity-75">- Retail Chain Owner</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Business Enquiry Forms -->
+            <div id="business-forms" class="bg-white/5 backdrop-blur-sm py-20">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        <!-- Bulk Enquiry Form -->
+                        <div id="bulk-enquiry-form" class="bg-white rounded-3xl p-10 text-gray-800 luxury-shadow">
+                            <div class="text-center mb-8">
+                                <div class="text-5xl mb-4">📦</div>
+                                <h3 class="text-3xl font-serif font-bold text-forest-green mb-4">Bulk Order Enquiry</h3>
+                                <p class="text-gray-600">Get competitive quotes for wholesale orders</p>
+                            </div>
+    
+                            <form class="space-y-6" onsubmit="submitBulkEnquiry(event)">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" placeholder="Company Name *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                    <input type="text" placeholder="Contact Person *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="email" placeholder="Business Email *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                    <input type="tel" placeholder="Phone Number *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                </div>
+                                <select required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                    <option value="">Business Type *</option>
+                                    <option value="restaurant">Restaurant/Hotel</option>
+                                    <option value="retail">Retail Chain</option>
+                                    <option value="processor">Food Processor</option>
+                                    <option value="catering">Catering Service</option>
+                                    <option value="export">Export Company</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" placeholder="City/Location" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                    <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                        <option value="">Order Frequency</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="seasonal">Seasonal</option>
+                                    </select>
+                                </div>
+                                <textarea placeholder="Products of Interest & Quantity Requirements *" rows="4" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green resize-none"></textarea>
+                                <textarea placeholder="Additional Requirements or Questions" rows="3" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green resize-none"></textarea>
+                                <button type="submit" class="w-full bg-forest-green hover:bg-sage-green text-white py-4 rounded-full font-semibold text-lg transition-all duration-500 luxury-shadow">
+                                    Submit Bulk Enquiry
+                                </button>
+                            </form>
+                        </div>
+    
+                        <!-- Farmer Connect Form -->
+                        <div id="farmer-connect-form" class="bg-white rounded-3xl p-10 text-gray-800 luxury-shadow">
+                            <div class="text-center mb-8">
+                                <div class="text-5xl mb-4">🌾</div>
+                                <h3 class="text-3xl font-serif font-bold text-forest-green mb-4">Join Farmer Network</h3>
+                                <p class="text-gray-600">Partner with us for sustainable farming success</p>
+                            </div>
+    
+                            <form class="space-y-6" onsubmit="submitFarmerForm(event)">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" placeholder="Farmer Name *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                    <input type="tel" placeholder="Mobile Number *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="email" placeholder="Email Address" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                    <input type="number" placeholder="Age" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" placeholder="Village/Location *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                    <input type="text" placeholder="District/State *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="number" placeholder="Total Land (Acres) *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                    <select required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                        <option value="">Farming Experience *</option>
+                                        <option value="0-2">0-2 years</option>
+                                        <option value="3-5">3-5 years</option>
+                                        <option value="6-10">6-10 years</option>
+                                        <option value="10+">10+ years</option>
+                                    </select>
+                                </div>
+                                <select required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                                    <option value="">Current Farming Type *</option>
+                                    <option value="conventional">Conventional</option>
+                                    <option value="transitioning">Transitioning to Organic</option>
+                                    <option value="organic">Certified Organic</option>
+                                    <option value="natural">Natural/Chemical-free</option>
+                                </select>
+                                <textarea placeholder="Current Crops & Farming Practices *" rows="3" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green resize-none"></textarea>
+                                <textarea placeholder="Goals & Expectations from Partnership" rows="3" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green resize-none"></textarea>
+                                <div class="flex items-start space-x-3">
+                                    <input type="checkbox" required class="mt-1">
+                                    <label class="text-sm text-gray-600">I agree to the terms and conditions and commit to sustainable farming practices *</label>
+                                </div>
+                                <button type="submit" class="w-full bg-forest-green hover:bg-sage-green text-white py-4 rounded-full font-semibold text-lg transition-all duration-500 luxury-shadow">
+                                    Join Farmer Network
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Contact Information -->
+            <div class="py-16 bg-white/10 backdrop-blur-sm">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h3 class="text-3xl font-serif font-bold mb-8 text-luxury-gold">Ready to Partner with Us?</h3>
+                    <p class="text-xl mb-8 opacity-90">Our business development team is ready to discuss your specific requirements</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                        <div class="text-center">
+                            <div class="text-3xl mb-3">📞</div>
+                            <h4 class="font-semibold mb-2">Business Hotline</h4>
+                            <p class="opacity-90">+91 XXXXX XXXXX</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl mb-3">✉️</div>
+                            <h4 class="font-semibold mb-2">Business Email</h4>
+                            <p class="opacity-90">business@fagunifarms.com</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl mb-3">💬</div>
+                            <h4 class="font-semibold mb-2">WhatsApp Business</h4>
+                            <p class="opacity-90">+91 XXXXX XXXXX</p>
+                        </div>
+                    </div>
+    
+                    <button onclick="showMainSite()" class="bg-transparent border-2 border-luxury-gold text-luxury-gold hover:bg-luxury-gold hover:text-deep-forest px-10 py-4 rounded-full font-semibold text-lg transition-all duration-500 hover-lift backdrop-luxury">
+                        ← Back to Main Site
+                    </button>
+                </div>
+            </div>
+        </section>
+    </body>
+</html>
