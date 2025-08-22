@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop All Products - Faguni Farms | Premium Organic Products Online</title>
+    <meta name="description" content="Shop premium organic products from Faguni Farms - A2 milk, bilona ghee, fresh vegetables, pulses, millets, mushrooms, and more. Direct from farm to your doorstep.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'forest-green': '#4A6741',
+                        'sage-green': '#A8C4A2',
+                        'earth-brown': '#8B6F47',
+                        'warm-beige': '#FAF8F3',
+                        'gold-accent': '#C9A96E',
+                        'cream': '#FEFDF9',
+                        'luxury-gold': '#D4C5A9',
+                        'deep-forest': '#5A7051',
+                        'pearl-white': '#FEFEFE'
+                    },
+                    fontFamily: {
+                        'serif': ['Playfair Display', 'Georgia', 'serif'],
+                        'sans': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+        
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .luxury-shadow {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.06);
+        }
+        
+        .filter-active {
+            background-color: #4A6741;
+            color: white;
+        }
+        
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+        
+        .badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 10;
+        }
+        
+        .price-strike {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body class="font-sans bg-warm-beige">
+    <!-- Header -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center">
+                    <a href="#" onclick="goBack()" class="text-3xl font-serif font-bold text-deep-forest">🌿 Faguni Farms</a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Search products..." class="w-80 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-forest-green">
+                        <button class="absolute right-3 top-2.5 text-gray-400">🔍</button>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="cartBtn" class="relative p-2 text-forest-green hover:text-gold-accent">
+                            🛒 <span id="cartCount" class="absolute -top-1 -right-1 bg-gold-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        </button>
+                        <button onclick="goBack()" class="bg-forest-green text-white px-6 py-2 rounded-full hover:bg-sage-green transition-colors">
+                            ← Back to Main Site
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-forest-green to-sage-green text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-5xl md:text-6xl font-serif font-bold mb-6">Premium Organic Products</h1>
+            <p class="text-xl md:text-2xl mb-8 opacity-90">Farm-fresh, certified organic, delivered to your doorstep</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <div class="bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
+                    <span class="font-semibold">✓ 100% Organic Certified</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
+                    <span class="font-semibold">✓ Farm Fresh Daily</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
+                    <span class="font-semibold">✓ Free Home Delivery</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters and Categories -->
+    <section class="py-8 bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button onclick="filterProducts('all')" class="filter-btn filter-active px-6 py-3 rounded-full font-medium transition-all">All Products</button>
+                <button onclick="filterProducts('dairy')" class="filter-btn px-6 py-3 rounded-full font-medium transition-all bg-gray-100 hover:bg-forest-green hover:text-white">🥛 Dairy</button>
+                <button onclick="filterProducts('grains')" class="filter-btn px-6 py-3 rounded-full font-medium transition-all bg-gray-100 hover:bg-forest-green hover:text-white">🌾 Grains & Pulses</button>
+                <button onclick="filterProducts('vegetables')" class="filter-btn px-6 py-3 rounded-full font-medium transition-all bg-gray-100 hover:bg-forest-green hover:text-white">🥬 Fresh Produce</button>
+                <button onclick="filterProducts('poultry')" class="filter-btn px-6 py-3 rounded-full font-medium transition-all bg-gray-100 hover:bg-forest-green hover:text-white">🥚 Poultry</button>
+                <button onclick="filterProducts('specialty')" class="filter-btn px-6 py-3 rounded-full font-medium transition-all bg-gray-100 hover:bg-forest-green hover:text-white">🍯 Specialty</button>
+                <button onclick="filterProducts('pooja')" class="filter-btn px-6 py-3 rounded-full font-medium transition-all bg-gray-100 hover:bg-forest-green hover:text-white">🕉️ Pooja Items</button>
+                <button onclick="filterProducts('gardening')" class="filter-btn px-6 py-3 rounded-full font-medium transition-all bg-gray-100 hover:bg-forest-green hover:text-white">🌱 Gardening</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-serif font-bold text-forest-green">Our Products</h2>
+                <div class="flex items-center space-x-4">
+                    <select id="sortSelect" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-green">
+                        <option value="name">Sort by Name</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="popular">Most Popular</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Products will be dynamically loaded here -->
+            </div>
+
+            <!-- Load More Button -->
+            <div class="text-center mt-12">
+                <button id="loadMoreBtn" class="bg-forest-green text-white px-8 py-4 rounded-full font-semibold hover:bg-sage-green transition-colors">
+                    Load More Products
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shopping Cart Sidebar -->
+    <div id="cartSidebar" class="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-6 border-b">
+            <div class="flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-forest-green">Shopping Cart</h3>
+                <button onclick="toggleCart()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+        </div>
+        <div id="cartItems" class="flex-1 overflow-y-auto p-6">
+            <div class="text-center text-gray-500 py-12">
+                <div class="text-6xl mb-4">🛒</div>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div id="cartFooter" class="border-t p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xl font-bold">Total: </span>
+                <span id="cartTotal" class="text-2xl font-bold text-forest-green">₹0</span>
+            </div>
+            <button class="w-full bg-forest-green text-white py-4 rounded-full font-semibold hover:bg-sage-green transition-colors">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div id="cartOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleCart()"></div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <h2 id="modalTitle" class="text-3xl font-bold text-forest-green"></h2>
+                    <button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                <div id="modalContent" class="space-y-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Product data
+        const products = [
+            // Dairy Products
+            {
+                id: 1,
+                name: "Pure A2 Milk",
+                category: "dairy",
+                price: 80,
+                originalPrice: 100,
+                unit: "1 Liter",
+                image: "🥛",
+                badge: "Fresh Daily",
+                description: "Pure A2 milk from grass-fed desi cows. Rich in proteins, vitamins, and natural probiotics.",
+                benefits: ["High in protein", "Rich in calcium", "Natural probiotics", "No hormones or antibiotics"],
+                inStock: true,
+                popular: true
+            },
+            {
+                id: 2,
+                name: "Regular Fresh Milk",
+                category: "dairy",
+                price: 60,
+                unit: "1 Liter",
+                image: "🥛",
+                badge: "Farm Fresh",
+                description: "Fresh organic milk from healthy cows, perfect for daily consumption.",
+                benefits: ["Daily fresh supply", "Organic certified", "Rich in nutrients", "Creamy texture"],
+                inStock: true
+            },
+            {
+                id: 3,
+                name: "Bilona Ghee",
+                category: "dairy",
+                price: 1200,
+                originalPrice: 1500,
+                unit: "500g",
+                image: "🧈",
+                badge: "Premium",
+                description: "Traditional bilona method ghee made from A2 milk. Slow-cooked to perfection.",
+                benefits: ["Traditional bilona method", "Made from A2 milk", "Rich in vitamins A, D, E, K", "High smoke point"],
+                inStock: true,
+                popular: true
+            },
+            {
+                id: 4,
+                name: "Regular Ghee",
+                category: "dairy",
+                price: 800,
+                unit: "500g",
+                image: "🧈",
+                description: "Pure organic ghee made from fresh cream. Perfect for cooking and health.",
+                benefits: ["Pure organic", "Made from fresh cream", "Rich flavor", "Healthy cooking oil"],
+                inStock: true
+            },
+            {
+                id: 5,
+                name: "White Butter",
+                category: "dairy",
+                price: 400,
+                unit: "250g",
+                image: "🧈",
+                badge: "Fresh",
+                description: "Freshly churned white butter from organic cream. Unsalted and pure.",
+                benefits: ["Freshly churned", "Unsalted", "Rich in vitamins", "Creamy texture"],
+                inStock: true
+            },
+            {
+                id: 6,
+                name: "Fresh Paneer",
+                category: "dairy",
+                price: 300,
+                unit: "250g",
+                image: "🧀",
+                badge: "Made Daily",
+                description: "Soft, fresh paneer made daily from pure milk. Perfect for curries and snacks.",
+                benefits: ["Made daily", "High protein", "Soft texture", "No preservatives"],
+                inStock: true
+            },
+            {
+                id: 7,
+                name: "Organic Curd",
+                category: "dairy",
+                price: 80,
+                unit: "500g",
+                image: "🥛",
+                description: "Thick, creamy curd made from organic milk with natural cultures.",
+                benefits: ["Natural probiotics", "Aids digestion", "Rich in calcium", "Thick and creamy"],
+                inStock: true
+            },
+
+            // Grains & Pulses
+            {
+                id: 8,
+                name: "Organic Wheat",
+                category: "grains",
+                price: 60,
+                unit: "1 Kg",
+                image: "🌾",
+                description: "Premium organic wheat grown without chemicals. Perfect for making fresh rotis.",
+                benefits: ["Chemical-free", "High fiber", "Rich in protein", "Traditional variety"],
+                inStock: true
+            },
+            {
+                id: 9,
+                name: "Wheat Flour",
+                category: "grains",
+                price: 65,
+                unit: "1 Kg",
+                image: "🌾",
+                badge: "Stone Ground",
+                description: "Stone-ground wheat flour retaining all nutrients and natural flavor.",
+                benefits: ["Stone ground", "Retains nutrients", "Fresh milling", "No additives"],
+                inStock: true
+            },
+            {
+                id: 10,
+                name: "Mixed Dal",
+                category: "grains",
+                price: 150,
+                unit: "1 Kg",
+                image: "🫘",
+                description: "Nutritious mix of organic pulses including moong, masoor, and chana dal.",
+                benefits: ["High protein", "Mixed nutrients", "Easy to cook", "Organic certified"],
+                inStock: true,
+                popular: true
+            },
+            {
+                id: 11,
+                name: "Moong Dal",
+                category: "grains",
+                price: 120,
+                unit: "1 Kg",
+                image: "🫘",
+                description: "Premium organic moong dal, easy to digest and rich in protein.",
+                benefits: ["Easy to digest", "High protein", "Rich in fiber", "Quick cooking"],
+                inStock: true
+            },
+            {
+                id: 12,
+                name: "Chana Dal",
+                category: "grains",
+                price: 100,
+                unit: "1 Kg",
+                image: "🫘",
+                description: "Organic chana dal with rich flavor and high protein content.",
+                benefits: ["High protein", "Rich flavor", "Good for health", "Versatile cooking"],
+                inStock: true
+            },
+            {
+                id: 13,
+                name: "Masoor Dal",
+                category: "grains",
+                price: 110,
+                unit: "1 Kg",
+                image: "🫘",
+                description: "Red lentils packed with protein and essential nutrients.",
+                benefits: ["Quick cooking", "High protein", "Rich in iron", "Heart healthy"],
+                inStock: true
+            },
+            {
+                id: 14,
+                name: "Daliya (Broken Wheat)",
+                category: "grains",
+                price: 80,
+                unit: "1 Kg",
+                image: "🌾",
+                description: "Nutritious broken wheat perfect for healthy breakfast and meals.",
+                benefits: ["High fiber", "Weight management", "Slow release energy", "Versatile"],
+                inStock: true
+            },
+            {
+                id: 15,
+                name: "Pearl Millet (Bajra)",
+                category: "grains",
+                price: 90,
+                unit: "1 Kg",
+                image: "🌾",
+                badge: "Superfood",
+                description: "Nutrient-dense pearl millet, gluten-free and rich in minerals.",
+                benefits: ["Gluten-free", "High in iron", "Rich in magnesium", "Diabetes friendly"],
+                inStock: true
+            },
+            {
+                id: 16,
+                name: "Finger Millet (Ragi)",
+                category: "grains",
+                price: 100,
+                unit: "1 Kg",
+                image: "🌾",
+                badge: "Calcium Rich",
+                description: "Calcium-rich finger millet, perfect for growing children and adults.",
+                benefits: ["High calcium", "Gluten-free", "Rich in amino acids", "Good for bones"],
+                inStock: true
+            },
+
+            // Fresh Produce
+            {
+                id: 17,
+                name: "Oyster Mushrooms",
+                category: "vegetables",
+                price: 200,
+                unit: "250g",
+                image: "🍄",
+                badge: "Fresh Harvest",
+                description: "Fresh oyster mushrooms grown in controlled organic environment.",
+                benefits: ["High protein", "Low calories", "Rich in vitamins", "Immune boosting"],
+                inStock: true,
+                popular: true
+            },
+            {
+                id: 18,
+                name: "Button Mushrooms",
+                category: "vegetables",
+                price: 180,
+                unit: "250g",
+                image: "🍄",
+                description: "Fresh button mushrooms perfect for cooking and salads.",
+                benefits: ["Versatile cooking", "Rich in selenium", "Low fat", "Good source of potassium"],
+                inStock: true
+            },
+            {
+                id: 19,
+                name: "Seasonal Vegetables Box",
+                category: "vegetables",
+                price: 400,
+                unit: "2 Kg Mix",
+                image: "🥬",
+                badge: "Seasonal",
+                description: "Mixed seasonal vegetables including spinach, carrots, beans, and more.",
+                benefits: ["Seasonal variety", "Fresh daily", "Pesticide-free", "Nutrient rich"],
+                inStock: true
+            },
+            {
+                id: 20,
+                name: "Organic Spinach",
+                category: "vegetables",
+                price: 40,
+                unit: "250g",
+                image: "🥬",
+                description: "Fresh organic spinach leaves, rich in iron and vitamins.",
+                benefits: ["High in iron", "Rich in vitamins", "Fresh daily", "Pesticide-free"],
+                inStock: true
+            },
+            {
+                id: 21,
+                name: "Mixed Fruits Basket",
+                category: "vegetables",
+                price: 500,
+                unit: "2 Kg",
+                image: "🍎",
+                badge: "Seasonal",
+                description: "Seasonal organic fruits basket with variety of fresh fruits.",
+                benefits: ["Seasonal variety", "Rich in vitamins", "Natural sweetness", "Antioxidant rich"],
+                inStock: true
+            },
+
+            // Poultry
+            {
+                id: 22,
+                name: "Farm Fresh Eggs",
+                category: "poultry",
+                price: 120,
+                unit: "12 Pieces",
+                image: "🥚",
+                badge: "Free Range",
+                description: "Fresh eggs from free-range hens fed with organic grains.",
+                benefits: ["Free-range hens", "Organic feed", "Rich in omega-3", "Superior protein"],
+                inStock: true,
+                popular: true
+            },
+            {
+                id: 23,
+                name: "Desi Chicken",
+                category: "poultry",
+                price: 400,
+                unit: "1 Kg",
+                image: "🐔",
+                badge: "Desi Breed",
+                description: "Indigenous breed chicken raised in natural environment.",
+                benefits: ["Desi breed", "Natural foraging", "No antibiotics", "Lean meat"],
+                inStock: true
+            },
+
+            // Specialty Products
+            {
+                id: 24,
+                name: "Raw Forest Honey",
+                category: "specialty",
+                price: 600,
+                originalPrice: 800,
+                unit: "500g",
+                image: "🍯",
+                badge: "Wild",
+                description: "Pure raw honey from forest beehives. Unprocessed and unfiltered.",
+                benefits: ["Unprocessed", "Natural enzymes", "Antibacterial", "Rich in antioxidants"],
+                inStock: true,
+                popular: true
+            },
+            {
+                id: 25,
+                name: "Organic Jaggery",
+                category: "specialty",
+                price: 120,
+                unit: "1 Kg",
+                image: "🟤",
+                description: "Pure organic jaggery made from sugarcane without chemicals.",
+                benefits: ["Chemical-free", "Rich in minerals", "Natural sweetener", "Aids digestion"],
+                inStock: true
+            },
+
+            // Pooja Items
+            {
+                id: 26,
+                name: "Cow Dung Diyas",
+                category: "pooja",
+                price: 100,
+                unit: "10 Pieces",
+                image: "🪔",
+                badge: "Handmade",
+                description: "Handcrafted cow dung diyas for festivals and daily prayers.",
+                benefits: ["100% natural", "Biodegradable", "Spiritual significance", "Eco-friendly"],
+                inStock: true
+            },
+            {
+                id: 27,
+                name: "Flower Agarbatti",
+                category: "pooja",
+                price: 80,
+                unit: "50 Sticks",
+                image: "🌸",
+                description: "Natural incense sticks made from flower residue and herbs.",
+                benefits: ["Made from flowers", "Chemical-free", "Long lasting", "Pure fragrance"],
+                inStock: true
+            },
+            {
+                id: 28,
+                name: "Hawan Samagri",
+                category: "pooja",
+                price: 150,
+                unit: "250g",
+                image: "🔥",
+                description: "Complete hawan samagri with authentic herbs and grains.",
+                benefits: ["Traditional blend", "Sacred herbs", "Vedic guidelines", "Purifying"],
+                inStock: true
+            },
+            {
+                id: 29,
+                name: "Organic Camphor",
+                category: "pooja",
+                price: 200,
+                unit: "100g",
+                image: "⚪",
+                badge: "Pure",
+                description: "Pure organic camphor for religious ceremonies and aromatherapy.",
+                benefits: ["100% pure", "Natural extraction", "Therapeutic", "Long burning"],
+                inStock: true
+            },
+
+            // Gardening
+            {
+                id: 30,
+                name: "Premium Potting Soil",
+                category: "gardening",
+                price: 300,
+                unit: "10 Kg",
+                image: "🌱",
+                badge: "Nutrient Rich",
+                description: "Premium potting soil blend perfect for all types of plants.",
+                benefits: ["Nutrient rich", "Good drainage", "pH balanced", "Organic matter"],
+                inStock: true
+            },
+            {
+                id: 31,
+                name: "Vermicompost",
+                category: "gardening",
+                price: 200,
+                unit: "5 Kg",
+                image: "🪱",
+                badge: "Organic",
+                description: "Rich vermicompost made from organic waste by earthworms.",
+                benefits: ["100% organic", "Rich in nutrients", "Improves soil", "Eco-friendly"],
+                inStock: true,
+                popular: true
+            },
+            {
+                id: 32,
+                name: "Cow Dung Cakes",
+                category: "gardening",
+                price: 150,
+                unit: "10 Pieces",
+                image: "🟤",
+                description: "Dried cow dung cakes for organic farming and fuel purposes.",
+                benefits: ["Natural fertilizer", "Eco-friendly fuel", "Pest repellent", "Soil enriching"],
+                inStock: true
+            }
+        ];
+
+        let currentFilter = 'all';
+        let currentSort = 'name';
+        let displayedProducts = 12;
+        let cart = [];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            displayProducts();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                searchProducts(e.target.value);
+            });
+
+            // Sort functionality
+            document.getElementById('sortSelect').addEventListener('change', function(e) {
+                currentSort = e.target.value;
+                displayProducts();
+            });
+
+            // Load more button
+            document.getElementById('loadMoreBtn').addEventListener('click', function() {
+                displayedProducts += 12;
+                displayProducts();
+            });
+
+            // Cart button
+            document.getElementById('cartBtn').addEventListener('click', toggleCart);
+        }
+
+        function filterProducts(category) {
+            currentFilter = category;
+            displayedProducts = 12;
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('filter-active');
+                btn.classList.add('bg-gray-100', 'hover:bg-forest-green', 'hover:text-white');
+            });
+            
+            event.target.classList.add('filter-active');
+            event.target.classList.remove('bg-gray-100', 'hover:bg-forest-green', 'hover:text-white');
+            
+            displayProducts();
+        }
+
+        function searchProducts(query) {
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(query.toLowerCase()) ||
+                product.description.toLowerCase().includes(query.toLowerCase())
+            );
+            displayFilteredProducts(filteredProducts);
+        }
+
+        function displayProducts() {
+            let filteredProducts = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
+            
+            // Sort products
+            filteredProducts.sort((a, b) => {
+                switch(currentSort) {
+                    case 'price-low':
+                        return a.price - b.price;
+                    case 'price-high':
+                        return b.price - a.price;
+                    case 'popular':
+                        return (b.popular ? 1 : 0) - (a.popular ? 1 : 0);
+                    default:
+                        return a.name.localeCompare(b.name);
+                }
+            });
+
+            displayFilteredProducts(filteredProducts.slice(0, displayedProducts));
+            
+            // Show/hide load more button
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (displayedProducts >= filteredProducts.length) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block';
+            }
+        }
+
+        function displayFilteredProducts(productsToShow) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            productsToShow.forEach(product => {
+                const productCard = createProductCard(product);
+                grid.appendChild(productCard);
+            });
+        }
+
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card bg-white rounded-2xl overflow-hidden luxury-shadow relative cursor-pointer';
+            
+            const discountPercent = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+            
+            card.innerHTML = `
+                ${product.badge ? `<div class="badge bg-forest-green text-white px-3 py-1 rounded-full text-sm font-medium">${product.badge}</div>` : ''}
+                ${discountPercent > 0 ? `<div class="badge bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium" style="top: 12px; left: 12px;">${discountPercent}% OFF</div>` : ''}
+                
+                <div class="p-6 text-center">
+                    <div class="text-6xl mb-4">${product.image}</div>
+                    <h3 class="text-xl font-bold text-forest-green mb-2">${product.name}</h3>
+                    <p class="text-gray-600 mb-4 text-sm leading-relaxed">${product.description}</p>
+                    
+                    <div class="flex justify-center items-center mb-4">
+                        <span class="text-2xl font-bold text-forest-green">₹${product.price}</span>
+                        ${product.originalPrice ? `<span class="text-lg text-gray-500 price-strike ml-2">₹${product.originalPrice}</span>` : ''}
+                        <span class="text-sm text-gray-500 ml-2">/ ${product.unit}</span>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-1 mb-4 justify-center">
+                        ${product.benefits.slice(0, 2).map(benefit => `<span class="bg-sage-green/20 text-forest-green px-2 py-1 rounded-full text-xs">${benefit}</span>`).join('')}
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button onclick="addToCart(${product.id})" class="flex-1 bg-forest-green text-white py-3 rounded-full font-semibold hover:bg-sage-green transition-colors">
+                            Add to Cart
+                        </button>
+                        <button onclick="showProductDetails(${product.id})" class="px-4 py-3 border-2 border-forest-green text-forest-green rounded-full hover:bg-forest-green hover:text-white transition-colors">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({...product, quantity: 1});
+            }
+            
+            updateCartUI();
+            showCartNotification(product.name);
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cartCount');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            const cartItems = document.getElementById('cartItems');
+            const cartFooter = document.getElementById('cartFooter');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="text-center text-gray-500 py-12">
+                        <div class="text-6xl mb-4">🛒</div>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+                cartFooter.classList.add('hidden');
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between py-4 border-b">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-2xl">${item.image}</div>
+                            <div>
+                                <h4 class="font-semibold text-sm">${item.name}</h4>
+                                <p class="text-gray-500 text-xs">₹${item.price} / ${item.unit}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQuantity(${item.id}, -1)" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">-</button>
+                            <span class="w-8 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)" class="w-8 h-8 bg-forest-green text-white rounded-full flex items-center justify-center">+</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                cartTotal.textContent = `₹${total}`;
+                cartFooter.classList.remove('hidden');
+            }
+        }
+
+        function updateQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(cartItem => cartItem.id !== productId);
+                }
+                updateCartUI();
+            }
+        }
+
+        function toggleCart() {
+            const sidebar = document.getElementById('cartSidebar');
+            const overlay = document.getElementById('cartOverlay');
+            
+            if (sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function showCartNotification(productName) {
+            // Create a simple notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-24 right-4 bg-forest-green text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <span>✓</span>
+                    <span>${productName} added to cart!</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function showProductDetails(productId) {
+            const product = products.find(p => p.id === productId);
+            const modal = document.getElementById('productModal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+            
+            title.textContent = product.name;
+            content.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="text-center">
+                        <div class="text-8xl mb-6">${product.image}</div>
+                        <div class="flex justify-center items-center mb-4">
+                            <span class="text-3xl font-bold text-forest-green">₹${product.price}</span>
+                            ${product.originalPrice ? `<span class="text-xl text-gray-500 price-strike ml-3">₹${product.originalPrice}</span>` : ''}
+                            <span class="text-lg text-gray-500 ml-3">/ ${product.unit}</span>
+                        </div>
+                        <button onclick="addToCart(${product.id}); closeProductModal();" class="w-full bg-forest-green text-white py-4 rounded-full font-semibold hover:bg-sage-green transition-colors">
+                            Add to Cart
+                        </button>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-forest-green mb-4">Product Details</h3>
+                        <p class="text-gray-700 mb-6 leading-relaxed">${product.description}</p>
+                        
+                        <h4 class="text-xl font-bold text-forest-green mb-3">Key Benefits</h4>
+                        <ul class="space-y-2 mb-6">
+                            ${product.benefits.map(benefit => `<li class="flex items-center space-x-2"><span class="text-green-500">✓</span><span>${benefit}</span></li>`).join('')}
+                        </ul>
+                        
+                        <div class="bg-sage-green/10 rounded-xl p-4">
+                            <h4 class="font-bold text-forest-green mb-2">Why Choose Our Products?</h4>
+                            <p class="text-sm text-gray-700">All our products are certified organic, grown without harmful chemicals, and delivered fresh from our farm to ensure maximum nutrition and authentic taste.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProductModal() {
+            const modal = document.getElementById('productModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        function goBack() {
+            // This would typically navigate back to the main site
+            //window.history.back();
+            window.location.href = "index.html";
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('productModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProductModal();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'973055c956e3550d',t:'MTc1NTg0NDM2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
