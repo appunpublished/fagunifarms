@@ -83,8 +83,9 @@
     </style>
 </head>
 <body class="font-sans text-gray-800 smooth-scroll">
-
+    
     <div class="absolute inset-0">
+      
         <svg class="w-full h-full object-cover" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
             <!-- Farm landscape background -->
             <defs>
@@ -112,7 +113,15 @@
                 <!-- Header -->
                 <div class="text-center mb-16">
                     <div class="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
-                        <span class="text-luxury-gold font-semibold">🤝 Business Partnerships</span>
+                        <span class="text-luxury-gold font-semibold">🤝 Business Partnershipss</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="cartBtn" class="relative p-2 text-forest-green hover:text-gold-accent">
+                            🛒 <span id="cartCount" class="absolute -top-1 -right-1 bg-gold-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        </button>
+                        <button onclick="" class="bg-forest-green text-white px-6 py-2 rounded-full hover:bg-sage-green transition-colors">
+                            ← Back to Main Site
+                        </button>
                     </div>
                     <h1 class="text-5xl md:text-7xl font-serif font-bold mb-8 text-shadow-luxury">
                         Partner with <span class="text-luxury-gold">Faguni Farms</span>
