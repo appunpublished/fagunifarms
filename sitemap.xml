@@ -4,7 +4,7 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
 
 
 <url>
@@ -13,26 +13,26 @@
   <priority>1.00</priority>
 </url>
 <url>
-  <loc>https://fagunifarms.in/blog.html</loc>
+  <loc>https://fagunifarms.in/products.html</loc>
   <lastmod>2025-07-24T12:21:07+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://fagunifarms.in/health-connect.html</loc>
+  <loc>https://fagunifarms.in/publications.html</loc>
   <lastmod>2025-07-24T12:21:07+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://fagunifarms.in/career.html</loc>
+  <loc>https://fagunifarms.in/farmstay.html</loc>
   <lastmod>2025-07-24T12:21:07+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://fagunifarms.in/partner/index.html</loc>
+  <loc>https://fagunifarms.in/business.html</loc>
   <lastmod>2025-07-24T12:21:07+00:00</lastmod>
   <priority>0.80</priority>
 </url>
-<url>
+<!-- <url>
   <loc>https://fagunifarms.in/mission.html</loc>
   <lastmod>2025-07-24T12:21:07+00:00</lastmod>
   <priority>0.80</priority>
@@ -106,17 +106,17 @@
   <loc>https://fagunifarms.in/terms-and-conditions.html</loc>
   <lastmod>2025-07-24T12:21:07+00:00</lastmod>
   <priority>0.80</priority>
-</url>
+</url> -->
 <url>
   <loc>https://fagunifarms.in/index.html</loc>
   <lastmod>2025-07-24T12:21:07+00:00</lastmod>
   <priority>0.64</priority>
 </url>
-<url>
+<!-- <url>
   <loc>https://fagunifarms.in/assets/brochures/internship_brochure.pdf</loc>
   <lastmod>2025-07-24T12:21:07+00:00</lastmod>
   <priority>0.64</priority>
-</url>
+</url> -->
 
 
 </urlset>
