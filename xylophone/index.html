@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xylophone PWA</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Load Tone.js for audio synthesis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+
+    <style>
+        :root {
+            --key-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.2);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1f2937; /* Dark background */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0.5rem;
+            overflow-x: hidden;
+            user-select: none; /* Prevent selection on mobile */
+        }
+        .xylophone-key {
+            transition: all 0.07s ease-out;
+            transform: translateY(0);
+            box-shadow: var(--key-shadow);
+        }
+        .xylophone-key:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+        /* Custom Key Colors */
+        .color-1 { background-color: #ef4444; border-bottom-color: #dc2626; } /* Red */
+        .color-2 { background-color: #f97316; border-bottom-color: #ea580c; } /* Orange */
+        .color-3 { background-color: #f59e0b; border-bottom-color: #d97706; } /* Amber */
+        .color-4 { background-color: #10b981; border-bottom-color: #059669; } /* Emerald */
+        .color-5 { background-color: #06b6d4; border-bottom-color: #0891b2; } /* Cyan */
+        .color-6 { background-color: #3b82f6; border-bottom-color: #2563eb; } /* Blue */
+        .color-7 { background-color: #6366f1; border-bottom-color: #4f46e5; } /* Indigo */
+        .color-8 { background-color: #a855f7; border-bottom-color: #9333ea; } /* Violet */
+
+        /* Responsive key height/width adjustments */
+        .key-bar-base {
+             /* Base width for all keys on mobile */
+            width: 90%;
+            height: 5rem;
+        }
+        @media (min-width: 640px) {
+            .key-bar-base {
+                width: 70%;
+                height: 6rem;
+                max-width: 800px;
+            }
+        }
+    </style>
+
+    <!-- PWA Manifest (Base64 encoded) -->
+    <!-- Contains metadata for installing the PWA -->
+    <!-- {"name": "Xylo-PWA", "short_name": "Xylo", "description": "A fun, responsive Xylophone Progressive Web App using Tone.js.", "start_url": "./", "display": "standalone", "background_color": "#1f2937", "theme_color": "#1f2937", "icons": [{"src": "https://placehold.co/192x192/000000/ffffff?text=X", "sizes": "192x192", "type": "image/png"}, {"src": "https://placehold.co/512x512/000000/ffffff?text=X", "sizes": "512x512", "type": "image/png"}]} -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIlh5bG9QR0EtUFdBIn0=">
+
+</head>
+<body>
+
+    <h1 class="text-3xl font-bold text-white mb-6 text-center">
+        🎶 Tone.js Xylophone PWA
+    </h1>
+    <p class="text-sm text-gray-400 mb-8 text-center">
+        Play with touch/click or use keys A-S-D-F-G-H-J-K
+    </p>
+
+    <!-- Xylophone Container -->
+    <div id="xylophone-container" class="w-full flex flex-col items-center space-y-3 p-4 max-w-xl">
+        <!-- The keys will be inserted here by JavaScript for precise responsive control -->
+    </div>
+
+    <!-- Service Worker Script (Embedded) -->
+    <script id="service-worker" type="text/worker">
+        const CACHE_NAME = 'xylophone-cache-v1';
+        const urlsToCache = [
+            '/',
+            'https://cdn.tailwindcss.com',
+            'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap',
+            'https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js',
+            // Since this is a single-file HTML, caching the root effectively caches the app
+        ];
+
+        self.addEventListener('install', (event) => {
+            console.log('Service Worker: Installing and caching shell');
+            event.waitUntil(
+                caches.open(CACHE_NAME)
+                    .then((cache) => {
+                        return cache.addAll(urlsToCache);
+                    })
+            );
+        });
+
+        self.addEventListener('fetch', (event) => {
+            // Only cache GET requests
+            if (event.request.method !== 'GET') return;
+
+            event.respondWith(
+                caches.match(event.request)
+                    .then((response) => {
+                        // Cache hit - return response
+                        if (response) {
+                            return response;
+                        }
+                        // Not in cache, fetch from network
+                        return fetch(event.request);
+                    })
+            );
+        });
+    </script>
+
+
+    <script>
+        // --- 1. Audio Setup (Tone.js) ---
+        // Use a simple FM Synth for a percussive, wooden tone
+        let synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sine" },
+            envelope: {
+                attack: 0.001,
+                decay: 0.2,
+                sustain: 0,
+                release: 0.05
+            },
+            volume: -10,
+        }).toDestination();
+
+        let isAudioReady = false;
+
+        const NOTES = [
+            { note: "C4", color: 1, key: "a" },
+            { note: "D4", color: 2, key: "s" },
+            { note: "E4", color: 3, key: "d" },
+            { note: "F4", color: 4, key: "f" },
+            { note: "G4", color: 5, key: "g" },
+            { note: "A4", color: 6, key: "h" },
+            { note: "B4", color: 7, key: "j" },
+            { note: "C5", color: 8, key: "k" }
+        ];
+
+        const keyToNote = NOTES.reduce((acc, curr) => {
+            acc[curr.key] = curr.note;
+            return acc;
+        }, {});
+
+        const noteToElementId = NOTES.reduce((acc, curr) => {
+            acc[curr.note] = `key-${curr.note}`;
+            return acc;
+        }, {});
+
+        function startAudio() {
+            if (!isAudioReady) {
+                Tone.start();
+                isAudioReady = true;
+                console.log("Audio Context Started.");
+            }
+        }
+
+        function playNote(note) {
+            startAudio();
+            // Trigger Attack and Release simultaneously for a quick pluck sound
+            synth.triggerAttackRelease(note, "8n");
+            // Visual feedback
+            const element = document.getElementById(noteToElementId[note]);
+            if (element) {
+                element.classList.add('playing');
+                setTimeout(() => element.classList.remove('playing'), 100);
+            }
+        }
+
+        // --- 2. UI Generation ---
+        const container = document.getElementById('xylophone-container');
+
+        NOTES.forEach((item, index) => {
+            // Calculate width reduction based on key index (making higher notes shorter)
+            const widthReduction = index * 4;
+            const keyClass = `color-${item.color}`;
+            const keyWidth = 100 - widthReduction;
+
+            const keyElement = document.createElement('div');
+            keyElement.id = noteToElementId[item.note];
+            keyElement.setAttribute('data-note', item.note);
+
+            // Responsive Tailwind classes for styling
+            keyElement.className = `xylophone-key key-bar-base rounded-lg shadow-lg cursor-pointer flex flex-col items-center justify-center m-auto ${keyClass} hover:brightness-110 active:brightness-90 transition-all duration-75`;
+            keyElement.style.width = `${keyWidth}%`; // Apply variable width
+
+            keyElement.innerHTML = `
+                <span class="text-xl font-bold text-gray-900">${item.note}</span>
+                <span class="text-sm text-gray-800 uppercase mt-1 hidden sm:block">Key: ${item.key}</span>
+            `;
+
+            container.appendChild(keyElement);
+        });
+
+        // --- 3. Event Listeners (Touch/Click) ---
+        container.addEventListener('mousedown', handleInteraction);
+        container.addEventListener('touchstart', handleInteraction, { passive: true });
+        container.addEventListener('mouseup', handleInteractionEnd);
+        container.addEventListener('touchend', handleInteractionEnd);
+
+        function handleInteraction(e) {
+            e.preventDefault();
+            const target = e.target.closest('.xylophone-key');
+            if (target) {
+                const note = target.getAttribute('data-note');
+                if (note) {
+                    playNote(note);
+                    target.classList.add('active'); // Manual active class for touch feedback
+                }
+            }
+        }
+
+        function handleInteractionEnd(e) {
+             e.preventDefault();
+            const target = e.target.closest('.xylophone-key');
+            if (target) {
+                target.classList.remove('active');
+            }
+        }
+
+        // --- 4. Event Listeners (Keyboard) ---
+        let keysPressed = {}; // Track currently pressed keys to prevent repeats
+
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            const note = keyToNote[key];
+
+            if (note && !keysPressed[key]) {
+                e.preventDefault();
+                keysPressed[key] = true;
+                playNote(note);
+
+                // Add visual feedback to the key element on keydown
+                const element = document.getElementById(noteToElementId[note]);
+                if (element) {
+                    element.classList.add('active');
+                    element.style.transform = 'translateY(4px)';
+                    element.style.boxShadow = 'none';
+                }
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            const key = e.key.toLowerCase();
+            const note = keyToNote[key];
+
+            if (note && keysPressed[key]) {
+                e.preventDefault();
+                keysPressed[key] = false;
+
+                // Remove visual feedback from the key element on keyup
+                const element = document.getElementById(noteToElementId[note]);
+                if (element) {
+                    element.classList.remove('active');
+                    element.style.transform = 'translateY(0)';
+                    element.style.boxShadow = 'var(--key-shadow)';
+                }
+            }
+        });
+
+        // --- 5. PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                try {
+                    // Create a Blob URL for the service worker script
+                    const swScript = document.getElementById('service-worker').textContent;
+                    const swBlob = new Blob([swScript], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(swBlob);
+
+                    navigator.serviceWorker.register(swUrl)
+                        .then(registration => {
+                            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        })
+                        .catch(error => {
+                            console.error('ServiceWorker registration failed: ', error);
+                        });
+                } catch (e) {
+                    console.error('Error during Service Worker registration setup:', e);
+                }
+            });
+        } else {
+            console.log('Service workers are not supported in this environment.');
+        }
+
+    </script>
+
+</body>
+</html>
