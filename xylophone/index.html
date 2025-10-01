@@ -3,297 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xylophone PWA</title>
-    <!-- Load Tailwind CSS for styling -->
+    <title>My Xylophone </title>
+    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Inter font -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#4f46e5',
+                        'secondary': '#facc15',
+                        'dark-bg': '#1f2937',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Load Tone.js for audio synthesis -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <!-- Tone.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6W3sic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyIsInNyYyI6Imh0dHBzOi8vcGxhY2Vob2xkLmNvLzE5MngxOTIvaDMwMzM0Zi9mZmYifSx7InNpemVzOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyIsInNyYyI6Imh0dHBzOi8vcGxhY2Vob2xkLmNvLzUxMng1MTIvaDMwMzM0Zi9mZmYifV0sIm5hbWUiOiJHbG9ja2Vuc3BpZWwgWHlsb3Bob25lIiwiZGlzcGxheSI6ImZ1bGxzY3JlZW4iLCJzdGFydF91cmwiOiIuLyIsInNjb3BlIjoiLi8iLCJkZXNjcmlwdGlvbiI6IlBsYXkgYSByZWFsaXN0aWMgc291bmRpbmcgeHlsb3Bob25lIG9ubGluZSBhbmQgb2ZmbGluZS4iLCJ0aGVtZV9jb2xvciI6IiMxZjI5MzciLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzFnMjkzNyJ9">
 
     <style>
-        :root {
-            --key-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.2);
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #1f2937; /* Dark background */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 0.5rem;
-            overflow-x: hidden;
-            user-select: none; /* Prevent selection on mobile */
-        }
-        .xylophone-key {
-            transition: all 0.07s ease-out;
+        /* Custom styles for the metallic keys */
+        .key-bar {
+            transition: all 0.05s ease-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             transform: translateY(0);
-            box-shadow: var(--key-shadow);
         }
-        .xylophone-key:active {
-            transform: translateY(4px);
-            box-shadow: none;
+        .key-bar:active {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            transform: translateY(2px);
+            opacity: 0.8;
         }
-        /* Custom Key Colors */
-        .color-1 { background-color: #ef4444; border-bottom-color: #dc2626; } /* Red */
-        .color-2 { background-color: #f97316; border-bottom-color: #ea580c; } /* Orange */
-        .color-3 { background-color: #f59e0b; border-bottom-color: #d97706; } /* Amber */
-        .color-4 { background-color: #10b981; border-bottom-color: #059669; } /* Emerald */
-        .color-5 { background-color: #06b6d4; border-bottom-color: #0891b2; } /* Cyan */
-        .color-6 { background-color: #3b82f6; border-bottom-color: #2563eb; } /* Blue */
-        .color-7 { background-color: #6366f1; border-bottom-color: #4f46e5; } /* Indigo */
-        .color-8 { background-color: #a855f7; border-bottom-color: #9333ea; } /* Violet */
 
-        /* Responsive key height/width adjustments */
-        .key-bar-base {
-             /* Base width for all keys on mobile */
-            width: 90%;
-            height: 5rem;
+        /* Responsive layout for bars */
+        .key-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr); /* 8 keys */
+            gap: 0.75rem; /* Space between keys */
+            padding: 1rem;
         }
-        @media (min-width: 640px) {
-            .key-bar-base {
-                width: 70%;
-                height: 6rem;
-                max-width: 800px;
+
+        /* Adjust width on smaller screens */
+        @media (max-width: 640px) {
+            .key-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0.5rem;
+                padding: 0.5rem;
             }
         }
     </style>
-
-    <!-- PWA Manifest (Base64 encoded) -->
-    <!-- Contains metadata for installing the PWA -->
-    <!-- {"name": "Xylo-PWA", "short_name": "Xylo", "description": "A fun, responsive Xylophone Progressive Web App using Tone.js.", "start_url": "./", "display": "standalone", "background_color": "#1f2937", "theme_color": "#1f2937", "icons": [{"src": "https://placehold.co/192x192/000000/ffffff?text=X", "sizes": "192x192", "type": "image/png"}, {"src": "https://placehold.co/512x512/000000/ffffff?text=X", "sizes": "512x512", "type": "image/png"}]} -->
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIlh5bG9QR0EtUFdBIn0=">
-
 </head>
-<body>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 font-sans">
 
-    <h1 class="text-3xl font-bold text-white mb-6 text-center">
-        🎶 My Xylophone
-    </h1>
-    <p class="text-sm text-gray-400 mb-8 text-center">
-        Play with touch/click or use keys A-S-D-F-G-H-J-K
-    </p>
+    <!-- Main Container -->
+    <div id="app" class="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-6 md:p-8">
+        <h1 class="text-4xl font-bold text-center text-primary mb-2 tracking-tight">
+            My Xylophone
+        </h1>
+        <p class="text-center text-gray-500 mb-6">Click or tap the bars to play!</p>
 
-    <!-- Xylophone Container -->
-    <div id="xylophone-container" class="w-full flex flex-col items-center space-y-3 p-4 max-w-xl">
-        <!-- The keys will be inserted here by JavaScript for precise responsive control -->
+        <!-- The Xylophone Grid -->
+        <div id="keyboard" class="key-grid">
+            <!-- Keys will be dynamically generated here -->
+        </div>
+        
+        <!-- Controls & Status -->
+        <div class="mt-8 flex flex-col items-center">
+            <button id="start-audio" class="px-6 py-3 bg-secondary text-dark-bg font-bold rounded-lg shadow-md hover:bg-yellow-400 transition transform hover:scale-105">
+                Start Audio
+            </button>
+            <p id="audio-status" class="mt-4 text-sm text-gray-600">Please click "Start Audio" to enable sound.</p>
+        </div>
     </div>
 
-    <!-- Service Worker Script (Embedded) -->
-    <script id="service-worker" type="text/worker">
-        const CACHE_NAME = 'xylophone-cache-v1';
-        const urlsToCache = [
-            '/',
-            'https://cdn.tailwindcss.com',
-            'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap',
-            'https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js',
-            // Since this is a single-file HTML, caching the root effectively caches the app
-        ];
-
-        self.addEventListener('install', (event) => {
-            console.log('Service Worker: Installing and caching shell');
-            event.waitUntil(
-                caches.open(CACHE_NAME)
-                    .then((cache) => {
-                        return cache.addAll(urlsToCache);
-                    })
-            );
-        });
-
-        self.addEventListener('fetch', (event) => {
-            // Only cache GET requests
-            if (event.request.method !== 'GET') return;
-
-            event.respondWith(
-                caches.match(event.request)
-                    .then((response) => {
-                        // Cache hit - return response
-                        if (response) {
-                            return response;
-                        }
-                        // Not in cache, fetch from network
-                        return fetch(event.request);
-                    })
-            );
-        });
-    </script>
-
-
     <script>
-        // --- 1. Audio Setup (Tone.js) ---
-        // Use a simple FM Synth for a percussive, wooden tone
-        let synth = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: "sine" },
-            envelope: {
-                attack: 0.001,
-                decay: 0.2,
-                sustain: 0,
-                release: 0.05
-            },
-            volume: -10,
-        }).toDestination();
+        // --- PWA Service Worker Registration ---
+        const CACHE_NAME = 'xylophone-v3'; // Increased version for new sound engine
+        const urlsToCache = ['index.html'];
 
+        if ('serviceWorker' in navigator) {
+            // Register service worker
+            navigator.serviceWorker.register('./index.html', { scope: './' })
+                .then(registration => {
+                    console.info('Service Worker registered successfully with scope:', registration.scope);
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+            
+            // Listen for fetch events to serve from cache
+            self.addEventListener('fetch', (event) => {
+                event.respondWith(
+                    caches.match(event.request)
+                        .then(response => {
+                            // Cache hit - return response
+                            if (response) {
+                                return response;
+                            }
+                            // No cache match - fetch from network
+                            return fetch(event.request);
+                        })
+                );
+            });
+
+            // Listen for install event to pre-cache assets
+            self.addEventListener('install', (event) => {
+                event.waitUntil(
+                    caches.open(CACHE_NAME)
+                        .then((cache) => {
+                            console.info('Opened cache');
+                            return cache.addAll(urlsToCache);
+                        })
+                );
+            });
+
+            // Listen for activate event to clear old caches
+            self.addEventListener('activate', (event) => {
+                const cacheWhitelist = [CACHE_NAME];
+                event.waitUntil(
+                    caches.keys().then(cacheNames => {
+                        return Promise.all(
+                            cacheNames.map(cacheName => {
+                                if (cacheWhitelist.indexOf(cacheName) === -1) {
+                                    return caches.delete(cacheName);
+                                }
+                            })
+                        );
+                    })
+                );
+            });
+        }
+
+
+        // --- Audio Logic (Tone.js) ---
+
+        let xylophone = null;
         let isAudioReady = false;
 
-        const NOTES = [
-            { note: "C4", color: 1, key: "a" },
-            { note: "D4", color: 2, key: "s" },
-            { note: "E4", color: 3, key: "d" },
-            { note: "F4", color: 4, key: "f" },
-            { note: "G4", color: 5, key: "g" },
-            { note: "A4", color: 6, key: "h" },
-            { note: "B4", color: 7, key: "j" },
-            { note: "C5", color: 8, key: "k" }
+        // Custom FM Synth configuration for a bright, percussive, metallic tone (Glockenspiel/Xylophone)
+        const glockenspielConfig = {
+            volume: -8,
+            oscillator: { type: 'sine' },
+            envelope: {
+                attack: 0.005,
+                decay: 0.8,
+                sustain: 0.0,
+                release: 0.8,
+            },
+            modulation: { type: 'triangle' },
+            modulationEnvelope: {
+                attack: 0.001,
+                decay: 0.3,
+                sustain: 0.0,
+                release: 0.3
+            },
+            harmonicity: 3.0, // Higher harmonicity adds that metallic bell-like quality
+            // Modulation index is handled by the modulation envelope's depth
+        };
+
+        const notes = [
+            { note: 'C4', color: '#ef4444', size: 1.0 }, // Red
+            { note: 'D4', color: '#f97316', size: 0.95 }, // Orange
+            { note: 'E4', color: '#fbbf24', size: 0.9 }, // Yellow
+            { note: 'F4', color: '#22c55e', size: 0.85 }, // Green
+            { note: 'G4', color: '#06b6d4', size: 0.8 }, // Cyan
+            { note: 'A4', color: '#3b82f6', size: 0.75 }, // Blue
+            { note: 'B4', color: 'indigo-500', size: 0.7 }, // Indigo
+            { note: 'C5', color: '#ec4899', size: 0.65 }  // Pink
         ];
 
-        const keyToNote = NOTES.reduce((acc, curr) => {
-            acc[curr.key] = curr.note;
-            return acc;
-        }, {});
+        // Function to set up the audio context and instrument
+        function setupAudio() {
+            if (xylophone) return; // Already set up
 
-        const noteToElementId = NOTES.reduce((acc, curr) => {
-            acc[curr.note] = `key-${curr.note}`;
-            return acc;
-        }, {});
-
-        function startAudio() {
-            if (!isAudioReady) {
-                Tone.start();
-                isAudioReady = true;
-                console.log("Audio Context Started.");
-            }
+            // Use a PolySynth with the custom FMSynth voice
+            xylophone = new Tone.PolySynth(
+                Tone.FMSynth, 
+                glockenspielConfig
+            ).toDestination();
+            
+            isAudioReady = true;
+            document.getElementById('audio-status').textContent = 'Audio is ready!';
+            document.getElementById('start-audio').classList.add('hidden');
+            console.log("Audio Context and Xylophone Instrument Initialized.");
         }
 
+        // Play the specified note
         function playNote(note) {
-            startAudio();
-            // Trigger Attack and Release simultaneously for a quick pluck sound
-            synth.triggerAttackRelease(note, "8n");
-            // Visual feedback
-            const element = document.getElementById(noteToElementId[note]);
-            if (element) {
-                element.classList.add('playing');
-                setTimeout(() => element.classList.remove('playing'), 100);
+            if (isAudioReady) {
+                // Trigger the attack (start) immediately, and release (stop) after a short duration
+                xylophone.triggerAttackRelease(note, "8n");
+            } else {
+                console.warn("Audio not started. Please click 'Start Audio'.");
             }
         }
 
-        // --- 2. UI Generation ---
-        const container = document.getElementById('xylophone-container');
+        // --- DOM/UI Logic ---
+        
+        const keyboard = document.getElementById('keyboard');
 
-        NOTES.forEach((item, index) => {
-            // Calculate width reduction based on key index (making higher notes shorter)
-            const widthReduction = index * 4;
-            const keyClass = `color-${item.color}`;
-            const keyWidth = 100 - widthReduction;
+        // Dynamically create the xylophone keys
+        function createKeys() {
+            notes.forEach((key, index) => {
+                const bar = document.createElement('div');
+                
+                // Determine width based on the size property
+                const widthFactor = 2.5 + (key.size * 5.5); // 8 is max width in Tailwind grid (1fr * 8), adjust to fit visually
+                const tailwindWidth = `w-[${widthFactor}rem]`;
 
-            const keyElement = document.createElement('div');
-            keyElement.id = noteToElementId[item.note];
-            keyElement.setAttribute('data-note', item.note);
+                // Calculate key color (using Tailwind classes where possible, direct hex otherwise)
+                const bgColorClass = key.color.startsWith('#') ? `bg-[${key.color}]` : `bg-${key.color}`;
+                
+                bar.className = `key-bar rounded-full ${bgColorClass} hover:opacity-90 cursor-pointer flex items-center justify-center font-bold text-white shadow-xl`;
+                bar.style.height = '2rem';
+                bar.style.width = `${key.size * 100}%`; // Use size to scale width (for visual effect)
+                bar.style.minWidth = '30px'; // Minimum width for mobile tapping
+                bar.style.margin = '0 auto'; // Center in the grid cell
 
-            // Responsive Tailwind classes for styling
-            keyElement.className = `xylophone-key key-bar-base rounded-lg shadow-lg cursor-pointer flex flex-col items-center justify-center m-auto ${keyClass} hover:brightness-110 active:brightness-90 transition-all duration-75`;
-            keyElement.style.width = `${keyWidth}%`; // Apply variable width
+                // The visual length of the bar represents the note pitch
+                bar.style.height = `${80 + (index * 20)}px`;
+                bar.style.backgroundColor = key.color; 
+                bar.dataset.note = key.note;
 
-            keyElement.innerHTML = `
-                <span class="text-xl font-bold text-gray-900">${item.note}</span>
-                <span class="text-sm text-gray-800 uppercase mt-1 hidden sm:block">Key: ${item.key}</span>
-            `;
+                // Create a div wrapper for the bar to sit in the grid cell
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex flex-col items-center justify-end h-full'; 
+                wrapper.style.minHeight = '180px';
+                wrapper.appendChild(bar);
 
-            container.appendChild(keyElement);
-        });
+                wrapper.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    if (!isAudioReady) {
+                        Tone.start();
+                        setupAudio();
+                    }
+                    if (isAudioReady) {
+                        playNote(key.note);
+                    }
+                });
 
-        // --- 3. Event Listeners (Touch/Click) ---
-        container.addEventListener('mousedown', handleInteraction);
-        container.addEventListener('touchstart', handleInteraction, { passive: true });
-        container.addEventListener('mouseup', handleInteractionEnd);
-        container.addEventListener('touchend', handleInteractionEnd);
-
-        function handleInteraction(e) {
-            e.preventDefault();
-            const target = e.target.closest('.xylophone-key');
-            if (target) {
-                const note = target.getAttribute('data-note');
-                if (note) {
-                    playNote(note);
-                    target.classList.add('active'); // Manual active class for touch feedback
-                }
-            }
-        }
-
-        function handleInteractionEnd(e) {
-             e.preventDefault();
-            const target = e.target.closest('.xylophone-key');
-            if (target) {
-                target.classList.remove('active');
-            }
-        }
-
-        // --- 4. Event Listeners (Keyboard) ---
-        let keysPressed = {}; // Track currently pressed keys to prevent repeats
-
-        document.addEventListener('keydown', (e) => {
-            const key = e.key.toLowerCase();
-            const note = keyToNote[key];
-
-            if (note && !keysPressed[key]) {
-                e.preventDefault();
-                keysPressed[key] = true;
-                playNote(note);
-
-                // Add visual feedback to the key element on keydown
-                const element = document.getElementById(noteToElementId[note]);
-                if (element) {
-                    element.classList.add('active');
-                    element.style.transform = 'translateY(4px)';
-                    element.style.boxShadow = 'none';
-                }
-            }
-        });
-
-        document.addEventListener('keyup', (e) => {
-            const key = e.key.toLowerCase();
-            const note = keyToNote[key];
-
-            if (note && keysPressed[key]) {
-                e.preventDefault();
-                keysPressed[key] = false;
-
-                // Remove visual feedback from the key element on keyup
-                const element = document.getElementById(noteToElementId[note]);
-                if (element) {
-                    element.classList.remove('active');
-                    element.style.transform = 'translateY(0)';
-                    element.style.boxShadow = 'var(--key-shadow)';
-                }
-            }
-        });
-
-        // --- 5. PWA Service Worker Registration ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                try {
-                    // Create a Blob URL for the service worker script
-                    const swScript = document.getElementById('service-worker').textContent;
-                    const swBlob = new Blob([swScript], { type: 'application/javascript' });
-                    const swUrl = URL.createObjectURL(swBlob);
-
-                    navigator.serviceWorker.register(swUrl)
-                        .then(registration => {
-                            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                        })
-                        .catch(error => {
-                            console.error('ServiceWorker registration failed: ', error);
-                        });
-                } catch (e) {
-                    console.error('Error during Service Worker registration setup:', e);
-                }
+                keyboard.appendChild(wrapper);
             });
-        } else {
-            console.log('Service workers are not supported in this environment.');
         }
 
-    </script>
+        // Start button handler
+        document.getElementById('start-audio').addEventListener('click', async () => {
+            if (Tone.context.state !== 'running') {
+                await Tone.start();
+            }
+            setupAudio();
+        });
 
+
+        // Initialize UI on load
+        window.onload = createKeys;
+        
+    </script>
 </body>
 </html>
