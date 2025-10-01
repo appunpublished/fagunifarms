@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Explorer PWA</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#10b981', // Emerald green
+                        'secondary': '#facc15', // Yellow
+                        'accent': '#1d4ed8', // Blue
+                        'dark-bg': '#1f2937',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Web App Manifest (Minimally required for installability) -->
+    <!-- The contents below are base64-encoded JSON for installability and are scoped to the current directory. -->
+    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6W3sic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyIsInNyYyI6Imh0dHBzOi8vcGxhY2Vob2xkLmNvLzE5MngxOTIvaDU1NjNjYy9mZmY/dGV4dD1BQiJ9LHsic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyIsInNyYyI6Imh0dHBzOi8vcGxhY2Vob2xkLmNvLzUxMng1MTIvaDU1NjNjYy9mZmY/dGV4dD1BQiJ9XSwibmFtZSI6IkFuaW1hbCBFeHBsb3JlciIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwic3RhcnRfdXJsIjoiLi8iLCJzY29wZSI6Ii4vIiwiZGVzY3JpcHRpb24iOiJMZWFybiBhbmltYWwgbmFtZXMsIHNvdW5kcywgYW5kIGltYWdlcyB3aXRoIG9mZmxpbmUgc3VwcG9ydC4iLCJ0aGVtZV9jb2xvciI6IiMxMDY0OGQiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiJ9">
+
+    <style>
+        /* Custom styles for touch targets and transitions */
+        .touch-button {
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .touch-button:active {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transform: translateY(1px);
+        }
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            background-color: #e5e7eb; /* Light gray background for contrast */
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.3s ease-in-out;
+        }
+        .carousel-item {
+            flex-shrink: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px; /* Fixed height for image area */
+        }
+
+        /* Responsive adjustment for small screens */
+        @media (max-width: 640px) {
+            .carousel-item {
+                height: 250px;
+            }
+        }
+        .image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col items-center p-4 min-h-screen font-sans">
+
+    <!-- Global Loading Indicator Modal (for TTS/Image API calls) -->
+    <div id="loading-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 hidden items-center justify-center">
+        <div class="bg-white p-6 rounded-xl shadow-2xl flex flex-col items-center">
+            <svg class="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span id="loading-text" class="text-gray-700 mt-3 font-semibold">Generating resource...</span>
+        </div>
+    </div>
+    
+    <!-- Main Application Container -->
+    <div id="app" class="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 md:p-8">
+        
+        <h1 id="title" class="text-3xl font-extrabold text-center text-accent mb-4">
+            Animal Fun Learning
+        </h1>
+
+        <!-- Animal List View -->
+        <div id="animal-list-view">
+            <p class="text-center text-gray-600 mb-6">Choose an animal to explore:</p>
+            <div id="animal-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <!-- Animal cards generated here -->
+            </div>
+        </div>
+
+        <!-- Animal Detail View (Hidden by default) -->
+        <div id="animal-detail-view" class="hidden">
+            <button id="back-button" class="text-primary hover:text-accent font-semibold mb-6 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Back to List
+            </button>
+
+            <h2 id="detail-name" class="text-4xl font-extrabold text-center text-primary mb-6 capitalize"></h2>
+
+            <!-- Image Carousel -->
+            <div class="carousel-container rounded-xl shadow-lg border-4 border-primary/50 mb-6">
+                <div id="carousel-track" class="carousel-track">
+                    <!-- Carousel items generated here -->
+                </div>
+                <!-- Carousel controls -->
+                <button id="prev-btn" class="absolute top-1/2 left-2 -translate-y-1/2 bg-black/30 p-2 rounded-full text-white hover:bg-black/50 transition z-10 touch-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <button id="next-btn" class="absolute top-1/2 right-2 -translate-y-1/2 bg-black/30 p-2 rounded-full text-white hover:bg-black/50 transition z-10 touch-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                </button>
+            </div>
+            
+            <div id="dots-container" class="flex justify-center space-x-2 mb-8">
+                <!-- Dots generated here -->
+            </div>
+
+
+            <!-- Interaction Buttons -->
+            <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+                
+                <button id="sound-button" class="touch-button flex-1 px-6 py-4 bg-secondary text-dark-bg font-extrabold text-lg rounded-xl flex items-center justify-center hover:bg-yellow-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 7.24a1 1 0 00-1.414-1.414L11 8.586l-.243-.243a1 1 0 00-1.414 1.414l.243.243 2.293 2.293a1 1 0 001.414 0l.243-.243 2.293-2.293a1 1 0 000-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Animal Sound
+                </button>
+                
+                <button id="pronounce-button" class="touch-button flex-1 px-6 py-4 bg-primary text-white font-extrabold text-lg rounded-xl flex items-center justify-center hover:bg-emerald-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M18 3a1 1 0 00-1-1h-4a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V3zM3 3a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V3a1 1 0 00-1-1H3zM9 13a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1v-4a1 1 0 00-1-1H9zM3 13a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1v-4a1 1 0 00-1-1H3z" />
+                    </svg>
+                    Say Name
+                </button>
+            </div>
+            <p id="tts-warning" class="text-sm text-center text-red-500 mt-4 hidden">Error: Could not generate audio. Check console for details.</p>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Global Variables and Constants ---
+        const API_KEY = ""; 
+        const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${API_KEY}`;
+        const IMAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${API_KEY}`;
+        
+        const loadingModal = document.getElementById('loading-modal');
+        const loadingText = document.getElementById('loading-text');
+        const ttsWarning = document.getElementById('tts-warning');
+
+        // Caches for performance improvement
+        const audioCache = {}; // Key: "Dog_name" or "Dog_sound" -> Value: audio URL
+        
+        // Initial state
+        let currentAnimal = null;
+        let currentSlide = 0;
+        const ANIMALS = [
+            // Added images: [] array to cache generated base64 image data
+            { id: 'dog', name: 'Dog', color: '#f59e0b', soundText: 'The sound of a friendly dog barking. Woof woof!', imgCount: 5, images: [] },
+            { id: 'cat', name: 'Cat', color: '#10b981', soundText: 'The sound of a playful cat meowing. Meow.', imgCount: 5, images: [] },
+            { id: 'cow', name: 'Cow', color: '#3b82f6', soundText: 'The sound of a big cow mooing. Moo!', imgCount: 5, images: [] },
+            { id: 'duck', name: 'Duck', color: '#ef4444', soundText: 'The sound of a little duck quacking. Quack quack.', imgCount: 5, images: [] },
+            { id: 'sheep', name: 'Sheep', color: '#8b5cf6', soundText: 'The sound of a soft sheep bleating. Baa baa.', imgCount: 5, images: [] },
+            { id: 'lion', name: 'Lion', color: '#f97316', soundText: 'The sound of a mighty lion roaring. Grrrrr.', imgCount: 5, images: [] },
+        ];
+
+
+        // --- PWA Service Worker Registration ---
+        const CACHE_NAME = 'animal-pwa-v2'; // Increment cache version
+        const urlsToCache = ['animals_pwa.html']; 
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./animals_pwa.html', { scope: './' })
+                    .then(registration => console.info('Service Worker registered:', registration.scope))
+                    .catch(error => console.error('Service Worker registration failed:', error));
+            });
+            
+            if (self.addEventListener) { 
+                self.addEventListener('install', (event) => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
+                    );
+                });
+
+                self.addEventListener('fetch', (event) => {
+                    event.respondWith(
+                        caches.match(event.request).then(response => response || fetch(event.request))
+                    );
+                });
+            }
+        }
+
+
+        // --- TTS Helper Functions (with Caching) ---
+
+        /** Converts Base64 string to ArrayBuffer. */
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        /** Converts PCM 16-bit audio data (Int16Array) to a WAV Blob. */
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const bytesPerSample = 2;
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcm16.length * bytesPerSample;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+            let offset = 0;
+
+            function writeString(s) {
+                for (let i = 0; i < s.length; i++) {
+                    view.setUint8(offset++, s.charCodeAt(i));
+                }
+            }
+
+            // RIFF chunk header
+            writeString('RIFF');
+            view.setUint32(offset, 36 + dataSize, true); offset += 4;
+            writeString('WAVE');
+
+            // fmt chunk
+            writeString('fmt ');
+            view.setUint32(offset, 16, true); offset += 4;
+            view.setUint16(offset, 1, true); offset += 2;
+            view.setUint16(offset, numChannels, true); offset += 2;
+            view.setUint32(offset, sampleRate, true); offset += 4;
+            view.setUint32(offset, byteRate, true); offset += 4;
+            view.setUint16(offset, blockAlign, true); offset += 2;
+            view.setUint16(offset, bytesPerSample * 8, true); offset += 2;
+
+            // data chunk
+            writeString('data');
+            view.setUint32(offset, dataSize, true); offset += 4;
+
+            // Write PCM data
+            const pcmDataView = new DataView(buffer, offset);
+            for (let i = 0; i < pcm16.length; i++) {
+                pcmDataView.setInt16(i * bytesPerSample, pcm16[i], true);
+            }
+            
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+
+        /**
+         * Fetches audio data from the TTS API with exponential backoff and caching.
+         * @param {string} key Unique key for caching (e.g., "Dog_name").
+         * @param {string} text The text to synthesize.
+         * @param {string} voice The voice to use.
+         */
+        async function fetchTTSAudio(key, text, voice, attempt = 1) {
+            if (audioCache[key]) {
+                return audioCache[key];
+            }
+
+            const maxAttempts = 5;
+            loadingModal.classList.remove('hidden');
+            loadingText.textContent = `Generating audio for ${key.split('_')[0]}...`;
+            ttsWarning.classList.add('hidden');
+
+            const payload = {
+                contents: [{ parts: [{ text: text }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            try {
+                const response = await fetch(TTS_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (!audioData || !mimeType || !mimeType.startsWith("audio/L16")) {
+                    throw new Error("Invalid audio response structure from API.");
+                }
+
+                const rateMatch = mimeType.match(/rate=(\d+)/);
+                const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000; 
+
+                const pcmData = base64ToArrayBuffer(audioData);
+                const pcm16 = new Int16Array(pcmData);
+                const wavBlob = pcmToWav(pcm16, sampleRate);
+                const audioUrl = URL.createObjectURL(wavBlob);
+                
+                audioCache[key] = audioUrl; // Cache the result
+                loadingModal.classList.add('hidden');
+                return audioUrl;
+
+            } catch (error) {
+                console.error(`TTS API error for ${key}:`, error);
+                
+                if (attempt < maxAttempts) {
+                    const delay = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
+                    console.warn(`Retrying TTS in ${delay / 1000}s... (Attempt ${attempt + 1})`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchTTSAudio(key, text, voice, attempt + 1);
+                } else {
+                    loadingModal.classList.add('hidden');
+                    ttsWarning.classList.remove('hidden');
+                    console.error('Failed to generate TTS audio after multiple attempts.');
+                    return null;
+                }
+            }
+        }
+
+
+        // --- Image Generation Functions (with Caching) ---
+
+        /**
+         * Fetches and displays a generated image, caching the result.
+         * @param {Object} animal The current animal object.
+         * @param {number} index The slide index.
+         */
+        async function fetchAndDisplayImage(animal, index) {
+            const imageElement = document.getElementById(`carousel-img-${index}`);
+            const loadingPlaceholder = document.getElementById(`loading-placeholder-${index}`);
+            
+            if (!imageElement || !loadingPlaceholder) return;
+
+            // 1. Check Cache
+            if (animal.images[index]) {
+                imageElement.src = animal.images[index];
+                imageElement.classList.remove('hidden');
+                loadingPlaceholder.classList.add('hidden');
+                return;
+            }
+
+            // 2. Prepare Loading UI
+            imageElement.classList.add('hidden');
+            loadingPlaceholder.classList.remove('hidden');
+            loadingPlaceholder.innerHTML = '<svg class="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+            const prompt = `A cute, friendly, photorealistic image of a ${animal.name} for children, full body, high quality, minimal background, bright colors. Image variation ${index + 1}.`;
+            
+            try {
+                // Show global loading for API call, but use local spinner on image
+                loadingModal.classList.remove('hidden');
+                loadingText.textContent = `Generating picture of the ${animal.name}...`;
+
+                const payload = { 
+                    instances: { prompt: prompt }, 
+                    parameters: { "sampleCount": 1 } 
+                };
+                
+                const response = await fetch(IMAGE_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Image API HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const base64Data = result?.predictions?.[0]?.bytesBase64Encoded;
+
+                if (!base64Data) {
+                    throw new Error("No image data received from API.");
+                }
+
+                const imageUrl = `data:image/png;base64,${base64Data}`;
+                
+                // 3. Update Cache and Display
+                animal.images[index] = imageUrl;
+                imageElement.src = imageUrl;
+                imageElement.classList.remove('hidden');
+                loadingPlaceholder.classList.add('hidden');
+                loadingModal.classList.add('hidden');
+
+
+            } catch (error) {
+                console.error('Image Generation Error:', error);
+                loadingPlaceholder.innerHTML = `<span class="text-red-500 font-bold text-center p-4">Image Error</span>`;
+                loadingModal.classList.add('hidden');
+            }
+        }
+
+
+        // --- UI Rendering and State Management ---
+
+        function renderAnimalList() {
+            const grid = document.getElementById('animal-grid');
+            grid.innerHTML = '';
+            
+            ANIMALS.forEach(animal => {
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-xl shadow-lg border-b-4 border-r-2 touch-button cursor-pointer bg-white hover:bg-gray-50 flex flex-col items-center justify-center transition-all`;
+                card.style.borderColor = animal.color; 
+                card.style.borderBottomWidth = '6px';
+
+                const image = document.createElement('img');
+                image.src = `https://placehold.co/100x100/${animal.color.substring(1)}/ffffff?text=${animal.name[0]}`;
+                image.className = 'w-16 h-16 rounded-full mb-3 shadow-md';
+                image.onerror = function() { this.src = 'https://placehold.co/100x100/374151/ffffff?text=?'; };
+                
+                const name = document.createElement('span');
+                name.className = 'text-xl font-bold capitalize text-gray-800';
+                name.textContent = animal.name;
+                
+                card.appendChild(image);
+                card.appendChild(name);
+                
+                card.addEventListener('click', () => showAnimalDetail(animal));
+                grid.appendChild(card);
+            });
+        }
+
+        function showAnimalDetail(animal) {
+            currentAnimal = animal;
+            currentSlide = 0;
+
+            document.getElementById('animal-list-view').classList.add('hidden');
+            document.getElementById('animal-detail-view').classList.remove('hidden');
+            document.getElementById('detail-name').textContent = animal.name;
+
+            // Reset images array if coming back to detail view of a different animal
+            if (!animal.images || animal.images.length === 0) {
+                 animal.images = new Array(animal.imgCount).fill(null);
+            }
+
+            renderCarousel();
+            updateCarousel(0);
+        }
+
+        function renderCarousel() {
+            const track = document.getElementById('carousel-track');
+            const dotsContainer = document.getElementById('dots-container');
+            track.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            for (let i = 0; i < currentAnimal.imgCount; i++) {
+                // 1. Image Item Container
+                const item = document.createElement('div');
+                item.className = 'carousel-item p-2';
+                
+                // Placeholder/Loading Block
+                const loadingPlaceholder = document.createElement('div');
+                loadingPlaceholder.id = `loading-placeholder-${i}`;
+                loadingPlaceholder.className = 'image-placeholder bg-gray-200 rounded-lg shadow-inner';
+                loadingPlaceholder.innerHTML = '<span class="text-gray-500">Loading image...</span>';
+
+                // Actual Image Element
+                const img = document.createElement('img');
+                img.id = `carousel-img-${i}`;
+                img.className = 'w-full h-full object-contain rounded-lg shadow-lg aspect-[3/2] hidden';
+                img.setAttribute('loading', 'eager'); 
+
+                item.appendChild(loadingPlaceholder);
+                item.appendChild(img);
+                track.appendChild(item);
+
+                // 2. Navigation Dot
+                const dot = document.createElement('button');
+                dot.className = 'h-3 w-3 rounded-full bg-gray-300 hover:bg-gray-500 transition touch-button';
+                dot.dataset.index = i;
+                dot.addEventListener('click', () => updateCarousel(i));
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function updateCarousel(index) {
+            const track = document.getElementById('carousel-track');
+            const dots = document.querySelectorAll('#dots-container button');
+            const totalSlides = currentAnimal.imgCount;
+            
+            // Handle wrapping
+            if (index < 0) {
+                index = totalSlides - 1;
+            } else if (index >= totalSlides) {
+                index = 0;
+            }
+
+            currentSlide = index;
+            
+            // Move the track
+            const offset = -currentSlide * 100;
+            track.style.transform = `translateX(${offset}%)`;
+
+            // Update dots
+            dots.forEach((dot, i) => {
+                dot.classList.remove('bg-accent');
+                dot.classList.add('bg-gray-300');
+                if (i === currentSlide) {
+                    dot.classList.remove('bg-gray-300');
+                    dot.classList.add('bg-accent');
+                }
+            });
+
+            // Start fetching/displaying the image for the new slide
+            fetchAndDisplayImage(currentAnimal, currentSlide);
+        }
+        
+        // --- Event Listeners and Initial Load ---
+
+        document.getElementById('back-button').addEventListener('click', () => {
+            document.getElementById('animal-detail-view').classList.add('hidden');
+            document.getElementById('animal-list-view').classList.remove('hidden');
+            currentAnimal = null;
+        });
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            updateCarousel(currentSlide + 1);
+        });
+
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            updateCarousel(currentSlide - 1);
+        });
+
+        document.getElementById('sound-button').addEventListener('click', async () => {
+            if (!currentAnimal) return;
+            const key = `${currentAnimal.id}_sound`;
+            const audioUrl = await fetchTTSAudio(key, currentAnimal.soundText, 'Kore');
+            if (audioUrl) {
+                const audio = new Audio(audioUrl);
+                audio.play().catch(e => console.error("Audio playback failed:", e));
+            }
+        });
+
+        document.getElementById('pronounce-button').addEventListener('click', async () => {
+            if (!currentAnimal) return;
+            const key = `${currentAnimal.id}_name`;
+            const audioUrl = await fetchTTSAudio(key, currentAnimal.name, 'Kore');
+            if (audioUrl) {
+                const audio = new Audio(audioUrl);
+                audio.play().catch(e => console.error("Audio playback failed:", e));
+            }
+        });
+
+        window.onload = renderAnimalList;
+    </script>
+</body>
+</html>
