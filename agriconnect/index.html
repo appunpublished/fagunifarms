@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer One-Stop MVP</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Slate 50 */
+        }
+        .tab-button {
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Main Application Container -->
+    <div id="app" class="flex flex-col flex-grow">
+        <!-- Header -->
+        <header class="bg-green-700 text-white shadow-md p-4 sticky top-0 z-10">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">AgriConnect MVP</h1>
+                <div id="auth-status" class="flex items-center space-x-4">
+                    <span id="user-display" class="text-sm font-medium">Loading...</span>
+                    <button id="logout-btn" onclick="logoutUser()" class="bg-red-500 hover:bg-red-600 text-white text-sm py-1 px-3 rounded-full font-semibold hidden transition duration-150">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="flex flex-grow items-center justify-center p-8">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500 mx-auto"></div>
+                <p class="mt-4 text-gray-600 font-semibold">Authenticating with Firebase...</p>
+            </div>
+        </div>
+
+        <!-- Auth View -->
+        <div id="auth-view" class="flex-grow flex items-center justify-center p-6 hidden">
+            <div class="w-full max-w-sm bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Farmer Login / Register</h2>
+                <form id="auth-form" onsubmit="handleAuth(event)">
+                    <input type="email" id="email-input" placeholder="Email" required
+                           class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                    <input type="password" id="password-input" placeholder="Password" required
+                           class="w-full p-3 mb-6 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                    <button type="submit" id="auth-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+                        Sign In
+                    </button>
+                </form>
+                <button onclick="toggleAuthMode()" class="w-full mt-4 text-sm text-green-600 hover:text-green-700 transition duration-200">
+                    Need an account? Register
+                </button>
+                <p id="auth-error" class="text-red-500 text-sm mt-4 text-center hidden"></p>
+            </div>
+        </div>
+
+        <!-- Main Content (Hidden until authenticated) -->
+        <div id="main-content" class="flex-grow flex flex-col hidden max-w-7xl mx-auto w-full">
+            <!-- Tabs Navigation -->
+            <nav class="bg-white border-b border-gray-200 shadow-sm">
+                <div class="flex space-x-1 p-2">
+                    <button class="tab-button px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-green-100 hover:bg-green-200 focus:outline-none" data-tab="listings">
+                        My Listings & Farmstays
+                    </button>
+                    <button class="tab-button px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-green-200 focus:outline-none" data-tab="community">
+                        Community Tech Hub
+                    </button>
+                    <button class="tab-button px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-green-200 focus:outline-none" data-tab="connections">
+                        Logistics & Machinery
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Tab Content -->
+            <div id="tab-container" class="flex-grow p-4 sm:p-8">
+                
+                <!-- Listings Tab (Private) -->
+                <div id="tab-listings" class="tab-content space-y-8">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-2 text-green-700">My Listings (Organic Products & Farmstays)</h2>
+                    
+                    <!-- Add New Listing Form -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-green-100">
+                        <h3 class="text-xl font-semibold mb-4 text-green-600">Add New Listing</h3>
+                        <form id="listing-form" onsubmit="addListing(event)">
+                            <select id="listing-type" required class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                                <option value="" disabled selected>Select Listing Type</option>
+                                <option value="product">Organic Product</option>
+                                <option value="farmstay">Farmstay</option>
+                            </select>
+                            
+                            <input type="text" id="listing-name" placeholder="Name (e.g., Heirloom Tomatoes or Sunrise Farmstay)" required
+                                class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                            
+                            <textarea id="listing-description" placeholder="Description/Details (e.g., Certified organic, available in 10kg batches, or 3-bedroom cabin, $150/night)" required
+                                class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 h-24"></textarea>
+                            
+                            <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition duration-200 shadow-md">
+                                Submit Listing
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Listings Display -->
+                    <div id="my-products-list" class="space-y-4">
+                        <h3 class="text-2xl font-semibold text-gray-700">Your Products:</h3>
+                        <div id="products-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Products will be injected here -->
+                            <p class="text-gray-500 col-span-2">No products listed yet.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="my-farmstays-list" class="space-y-4 pt-4">
+                        <h3 class="text-2xl font-semibold text-gray-700">Your Farmstays:</h3>
+                        <div id="farmstays-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Farmstays will be injected here -->
+                            <p class="text-gray-500 col-span-2">No farmstays listed yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community Hub Tab (Public) -->
+                <div id="tab-community" class="tab-content hidden space-y-8">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-2 text-green-700">Community Tech Hub (Share & Learn)</h2>
+                    
+                    <!-- Add New Tech Tip Form -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-green-100">
+                        <h3 class="text-xl font-semibold mb-4 text-green-600">Share a Technology Tip</h3>
+                        <form id="tech-tip-form" onsubmit="addTechTip(event)">
+                            <input type="text" id="tip-title" placeholder="Tip Title (e.g., Drip Irrigation Best Practices)" required
+                                class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                            
+                            <textarea id="tip-content" placeholder="Detailed advice on the technology or machinery." required
+                                class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 h-32"></textarea>
+                            
+                            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl transition duration-200 shadow-md">
+                                Post Tip to Community
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tech Tip Feed -->
+                    <div id="tech-tips-feed" class="space-y-4">
+                        <h3 class="text-2xl font-semibold text-gray-700">Recent Technology Tips:</h3>
+                        <!-- Tips will be injected here -->
+                        <p id="no-tips-msg" class="text-gray-500">No technology tips posted yet.</p>
+                    </div>
+                </div>
+
+                <!-- Connections Tab (Future Planning/Placeholder) -->
+                <div id="tab-connections" class="tab-content hidden space-y-8">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-2 text-green-700">Logistics, Machinery & Export Groups</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-green-100 space-y-4">
+                        <p class="text-gray-700">
+                            This section represents the planned advanced features of your platform. In this MVP phase, we are simply collecting data on interest and need.
+                        </p>
+                        <ul class="list-disc list-inside text-lg text-gray-600 space-y-2 pl-4">
+                            <li><strong>Machinery Sharing:</strong> A system for farmers to list machinery available for rent or request equipment.</li>
+                            <li><strong>Cold Chains/Logistics:</strong> A directory or submission form to connect farmers with verified transport partners.</li>
+                            <li><strong>Export Groups:</strong> A mechanism to form virtual cooperatives for bulk exporting to international buyers.</li>
+                        </ul>
+                        <div class="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <p class="font-semibold text-yellow-800">MVP Next Steps:</p>
+                            <p class="text-sm text-yellow-700">We will start by adding a simple 'Needs Assessment' form here to capture farmer requirements for these services, which will guide the next development phase.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, addDoc, setDoc, onSnapshot, collection, query, where, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Set Firebase Log Level for Debugging
+        setLogLevel('Debug');
+
+        // Global Firebase and App variables (Mandatory Canvas Environment Variables)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // Firebase Instances
+        let app, db, auth;
+        let userId = null;
+        let isAuthReady = false;
+
+        // --- DOM Elements ---
+        const authView = document.getElementById('auth-view');
+        const mainContent = document.getElementById('main-content');
+        const loadingScreen = document.getElementById('loading-screen');
+        const userDisplay = document.getElementById('user-display');
+        const logoutBtn = document.getElementById('logout-btn');
+        const authForm = document.getElementById('auth-form');
+        const authBtn = document.getElementById('auth-btn');
+        const authError = document.getElementById('auth-error');
+
+        // --- Utility Functions ---
+
+        /** Initializes Firebase and handles authentication state */
+        async function initializeFirebase() {
+            try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.error("Firebase configuration is missing.");
+                    return;
+                }
+                
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInWithEmailAndPassword(auth, "default@example.com", "password123")
+                        .catch(async (error) => {
+                            if (error.code === 'auth/user-not-found') {
+                                // Create a placeholder user if none exists
+                                await createUserWithEmailAndPassword(auth, "default@example.com", "password123");
+                            }
+                        });
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    loadingScreen.classList.add('hidden');
+                    if (user) {
+                        userId = user.uid;
+                        isAuthReady = true;
+                        
+                        userDisplay.textContent = `User ID: ${userId.substring(0, 8)}...`;
+                        logoutBtn.classList.remove('hidden');
+                        authView.classList.add('hidden');
+                        mainContent.classList.remove('hidden');
+
+                        // Start listening to Firestore data once authenticated
+                        setupFirestoreListeners();
+
+                    } else {
+                        userId = null;
+                        isAuthReady = true;
+                        userDisplay.textContent = "Guest";
+                        logoutBtn.classList.add('hidden');
+                        authView.classList.remove('hidden');
+                        mainContent.classList.add('hidden');
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                loadingScreen.innerHTML = `<p class="text-red-600 font-bold">Error: Failed to initialize Firebase. Check console for details.</p>`;
+            }
+        }
+
+        // --- Auth Handlers ---
+
+        window.toggleAuthMode = function() {
+            const isRegister = authBtn.textContent.includes('Register');
+            authBtn.textContent = isRegister ? 'Sign In' : 'Register';
+            document.querySelector('.text-sm.text-green-600').textContent = isRegister ? 'Need an account? Register' : 'Already have an account? Sign In';
+        };
+
+        window.handleAuth = async function(event) {
+            event.preventDefault();
+            authError.classList.add('hidden');
+            const email = document.getElementById('email-input').value;
+            const password = document.getElementById('password-input').value;
+            const isRegister = authBtn.textContent.includes('Register');
+            
+            try {
+                if (isRegister) {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                }
+            } catch (error) {
+                console.error("Auth error:", error.message);
+                authError.textContent = error.message.replace('Firebase: ', '');
+                authError.classList.remove('hidden');
+            }
+        };
+
+        window.logoutUser = async function() {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Logout error:", error);
+            }
+        };
+
+        // --- Firestore Data Operations ---
+
+        // Gets the correct Firestore path for private user data
+        function getPrivateCollectionPath(collectionName) {
+            if (!userId) {
+                console.error("User not authenticated for private data.");
+                return null;
+            }
+            return `artifacts/${appId}/users/${userId}/${collectionName}`;
+        }
+
+        // Gets the correct Firestore path for public data
+        function getPublicCollectionPath(collectionName) {
+            return `artifacts/${appId}/public/data/${collectionName}`;
+        }
+
+        /** Handles adding a new product or farmstay listing */
+        window.addListing = async function(event) {
+            event.preventDefault();
+            if (!isAuthReady || !userId || !db) return;
+
+            const type = document.getElementById('listing-type').value;
+            const name = document.getElementById('listing-name').value;
+            const description = document.getElementById('listing-description').value;
+
+            const collectionName = type === 'product' ? 'organic_products' : 'farmstays';
+            const collectionPath = getPrivateCollectionPath(collectionName);
+
+            try {
+                await addDoc(collection(db, collectionPath), {
+                    name,
+                    description,
+                    type,
+                    timestamp: serverTimestamp(),
+                    status: 'Active'
+                });
+                document.getElementById('listing-form').reset();
+                alertMessage('success', `${name} (${type}) added successfully!`);
+            } catch (error) {
+                console.error(`Error adding ${type}:`, error);
+                alertMessage('error', `Could not add listing: ${error.message}`);
+            }
+        };
+
+        /** Handles adding a new tech tip to the public community hub */
+        window.addTechTip = async function(event) {
+            event.preventDefault();
+            if (!isAuthReady || !userId || !db) return;
+
+            const title = document.getElementById('tip-title').value;
+            const content = document.getElementById('tip-content').value;
+
+            const collectionPath = getPublicCollectionPath('tech_tips');
+
+            try {
+                await addDoc(collection(db, collectionPath), {
+                    title,
+                    content,
+                    authorId: userId,
+                    authorEmail: auth.currentUser.email,
+                    timestamp: serverTimestamp()
+                });
+                document.getElementById('tech-tip-form').reset();
+                alertMessage('success', `Tech Tip "${title}" posted successfully!`);
+            } catch (error) {
+                console.error("Error adding tech tip:", error);
+                alertMessage('error', `Could not post tip: ${error.message}`);
+            }
+        };
+
+        // --- Firestore Listeners and UI Rendering ---
+
+        function setupFirestoreListeners() {
+            if (!db || !userId) return;
+            
+            // 1. Listen for My Private Listings (Products)
+            const productsPath = getPrivateCollectionPath('organic_products');
+            if (productsPath) {
+                onSnapshot(collection(db, productsPath), (snapshot) => {
+                    const productsContainer = document.getElementById('products-container');
+                    productsContainer.innerHTML = '';
+                    if (snapshot.empty) {
+                        productsContainer.innerHTML = '<p class="text-gray-500 col-span-2">No organic products listed yet.</p>';
+                        return;
+                    }
+                    snapshot.docs.forEach(doc => {
+                        const data = doc.data();
+                        productsContainer.innerHTML += createListingCard(data.name, data.description, 'bg-green-50');
+                    });
+                }, (error) => {
+                    console.error("Error listening to products:", error);
+                });
+            }
+
+            // 2. Listen for My Private Listings (Farmstays)
+            const farmstaysPath = getPrivateCollectionPath('farmstays');
+            if (farmstaysPath) {
+                onSnapshot(collection(db, farmstaysPath), (snapshot) => {
+                    const farmstaysContainer = document.getElementById('farmstays-container');
+                    farmstaysContainer.innerHTML = '';
+                    if (snapshot.empty) {
+                        farmstaysContainer.innerHTML = '<p class="text-gray-500 col-span-2">No farmstays listed yet.</p>';
+                        return;
+                    }
+                    snapshot.docs.forEach(doc => {
+                        const data = doc.data();
+                        farmstaysContainer.innerHTML += createListingCard(data.name, data.description, 'bg-blue-50');
+                    });
+                }, (error) => {
+                    console.error("Error listening to farmstays:", error);
+                });
+            }
+
+
+            // 3. Listen for Public Tech Tips
+            const tipsQuery = query(collection(db, getPublicCollectionPath('tech_tips')));
+            onSnapshot(tipsQuery, (snapshot) => {
+                const feed = document.getElementById('tech-tips-feed');
+                const noTipsMsg = document.getElementById('no-tips-msg');
+                feed.innerHTML = '<h3 class="text-2xl font-semibold text-gray-700">Recent Technology Tips:</h3>';
+                noTipsMsg.classList.add('hidden');
+
+                if (snapshot.empty) {
+                    noTipsMsg.classList.remove('hidden');
+                    feed.appendChild(noTipsMsg);
+                    return;
+                }
+                
+                // Sort tips by timestamp (descending) in memory as Firestore sorting is complex with indexes
+                const tips = snapshot.docs.map(doc => doc.data()).sort((a, b) => b.timestamp?.seconds - a.timestamp?.seconds);
+
+                tips.forEach(data => {
+                    const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : 'N/A';
+                    feed.innerHTML += `
+                        <div class="bg-white p-4 rounded-lg shadow border border-gray-100 transition hover:shadow-md">
+                            <h4 class="text-xl font-bold text-blue-800">${data.title}</h4>
+                            <p class="text-gray-700 mt-2">${data.content}</p>
+                            <p class="text-xs text-gray-500 mt-3 border-t pt-2">
+                                Shared by: ${data.authorId.substring(0, 8)}... on ${date}
+                            </p>
+                        </div>
+                    `;
+                });
+
+            }, (error) => {
+                console.error("Error listening to tech tips:", error);
+            });
+        }
+
+        // --- UI Helper Functions ---
+        
+        // Custom message box utility (replaces alert())
+        function alertMessage(type, message) {
+            const container = document.getElementById('app');
+            let alertDiv = document.getElementById('custom-alert');
+
+            if (!alertDiv) {
+                alertDiv = document.createElement('div');
+                alertDiv.id = 'custom-alert';
+                alertDiv.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-xl text-white font-semibold z-50 transition-transform transform translate-x-full duration-300';
+                container.appendChild(alertDiv);
+            }
+
+            if (type === 'success') {
+                alertDiv.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-xl text-white font-semibold z-50 transition-transform duration-300 bg-green-500';
+            } else if (type === 'error') {
+                alertDiv.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-xl text-white font-semibold z-50 transition-transform duration-300 bg-red-500';
+            }
+
+            alertDiv.textContent = message;
+            alertDiv.classList.remove('translate-x-full');
+            alertDiv.classList.add('translate-x-0');
+
+            setTimeout(() => {
+                alertDiv.classList.remove('translate-x-0');
+                alertDiv.classList.add('translate-x-full');
+            }, 5000);
+        }
+
+        function createListingCard(name, description, bgColor) {
+            return `
+                <div class="${bgColor} p-4 rounded-xl shadow border border-gray-200">
+                    <h4 class="text-xl font-bold text-gray-800">${name}</h4>
+                    <p class="text-gray-600 mt-2">${description}</p>
+                    <span class="inline-block mt-3 text-xs font-medium bg-gray-200 text-gray-700 px-2 py-1 rounded-full">Status: Active</span>
+                </div>
+            `;
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('bg-green-100', 'text-green-800');
+                button.classList.add('text-gray-700', 'hover:bg-green-200');
+            });
+
+            document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('bg-green-100', 'text-green-800');
+            document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.remove('text-gray-700', 'hover:bg-green-200');
+        }
+
+        // Event listener for tab switching
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    switchTab(button.getAttribute('data-tab'));
+                });
+            });
+
+            // Initialize the default tab
+            switchTab('listings');
+        });
+
+        // Initialize the application
+        initializeFirebase();
+
+    </script>
+</body>
+</html>
