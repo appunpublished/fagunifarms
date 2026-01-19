@@ -4,37 +4,57 @@
 
 body {
   margin: 0;
-  overflow: hidden;
   background: #fff;
-  font-family: system-ui, sans-serif;
+  overflow: hidden;
   touch-action: none;
+  font-family: system-ui, sans-serif;
 }
 
-/* TOP BAR */
+/* ---------- TOP BAR ---------- */
 .top-bar {
-  height: 100px;
-  border-bottom: 2px solid #eee;
+  height: 56px;
   display: flex;
   justify-content: center;
+  gap: 12px;
   align-items: center;
+  border-bottom: 2px solid #eee;
 }
 
-.palette button {
-  width: 56px;
-  height: 56px;
-  margin: 6px;
+.top-bar button {
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
   border-radius: 50%;
   border: none;
-  font-size: 26px;
 }
 
-/* MAIN LAYOUT */
-.main {
+/* ---------- WORKSPACE ---------- */
+.workspace {
   display: flex;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 56px - 110px);
+  overflow: hidden;
 }
 
-/* CANVAS */
+/* ---------- COLOR BAR ---------- */
+#colorBar {
+  width: 72px;
+  flex-shrink: 0;
+  background: #fafafa;
+  border-right: 2px solid #eee;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#colorBar button {
+  width: 48px;
+  height: 48px;
+  margin: 10px auto;
+  border-radius: 50%;
+  border: none;
+}
+
+/* ---------- CANVAS ---------- */
 canvas {
   flex: 1;
   width: 100%;
@@ -43,19 +63,19 @@ canvas {
   touch-action: none;
 }
 
-/* SIDEBAR (DESKTOP) */
+/* ---------- IMAGE PICKER ---------- */
 #sidebar {
-  width: 120px;
+  height: 110px;
+  display: flex;
+  overflow-x: auto;
   background: #f4f4f4;
-  overflow-y: auto;
-  border-left: 2px solid #eee;
+  border-top: 2px solid #eee;
 }
 
 #sidebar img {
-  width: 90px;
+  width: 80px;
   margin: 10px;
   border-radius: 10px;
-  cursor: pointer;
   border: 3px solid transparent;
 }
 
@@ -63,78 +83,14 @@ canvas {
   border-color: #007AFF;
 }
 
-/* -------- MOBILE MODE -------- */
-@media (max-width: 768px) {
-  .main {
-    flex-direction: column;
+/* ---------- TABLET / LARGE SCREENS ---------- */
+@media (min-width: 768px) {
+  #colorBar {
+    width: 90px;
   }
 
-  #sidebar {
-    width: 100%;
-    height: 110px;
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    border-left: none;
-    border-top: 2px solid #eee;
-  }
-
-  #sidebar img {
-    flex: 0 0 auto;
-    width: 80px;
-    margin: 10px;
-  }
-}
-.palette {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Color tray */
-#colorTray {
-  display: flex;
-  gap: 6px;
-}
-
-/* Color buttons */
-#colorTray button {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-}
-
-/* Toggle button */
-#toggleColors {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  font-size: 26px;
-}
-
-/* ---------------- MOBILE MODE ---------------- */
-@media (max-width: 768px) {
-  #colorTray {
-    display: none;          /* hidden by default */
-    position: absolute;
-    top: 100px;             /* just below top bar */
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ffffff;
-    padding: 10px;
-    border-radius: 16px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-    z-index: 1000;
-  }
-
-  #colorTray.show {
-    display: flex;
-  }
-
-  #colorTray button {
-    width: 44px;
-    height: 44px;
+  #colorBar button {
+    width: 56px;
+    height: 56px;
   }
 }

@@ -126,27 +126,25 @@ toggleColors.onclick = () => {
   colorTray.classList.toggle("show");
 };
 
-// Color selection (auto-close tray)
-document.querySelectorAll("#colorTray button[data-color]").forEach(btn => {
+// Color selection
+document.querySelectorAll("#colorBar button[data-color]").forEach(btn => {
   btn.onclick = () => {
     mode = "draw";
     color = btn.dataset.color;
-    colorTray.classList.remove("show");
   };
 });
 
 // Eraser
 document.getElementById("eraser").onclick = () => {
   mode = "erase";
-  colorTray.classList.remove("show");
 };
 
-// Undo (clear drawing layer only)
+// Undo
 document.getElementById("undo").onclick = () => {
   clearDrawing();
   redraw();
-  colorTray.classList.remove("show");
 };
+
 
 
 
