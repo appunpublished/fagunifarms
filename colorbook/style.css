@@ -25,9 +25,11 @@ body {
 /* WORKSPACE */
 .workspace {
   display: grid;
-  grid-template-columns: 72px 1fr; /* color bar | canvas */
+  grid-template-columns: 72px 1fr;
+  height: 100%;
   overflow: hidden;
 }
+
 
 /* COLOR BAR */
 #colorBar {

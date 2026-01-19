@@ -1,69 +1,47 @@
-/*********************************
+/***********************
  * ELEMENTS
- *********************************/
+ ***********************/
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const sidebar = document.getElementById("sidebar");
 const colorBar = document.getElementById("colorBar");
 
-/*********************************
+/***********************
  * STATE
- *********************************/
+ ***********************/
 let drawing = false;
-let mode = "draw"; // draw | erase
+let mode = "draw";
 let color = "#FF3B30";
 let images = [];
 let currentIndex = 0;
 let baseImage = null;
 
-/*********************************
- * SERVICE WORKER (SAFE)
- *********************************/
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
-
-/*********************************
- * OFFSCREEN DRAW LAYER
- *********************************/
+/***********************
+ * DRAW LAYER
+ ***********************/
 const drawLayer = document.createElement("canvas");
 const drawCtx = drawLayer.getContext("2d");
 
-/*********************************
- * CANVAS SETUP (MOBILE-SAFE)
- *********************************/
+/***********************
+ * CANVAS SETUP (CORRECT)
+ ***********************/
 function resizeCanvas() {
-  const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
 
-  // Guard: layout not ready yet
-  if (rect.width === 0 || rect.height === 0) {
-    requestAnimationFrame(resizeCanvas);
-    return;
-  }
-
-  // Internal buffer
-  canvas.width = Math.round(rect.width * dpr);
-  canvas.height = Math.round(rect.height * dpr);
-  drawLayer.width = canvas.width;
-  drawLayer.height = canvas.height;
-
-  // Reset transforms
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  drawCtx.setTransform(1, 0, 0, 1, 0, 0);
-
-  // Scale once
-  ctx.scale(dpr, dpr);
-  drawCtx.scale(dpr, dpr);
+  // CSS size = drawing size (NO DPR SCALING)
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  drawLayer.width = rect.width;
+  drawLayer.height = rect.height;
 
   redraw();
 }
 
 window.addEventListener("resize", resizeCanvas);
 
-/*********************************
- * LOAD IMAGE LIST
- *********************************/
+/***********************
+ * LOAD IMAGES
+ ***********************/
 fetch("images.json")
   .then(r => r.json())
   .then(list => {
@@ -88,7 +66,7 @@ function loadImage(index) {
   img.src = `images/${images[index]}`;
   img.onload = () => {
     baseImage = img;
-    clearDrawing();
+    drawCtx.clearRect(0, 0, canvas.width, canvas.height);
     redraw();
     highlightActive();
   };
@@ -97,33 +75,23 @@ function loadImage(index) {
 function highlightActive() {
   document.querySelectorAll("#sidebar img").forEach((img, i) => {
     img.classList.toggle("active", i === currentIndex);
-    if (i === currentIndex) {
-      img.scrollIntoView({ behavior: "smooth", inline: "center" });
-    }
   });
 }
 
-/*********************************
+/***********************
  * DRAW STACK
- *********************************/
+ ***********************/
 function redraw() {
   if (!baseImage) return;
 
-  const rect = canvas.getBoundingClientRect();
-
-  ctx.clearRect(0, 0, rect.width, rect.height);
-  ctx.drawImage(baseImage, 0, 0, rect.width, rect.height);
-  ctx.drawImage(drawLayer, 0, 0, rect.width, rect.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(drawLayer, 0, 0);
 }
 
-function clearDrawing() {
-  const rect = canvas.getBoundingClientRect();
-  drawCtx.clearRect(0, 0, rect.width, rect.height);
-}
-
-/*********************************
+/***********************
  * TOOLS
- *********************************/
+ ***********************/
 colorBar.querySelectorAll("button[data-color]").forEach(btn => {
   btn.onclick = () => {
     mode = "draw";
@@ -136,13 +104,13 @@ document.getElementById("eraser").onclick = () => {
 };
 
 document.getElementById("undo").onclick = () => {
-  clearDrawing();
+  drawCtx.clearRect(0, 0, canvas.width, canvas.height);
   redraw();
 };
 
-/*********************************
+/***********************
  * POINTER UTILS
- *********************************/
+ ***********************/
 function getPos(e) {
   const rect = canvas.getBoundingClientRect();
   return {
@@ -151,14 +119,13 @@ function getPos(e) {
   };
 }
 
-/*********************************
- * DRAWING (MOBILE-PROOF)
- *********************************/
+/***********************
+ * DRAWING (ROBUST)
+ ***********************/
 canvas.addEventListener("pointerdown", e => {
   e.preventDefault();
-  canvas.setPointerCapture(e.pointerId);
-
   drawing = true;
+
   const p = getPos(e);
   drawCtx.beginPath();
   drawCtx.moveTo(p.x, p.y);
@@ -166,17 +133,17 @@ canvas.addEventListener("pointerdown", e => {
 
 canvas.addEventListener("pointermove", e => {
   if (!drawing) return;
-
   e.preventDefault();
+
   const p = getPos(e);
 
   if (mode === "erase") {
     drawCtx.globalCompositeOperation = "destination-out";
-    drawCtx.lineWidth = 28;
+    drawCtx.lineWidth = 30;
   } else {
     drawCtx.globalCompositeOperation = "source-over";
     drawCtx.strokeStyle = color;
-    drawCtx.lineWidth = 12;
+    drawCtx.lineWidth = 14;
   }
 
   drawCtx.lineCap = "round";
@@ -188,21 +155,15 @@ canvas.addEventListener("pointermove", e => {
 });
 
 canvas.addEventListener("pointerup", stopDraw);
-canvas.addEventListener("pointercancel", stopDraw);
 canvas.addEventListener("pointerleave", stopDraw);
+canvas.addEventListener("pointercancel", stopDraw);
 
-function stopDraw(e) {
-  if (!drawing) return;
-
+function stopDraw() {
   drawing = false;
   drawCtx.globalCompositeOperation = "source-over";
-
-  if (e && e.pointerId) {
-    canvas.releasePointerCapture(e.pointerId);
-  }
 }
 
-/*********************************
+/***********************
  * INIT
- *********************************/
+ ***********************/
 resizeCanvas();
