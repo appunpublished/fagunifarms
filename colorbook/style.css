@@ -86,3 +86,55 @@ canvas {
     margin: 10px;
   }
 }
+.palette {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Color tray */
+#colorTray {
+  display: flex;
+  gap: 6px;
+}
+
+/* Color buttons */
+#colorTray button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+}
+
+/* Toggle button */
+#toggleColors {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-size: 26px;
+}
+
+/* ---------------- MOBILE MODE ---------------- */
+@media (max-width: 768px) {
+  #colorTray {
+    display: none;          /* hidden by default */
+    position: absolute;
+    top: 100px;             /* just below top bar */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    z-index: 1000;
+  }
+
+  #colorTray.show {
+    display: flex;
+  }
+
+  #colorTray button {
+    width: 44px;
+    height: 44px;
+  }
+}

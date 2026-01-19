@@ -108,20 +108,41 @@ function clearDrawing() {
 }
 
 /* ===============================
-   TOOLS
+   TOOLS (FINAL)
 ================================ */
-document.querySelectorAll(".palette button[data-color]").forEach(btn => {
+
+// Color tray toggle
+const toggleColors = document.getElementById("toggleColors");
+const colorTray = document.getElementById("colorTray");
+
+toggleColors.onclick = () => {
+  colorTray.classList.toggle("show");
+};
+
+// Color selection (auto-close tray)
+document.querySelectorAll("#colorTray button[data-color]").forEach(btn => {
   btn.onclick = () => {
     mode = "draw";
     color = btn.dataset.color;
+    colorTray.classList.remove("show");
   };
 });
 
-document.getElementById("eraser").onclick = () => mode = "erase";
+// Eraser
+document.getElementById("eraser").onclick = () => {
+  mode = "erase";
+  colorTray.classList.remove("show");
+};
+
+// Undo (clear drawing layer only)
 document.getElementById("undo").onclick = () => {
   clearDrawing();
   redraw();
+  colorTray.classList.remove("show");
 };
+
+
+
 
 /* ===============================
    POINTER — FINAL, CORRECT
