@@ -1,7 +1,6 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const sidebar = document.getElementById("sidebar");
-const colorBar = document.getElementById("colorBar");
 
 let drawing = false;
 let mode = "draw";
@@ -10,23 +9,32 @@ let images = [];
 let currentIndex = 0;
 let baseImage = null;
 
-// Drawing-only layer
+// Offscreen drawing layer
 const drawLayer = document.createElement("canvas");
 const drawCtx = drawLayer.getContext("2d");
 
-/* -------- CANVAS SETUP (CORRECT) -------- */
+/* ===============================
+   CANVAS SETUP — FINAL VERSION
+================================ */
 function resizeCanvas() {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
 
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
+  // CSS size
+  const cssWidth = rect.width;
+  const cssHeight = rect.height;
+
+  // Internal pixel buffer
+  canvas.width = Math.round(cssWidth * dpr);
+  canvas.height = Math.round(cssHeight * dpr);
   drawLayer.width = canvas.width;
   drawLayer.height = canvas.height;
 
+  // Reset transforms FIRST
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   drawCtx.setTransform(1, 0, 0, 1, 0, 0);
 
+  // Scale once
   ctx.scale(dpr, dpr);
   drawCtx.scale(dpr, dpr);
 
@@ -35,7 +43,9 @@ function resizeCanvas() {
 
 window.addEventListener("resize", resizeCanvas);
 
-/* -------- LOAD IMAGES -------- */
+/* ===============================
+   LOAD IMAGE LIST
+================================ */
 fetch("images.json")
   .then(r => r.json())
   .then(list => {
@@ -75,13 +85,20 @@ function highlightActive() {
   });
 }
 
-/* -------- DRAW STACK -------- */
+/* ===============================
+   DRAW STACK (CSS PIXELS ONLY)
+================================ */
 function redraw() {
   if (!baseImage) return;
+
   const rect = canvas.getBoundingClientRect();
 
   ctx.clearRect(0, 0, rect.width, rect.height);
+
+  // BASE IMAGE
   ctx.drawImage(baseImage, 0, 0, rect.width, rect.height);
+
+  // DRAWING LAYER
   ctx.drawImage(drawLayer, 0, 0, rect.width, rect.height);
 }
 
@@ -90,21 +107,46 @@ function clearDrawing() {
   drawCtx.clearRect(0, 0, rect.width, rect.height);
 }
 
-/* -------- TOOLS -------- */
-colorBar.querySelectorAll("button[data-color]").forEach(btn => {
+/* ===============================
+   TOOLS (FINAL)
+================================ */
+
+// Color tray toggle
+const toggleColors = document.getElementById("toggleColors");
+const colorTray = document.getElementById("colorTray");
+
+toggleColors.onclick = () => {
+  colorTray.classList.toggle("show");
+};
+
+// Color selection (auto-close tray)
+document.querySelectorAll("#colorTray button[data-color]").forEach(btn => {
   btn.onclick = () => {
     mode = "draw";
     color = btn.dataset.color;
+    colorTray.classList.remove("show");
   };
 });
 
-document.getElementById("eraser").onclick = () => mode = "erase";
+// Eraser
+document.getElementById("eraser").onclick = () => {
+  mode = "erase";
+  colorTray.classList.remove("show");
+};
+
+// Undo (clear drawing layer only)
 document.getElementById("undo").onclick = () => {
   clearDrawing();
   redraw();
+  colorTray.classList.remove("show");
 };
 
-/* -------- POINTER -------- */
+
+
+
+/* ===============================
+   POINTER — FINAL, CORRECT
+================================ */
 function getPos(e) {
   const rect = canvas.getBoundingClientRect();
   return {
@@ -113,7 +155,9 @@ function getPos(e) {
   };
 }
 
-/* -------- DRAWING -------- */
+/* ===============================
+   DRAWING
+================================ */
 canvas.addEventListener("pointerdown", e => {
   drawing = true;
   const p = getPos(e);
@@ -123,6 +167,7 @@ canvas.addEventListener("pointerdown", e => {
 
 canvas.addEventListener("pointermove", e => {
   if (!drawing) return;
+
   const p = getPos(e);
 
   if (mode === "erase") {
@@ -150,5 +195,7 @@ function stopDraw() {
   drawCtx.globalCompositeOperation = "source-over";
 }
 
-/* -------- INIT -------- */
+/* ===============================
+   INIT
+================================ */
 resizeCanvas();
