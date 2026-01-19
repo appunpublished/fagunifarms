@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Kids Coloring Book</title>
 
-  <!-- MOBILE CRITICAL -->
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -12,11 +11,16 @@
 </head>
 <body>
 
+<!-- TOP BAR (Parent Controls) -->
 <div class="top-bar">
-<div class="palette">
-  <button id="toggleColors">🎨</button>
+  <button id="eraser">🧽</button>
+  <button id="undo">↩️</button>
+</div>
 
-  <div id="colorTray">
+<!-- MAIN AREA -->
+<div class="main">
+  <!-- LEFT COLOR BAR -->
+  <div id="colorBar">
     <button data-color="#FF3B30" style="background:#FF3B30"></button>
     <button data-color="#007AFF" style="background:#007AFF"></button>
     <button data-color="#34C759" style="background:#34C759"></button>
@@ -27,16 +31,12 @@
     <button data-color="#000000" style="background:#000000"></button>
   </div>
 
-  <button id="eraser">🧽</button>
-  <button id="undo">↩️</button>
-</div>
-
-</div>
-
-<div class="main">
+  <!-- CANVAS -->
   <canvas id="canvas"></canvas>
-  <div id="sidebar"></div>
 </div>
+
+<!-- IMAGE SELECTOR -->
+<div id="sidebar"></div>
 
 <script src="app.js"></script>
 </body>
