@@ -7,11 +7,13 @@ let mode = "draw"; // draw | erase
 let color = "#FF3B30";
 let images = [];
 let currentIndex = 0;
-let currentImage = null;
+let baseImage = null;
 
-/* ---------------------------------
-   CANVAS SETUP (FIXED PROPERLY)
----------------------------------- */
+// Offscreen drawing layer (colors only)
+const drawLayer = document.createElement("canvas");
+const drawCtx = drawLayer.getContext("2d");
+
+/* ---------------- CANVAS SETUP ---------------- */
 function resizeCanvas() {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
@@ -19,16 +21,18 @@ function resizeCanvas() {
   canvas.width = rect.width * dpr;
   canvas.height = rect.height * dpr;
 
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // scale ONCE
+  drawLayer.width = canvas.width;
+  drawLayer.height = canvas.height;
 
-  if (currentImage) drawBaseImage();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  drawCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  redraw();
 }
 
 window.addEventListener("resize", resizeCanvas);
 
-/* ---------------------------------
-   LOAD IMAGE LIST
----------------------------------- */
+/* ---------------- LOAD IMAGES ---------------- */
 fetch("images.json")
   .then(res => res.json())
   .then(list => {
@@ -37,9 +41,6 @@ fetch("images.json")
     loadImage(0);
   });
 
-/* ---------------------------------
-   SIDEBAR
----------------------------------- */
 function renderSidebar() {
   sidebar.innerHTML = "";
   images.forEach((name, index) => {
@@ -50,57 +51,63 @@ function renderSidebar() {
   });
 }
 
-/* ---------------------------------
-   IMAGE LOADING
----------------------------------- */
 function loadImage(index) {
   currentIndex = index;
   const img = new Image();
   img.src = `images/${images[index]}`;
   img.onload = () => {
-    currentImage = img;
-    drawBaseImage();
+    baseImage = img;
+    clearDrawing();
+    redraw();
     highlightActive();
   };
-}
-
-function drawBaseImage() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(
-    currentImage,
-    0,
-    0,
-    canvas.clientWidth,
-    canvas.clientHeight
-  );
 }
 
 function highlightActive() {
   document.querySelectorAll("#sidebar img").forEach((img, i) => {
     img.classList.toggle("active", i === currentIndex);
+    if (i === currentIndex) {
+      img.scrollIntoView({ behavior: "smooth", inline: "center" });
+    }
   });
 }
 
-/* ---------------------------------
-   COLOR + ERASER
----------------------------------- */
-document.querySelectorAll(".palette button").forEach(btn => {
+/* ---------------- DRAW STACK ---------------- */
+function redraw() {
+  if (!baseImage) return;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.drawImage(
+    baseImage,
+    0,
+    0,
+    canvas.clientWidth,
+    canvas.clientHeight
+  );
+
+  ctx.drawImage(drawLayer, 0, 0);
+}
+
+function clearDrawing() {
+  drawCtx.clearRect(0, 0, drawLayer.width, drawLayer.height);
+}
+
+/* ---------------- TOOLS ---------------- */
+document.querySelectorAll(".palette button[data-color]").forEach(btn => {
   btn.onclick = () => {
     mode = "draw";
     color = btn.dataset.color;
   };
 });
 
-// ERASER BUTTON (create once)
-const eraser = document.createElement("button");
-eraser.textContent = "🧽";
-eraser.style.fontSize = "28px";
-eraser.onclick = () => mode = "erase";
-document.querySelector(".palette").appendChild(eraser);
+document.getElementById("eraser").onclick = () => mode = "erase";
+document.getElementById("undo").onclick = () => {
+  clearDrawing();
+  redraw();
+};
 
-/* ---------------------------------
-   POINTER COORDINATES (FINAL FIX)
----------------------------------- */
+/* ---------------- POINTER ---------------- */
 function getPos(e) {
   const rect = canvas.getBoundingClientRect();
   return {
@@ -109,14 +116,12 @@ function getPos(e) {
   };
 }
 
-/* ---------------------------------
-   DRAWING / ERASING
----------------------------------- */
+/* ---------------- DRAWING ---------------- */
 canvas.addEventListener("pointerdown", e => {
   drawing = true;
   const pos = getPos(e);
-  ctx.beginPath();
-  ctx.moveTo(pos.x, pos.y);
+  drawCtx.beginPath();
+  drawCtx.moveTo(pos.x, pos.y);
 });
 
 canvas.addEventListener("pointermove", e => {
@@ -125,18 +130,20 @@ canvas.addEventListener("pointermove", e => {
   const pos = getPos(e);
 
   if (mode === "erase") {
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.lineWidth = 28;
+    drawCtx.globalCompositeOperation = "destination-out";
+    drawCtx.lineWidth = 28;
   } else {
-    ctx.globalCompositeOperation = "source-over";
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 12;
+    drawCtx.globalCompositeOperation = "source-over";
+    drawCtx.strokeStyle = color;
+    drawCtx.lineWidth = 12;
   }
 
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-  ctx.lineTo(pos.x, pos.y);
-  ctx.stroke();
+  drawCtx.lineCap = "round";
+  drawCtx.lineJoin = "round";
+  drawCtx.lineTo(pos.x, pos.y);
+  drawCtx.stroke();
+
+  redraw();
 });
 
 canvas.addEventListener("pointerup", stopDraw);
@@ -144,10 +151,8 @@ canvas.addEventListener("pointerleave", stopDraw);
 
 function stopDraw() {
   drawing = false;
-  ctx.globalCompositeOperation = "source-over";
+  drawCtx.globalCompositeOperation = "source-over";
 }
 
-/* ---------------------------------
-   INIT
----------------------------------- */
+/* ---------------- INIT ---------------- */
 resizeCanvas();

@@ -6,16 +6,17 @@ body {
   margin: 0;
   overflow: hidden;
   background: #fff;
-  touch-action: none;
   font-family: system-ui, sans-serif;
+  touch-action: none;
 }
 
+/* TOP BAR */
 .top-bar {
   height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-bottom: 2px solid #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .palette button {
@@ -24,18 +25,30 @@ body {
   margin: 6px;
   border-radius: 50%;
   border: none;
+  font-size: 26px;
 }
 
+/* MAIN LAYOUT */
 .main {
   display: flex;
   height: calc(100vh - 100px);
 }
 
+/* CANVAS */
+canvas {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+/* SIDEBAR (DESKTOP) */
 #sidebar {
-  width: 110px;
+  width: 120px;
   background: #f4f4f4;
   overflow-y: auto;
-  border-right: 2px solid #eee;
+  border-left: 2px solid #eee;
 }
 
 #sidebar img {
@@ -50,10 +63,26 @@ body {
   border-color: #007AFF;
 }
 
-canvas {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  display: block;
-  touch-action: none; /* NON-NEGOTIABLE */
+/* -------- MOBILE MODE -------- */
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+  }
+
+  #sidebar {
+    width: 100%;
+    height: 110px;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-left: none;
+    border-top: 2px solid #eee;
+  }
+
+  #sidebar img {
+    flex: 0 0 auto;
+    width: 80px;
+    margin: 10px;
+  }
 }

@@ -4,13 +4,12 @@
   <meta charset="UTF-8" />
   <title>Kids Coloring Book</title>
 
-  <!-- CRITICAL for mobile -->
+  <!-- MOBILE CRITICAL -->
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div class="top-bar">
@@ -23,12 +22,15 @@
     <button data-color="#AF52DE" style="background:#AF52DE"></button>
     <button data-color="#8E6E53" style="background:#8E6E53"></button>
     <button data-color="#000000" style="background:#000000"></button>
+
+    <button id="eraser">🧽</button>
+    <button id="undo">↩️</button>
   </div>
 </div>
 
 <div class="main">
-  <div id="sidebar"></div>
   <canvas id="canvas"></canvas>
+  <div id="sidebar"></div>
 </div>
 
 <script src="app.js"></script>
