@@ -9,6 +9,13 @@ let images = [];
 let currentIndex = 0;
 let baseImage = null;
 
+
+
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+
 // Offscreen drawing layer
 const drawLayer = document.createElement("canvas");
 const drawCtx = drawLayer.getContext("2d");
