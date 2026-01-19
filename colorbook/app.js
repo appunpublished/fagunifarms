@@ -3,14 +3,15 @@ const ctx = canvas.getContext("2d");
 const sidebar = document.getElementById("sidebar");
 
 let drawing = false;
+let mode = "draw"; // draw | erase
 let color = "#FF3B30";
 let images = [];
 let currentIndex = 0;
 let currentImage = null;
 
-/* -------------------------------
-   CANVAS SCALING (MOBILE SAFE)
--------------------------------- */
+/* ---------------------------------
+   CANVAS SETUP (FIXED PROPERLY)
+---------------------------------- */
 function resizeCanvas() {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
@@ -18,16 +19,16 @@ function resizeCanvas() {
   canvas.width = rect.width * dpr;
   canvas.height = rect.height * dpr;
 
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // scale ONCE
 
-  if (currentImage) drawImage(currentImage);
+  if (currentImage) drawBaseImage();
 }
 
 window.addEventListener("resize", resizeCanvas);
 
-/* -------------------------------
+/* ---------------------------------
    LOAD IMAGE LIST
--------------------------------- */
+---------------------------------- */
 fetch("images.json")
   .then(res => res.json())
   .then(list => {
@@ -36,9 +37,9 @@ fetch("images.json")
     loadImage(0);
   });
 
-/* -------------------------------
+/* ---------------------------------
    SIDEBAR
--------------------------------- */
+---------------------------------- */
 function renderSidebar() {
   sidebar.innerHTML = "";
   images.forEach((name, index) => {
@@ -49,23 +50,29 @@ function renderSidebar() {
   });
 }
 
-/* -------------------------------
-   LOAD IMAGE ON CANVAS
--------------------------------- */
+/* ---------------------------------
+   IMAGE LOADING
+---------------------------------- */
 function loadImage(index) {
   currentIndex = index;
   const img = new Image();
   img.src = `images/${images[index]}`;
   img.onload = () => {
     currentImage = img;
-    drawImage(img);
+    drawBaseImage();
     highlightActive();
   };
 }
 
-function drawImage(img) {
+function drawBaseImage() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(img, 0, 0, canvas.clientWidth, canvas.clientHeight);
+  ctx.drawImage(
+    currentImage,
+    0,
+    0,
+    canvas.clientWidth,
+    canvas.clientHeight
+  );
 }
 
 function highlightActive() {
@@ -74,16 +81,26 @@ function highlightActive() {
   });
 }
 
-/* -------------------------------
-   COLOR PICKER
--------------------------------- */
+/* ---------------------------------
+   COLOR + ERASER
+---------------------------------- */
 document.querySelectorAll(".palette button").forEach(btn => {
-  btn.onclick = () => color = btn.dataset.color;
+  btn.onclick = () => {
+    mode = "draw";
+    color = btn.dataset.color;
+  };
 });
 
-/* -------------------------------
-   POINTER COORDINATES (FIXED)
--------------------------------- */
+// ERASER BUTTON (create once)
+const eraser = document.createElement("button");
+eraser.textContent = "🧽";
+eraser.style.fontSize = "28px";
+eraser.onclick = () => mode = "erase";
+document.querySelector(".palette").appendChild(eraser);
+
+/* ---------------------------------
+   POINTER COORDINATES (FINAL FIX)
+---------------------------------- */
 function getPos(e) {
   const rect = canvas.getBoundingClientRect();
   return {
@@ -92,9 +109,9 @@ function getPos(e) {
   };
 }
 
-/* -------------------------------
-   DRAWING LOGIC
--------------------------------- */
+/* ---------------------------------
+   DRAWING / ERASING
+---------------------------------- */
 canvas.addEventListener("pointerdown", e => {
   drawing = true;
   const pos = getPos(e);
@@ -104,19 +121,33 @@ canvas.addEventListener("pointerdown", e => {
 
 canvas.addEventListener("pointermove", e => {
   if (!drawing) return;
+
   const pos = getPos(e);
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 12;
+
+  if (mode === "erase") {
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.lineWidth = 28;
+  } else {
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 12;
+  }
+
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
   ctx.lineTo(pos.x, pos.y);
   ctx.stroke();
 });
 
-canvas.addEventListener("pointerup", () => drawing = false);
-canvas.addEventListener("pointerleave", () => drawing = false);
+canvas.addEventListener("pointerup", stopDraw);
+canvas.addEventListener("pointerleave", stopDraw);
 
-/* -------------------------------
+function stopDraw() {
+  drawing = false;
+  ctx.globalCompositeOperation = "source-over";
+}
+
+/* ---------------------------------
    INIT
--------------------------------- */
+---------------------------------- */
 resizeCanvas();
