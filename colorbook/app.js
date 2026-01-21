@@ -1,39 +1,36 @@
-
-
-
-/***********************
+/*************************************************
  * ELEMENTS
- ***********************/
+ *************************************************/
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const sidebar = document.getElementById("sidebar");
 const colorBar = document.getElementById("colorBar");
 
-/***********************
+/*************************************************
  * STATE
- ***********************/
-let activePointerId = null;
-
+ *************************************************/
 let drawing = false;
+let activePointerId = null; // 👈 SINGLE POINTER LOCK
 let mode = "draw";
 let color = "#FF3B30";
 let images = [];
 let currentIndex = 0;
 let baseImage = null;
 
-/***********************
- * DRAW LAYER
- ***********************/
+/*************************************************
+ * DRAWING LAYER (COLORS ONLY)
+ *************************************************/
 const drawLayer = document.createElement("canvas");
 const drawCtx = drawLayer.getContext("2d");
 
-/***********************
- * CANVAS SETUP (CORRECT)
- ***********************/
+/*************************************************
+ * CANVAS SETUP (NO DPR – STABLE)
+ *************************************************/
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
 
-  // CSS size = drawing size (NO DPR SCALING)
+  if (rect.width === 0 || rect.height === 0) return;
+
   canvas.width = rect.width;
   canvas.height = rect.height;
   drawLayer.width = rect.width;
@@ -44,11 +41,11 @@ function resizeCanvas() {
 
 window.addEventListener("resize", resizeCanvas);
 
-/***********************
- * LOAD IMAGES
- ***********************/
+/*************************************************
+ * LOAD IMAGE LIST
+ *************************************************/
 fetch("images.json")
-  .then(r => r.json())
+  .then(res => res.json())
   .then(list => {
     images = list;
     renderSidebar();
@@ -71,7 +68,7 @@ function loadImage(index) {
   img.src = `images/${images[index]}`;
   img.onload = () => {
     baseImage = img;
-    drawCtx.clearRect(0, 0, canvas.width, canvas.height);
+    clearDrawing();
     redraw();
     highlightActive();
   };
@@ -83,9 +80,9 @@ function highlightActive() {
   });
 }
 
-/***********************
+/*************************************************
  * DRAW STACK
- ***********************/
+ *************************************************/
 function redraw() {
   if (!baseImage) return;
 
@@ -94,44 +91,48 @@ function redraw() {
   ctx.drawImage(drawLayer, 0, 0);
 }
 
-/***********************
- * TOOLS – COLOR SELECTION (FINAL)
- ***********************/
+function clearDrawing() {
+  drawCtx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/*************************************************
+ * COLOR SELECTION (WITH HIGHLIGHT)
+ *************************************************/
 const colorButtons = colorBar.querySelectorAll("button[data-color]");
 
 colorButtons.forEach(btn => {
   btn.onclick = () => {
-    // Do not change color mid-stroke
-    if (drawing) return;
+    if (drawing) return; // prevent mid-stroke change
 
     mode = "draw";
     color = btn.dataset.color;
 
-    // Visual feedback
     colorButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
   };
 });
 
-// Set default selected color
+// Default color
 if (colorButtons.length > 0) {
   colorButtons[0].classList.add("active");
   color = colorButtons[0].dataset.color;
 }
 
-
+/*************************************************
+ * ERASER & RESET
+ *************************************************/
 document.getElementById("eraser").onclick = () => {
   mode = "erase";
 };
 
 document.getElementById("undo").onclick = () => {
-  drawCtx.clearRect(0, 0, canvas.width, canvas.height);
+  clearDrawing();
   redraw();
 };
 
-/***********************
+/*************************************************
  * POINTER UTILS
- ***********************/
+ *************************************************/
 function getPos(e) {
   const rect = canvas.getBoundingClientRect();
   return {
@@ -140,15 +141,18 @@ function getPos(e) {
   };
 }
 
-/***********************
- * DRAWING (ROBUST)
- ***********************/
+/*************************************************
+ * DRAWING – SINGLE TOUCH ONLY (BULLETPROOF)
+ *************************************************/
 canvas.addEventListener("pointerdown", e => {
-  // Ignore if another finger is already drawing
+  // Allow ONLY primary finger
+  if (!e.isPrimary) return;
   if (activePointerId !== null) return;
 
   e.preventDefault();
+
   activePointerId = e.pointerId;
+  canvas.setPointerCapture(e.pointerId); // 👈 VERY IMPORTANT
 
   drawing = true;
   const p = getPos(e);
@@ -156,11 +160,11 @@ canvas.addEventListener("pointerdown", e => {
   drawCtx.moveTo(p.x, p.y);
 });
 
-
 canvas.addEventListener("pointermove", e => {
-  if (!drawing) return;
-  e.preventDefault();
+  // Ignore non-active pointers
+  if (!drawing || e.pointerId !== activePointerId) return;
 
+  e.preventDefault();
   const p = getPos(e);
 
   if (mode === "erase") {
@@ -181,8 +185,8 @@ canvas.addEventListener("pointermove", e => {
 });
 
 canvas.addEventListener("pointerup", stopDraw);
-canvas.addEventListener("pointerleave", stopDraw);
 canvas.addEventListener("pointercancel", stopDraw);
+canvas.addEventListener("pointerleave", stopDraw);
 
 function stopDraw(e) {
   if (e.pointerId !== activePointerId) return;
@@ -190,10 +194,20 @@ function stopDraw(e) {
   drawing = false;
   activePointerId = null;
   drawCtx.globalCompositeOperation = "source-over";
+
+  try {
+    canvas.releasePointerCapture(e.pointerId);
+  } catch {}
 }
 
+/*************************************************
+ * iOS PINCH-ZOOM KILL SWITCH
+ *************************************************/
+document.addEventListener("gesturestart", e => e.preventDefault());
+document.addEventListener("gesturechange", e => e.preventDefault());
+document.addEventListener("gestureend", e => e.preventDefault());
 
-/***********************
+/*************************************************
  * INIT
- ***********************/
+ *************************************************/
 resizeCanvas();

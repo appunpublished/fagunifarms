@@ -3,6 +3,7 @@ body {
   background: #fff;
   overflow: hidden;
   touch-action: none;
+  overscroll-behavior: none;
   font-family: system-ui, sans-serif;
 }
 
@@ -86,6 +87,7 @@ canvas {
   height: 100%;
   display: block;
   touch-action: none;
+  pointer-events: auto;
 }
 
 /* IMAGE PICKER */
