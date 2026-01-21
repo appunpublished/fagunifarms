@@ -95,14 +95,30 @@ function redraw() {
 }
 
 /***********************
- * TOOLS
+ * TOOLS – COLOR SELECTION (FINAL)
  ***********************/
-colorBar.querySelectorAll("button[data-color]").forEach(btn => {
+const colorButtons = colorBar.querySelectorAll("button[data-color]");
+
+colorButtons.forEach(btn => {
   btn.onclick = () => {
+    // Do not change color mid-stroke
+    if (drawing) return;
+
     mode = "draw";
     color = btn.dataset.color;
+
+    // Visual feedback
+    colorButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
   };
 });
+
+// Set default selected color
+if (colorButtons.length > 0) {
+  colorButtons[0].classList.add("active");
+  color = colorButtons[0].dataset.color;
+}
+
 
 document.getElementById("eraser").onclick = () => {
   mode = "erase";

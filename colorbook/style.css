@@ -22,6 +22,32 @@ body {
   border-bottom: 2px solid #eee;
 }
 
+/* Parent controls – big & clear for mobile */
+.top-bar button {
+  width: 72px;              /* BIG touch target */
+  height: 72px;
+  font-size: 34px;          /* Emoji visibility */
+  border-radius: 18px;      /* Softer than circle */
+  border: none;
+  background: #f4f4f4;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+@media (min-width: 768px) {
+  .top-bar button {
+    width: 64px;
+    height: 64px;
+    font-size: 30px;
+  }
+}
+
+/* Extra spacing between buttons */
+.top-bar {
+  gap: 20px;
+}
+
+
+
 /* WORKSPACE */
 .workspace {
   display: grid;
@@ -46,6 +72,12 @@ body {
   margin: 10px auto;
   border-radius: 50%;
   border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#colorBar button.active {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.15);
 }
 
 /* CANVAS */
