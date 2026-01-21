@@ -1,3 +1,6 @@
+
+
+
 /***********************
  * ELEMENTS
  ***********************/
@@ -9,6 +12,8 @@ const colorBar = document.getElementById("colorBar");
 /***********************
  * STATE
  ***********************/
+let activePointerId = null;
+
 let drawing = false;
 let mode = "draw";
 let color = "#FF3B30";
@@ -123,13 +128,18 @@ function getPos(e) {
  * DRAWING (ROBUST)
  ***********************/
 canvas.addEventListener("pointerdown", e => {
-  e.preventDefault();
-  drawing = true;
+  // Ignore if another finger is already drawing
+  if (activePointerId !== null) return;
 
+  e.preventDefault();
+  activePointerId = e.pointerId;
+
+  drawing = true;
   const p = getPos(e);
   drawCtx.beginPath();
   drawCtx.moveTo(p.x, p.y);
 });
+
 
 canvas.addEventListener("pointermove", e => {
   if (!drawing) return;
@@ -158,10 +168,14 @@ canvas.addEventListener("pointerup", stopDraw);
 canvas.addEventListener("pointerleave", stopDraw);
 canvas.addEventListener("pointercancel", stopDraw);
 
-function stopDraw() {
+function stopDraw(e) {
+  if (e.pointerId !== activePointerId) return;
+
   drawing = false;
+  activePointerId = null;
   drawCtx.globalCompositeOperation = "source-over";
 }
+
 
 /***********************
  * INIT
