@@ -200,6 +200,61 @@ function stopDraw(e) {
   } catch {}
 }
 
+
+/*************************************************
+ * SAFE GALLERY (RUNS ONLY ON CLICK)
+ *************************************************/
+window.addEventListener("DOMContentLoaded", () => {
+  const galleryBtn = document.getElementById("galleryBtn");
+  const galleryOverlay = document.getElementById("galleryOverlay");
+  const galleryGrid = document.getElementById("galleryGrid");
+  const closeGallery = document.getElementById("closeGallery");
+
+  if (!galleryBtn || !galleryOverlay || !galleryGrid) {
+    console.warn("Gallery elements not found – skipping gallery");
+    return;
+  }
+
+  galleryBtn.addEventListener("click", async () => {
+    galleryGrid.innerHTML = "";
+    galleryOverlay.hidden = false;
+
+    try {
+      const res = await fetch("100images/index.json");
+      if (!res.ok) throw new Error("Gallery index not found");
+
+      const files = await res.json();
+
+      files.forEach(file => {
+        const img = document.createElement("img");
+        img.src = `100images/${file}`;
+        img.onclick = () => {
+          const image = new Image();
+          image.src = img.src;
+          image.onload = () => {
+            baseImage = image;
+            clearDrawing();
+            redraw();
+            galleryOverlay.hidden = true;
+          };
+        };
+        galleryGrid.appendChild(img);
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert("Gallery images not available");
+      galleryOverlay.hidden = true;
+    }
+  });
+
+  closeGallery.addEventListener("click", () => {
+    galleryOverlay.hidden = true;
+  });
+});
+
+
+
 /*************************************************
  * iOS PINCH-ZOOM KILL SWITCH
  *************************************************/

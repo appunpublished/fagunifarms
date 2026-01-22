@@ -113,3 +113,55 @@ canvas {
 canvas {
   pointer-events: auto;
 }
+
+/* ===============================
+   GALLERY OVERLAY (FIXED)
+================================ */
+
+/* hidden MUST win */
+#galleryOverlay[hidden] {
+  display: none !important;
+}
+
+#galleryOverlay {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.gallery-header {
+  height: 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 2px solid #eee;
+  font-size: 18px;
+}
+
+.gallery-header button {
+  font-size: 28px;
+  background: none;
+  border: none;
+}
+
+/* Grid */
+#galleryGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+#galleryGrid img {
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+}
+
