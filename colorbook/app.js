@@ -10,7 +10,7 @@ const colorBar = document.getElementById("colorBar");
  * STATE
  *************************************************/
 let drawing = false;
-let activePointerId = null; // 👈 SINGLE POINTER LOCK
+let activePointerId = null;
 let mode = "draw";
 let color = "#FF3B30";
 let images = [];
@@ -24,12 +24,11 @@ const drawLayer = document.createElement("canvas");
 const drawCtx = drawLayer.getContext("2d");
 
 /*************************************************
- * CANVAS SETUP (NO DPR – STABLE)
+ * CANVAS SETUP
  *************************************************/
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
-
-  if (rect.width === 0 || rect.height === 0) return;
+  if (!rect.width || !rect.height) return;
 
   canvas.width = rect.width;
   canvas.height = rect.height;
@@ -38,14 +37,13 @@ function resizeCanvas() {
 
   redraw();
 }
-
 window.addEventListener("resize", resizeCanvas);
 
 /*************************************************
  * LOAD IMAGE LIST
  *************************************************/
 fetch("images.json")
-  .then(res => res.json())
+  .then(r => r.json())
   .then(list => {
     images = list;
     renderSidebar();
@@ -81,39 +79,40 @@ function highlightActive() {
 }
 
 /*************************************************
- * DRAW STACK
+ * DRAW STACK (🔥 FIXED ORDER)
  *************************************************/
 function redraw() {
   if (!baseImage) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 1️⃣ Draw sketch FIRST
+  ctx.globalCompositeOperation = "source-over";
   ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+
+  // 2️⃣ Draw colors using multiply (keeps lines visible)
+  ctx.globalCompositeOperation = "multiply";
   ctx.drawImage(drawLayer, 0, 0);
+
+  // 3️⃣ Reset
+  ctx.globalCompositeOperation = "source-over";
 }
 
-function clearDrawing() {
-  drawCtx.clearRect(0, 0, canvas.width, canvas.height);
-}
 
 /*************************************************
- * COLOR SELECTION (WITH HIGHLIGHT)
+ * COLOR SELECTION
  *************************************************/
 const colorButtons = colorBar.querySelectorAll("button[data-color]");
-
 colorButtons.forEach(btn => {
   btn.onclick = () => {
-    if (drawing) return; // prevent mid-stroke change
-
+    if (drawing) return;
     mode = "draw";
     color = btn.dataset.color;
-
     colorButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
   };
 });
-
-// Default color
-if (colorButtons.length > 0) {
+if (colorButtons.length) {
   colorButtons[0].classList.add("active");
   color = colorButtons[0].dataset.color;
 }
@@ -121,10 +120,7 @@ if (colorButtons.length > 0) {
 /*************************************************
  * ERASER & RESET
  *************************************************/
-document.getElementById("eraser").onclick = () => {
-  mode = "erase";
-};
-
+document.getElementById("eraser").onclick = () => mode = "erase";
 document.getElementById("undo").onclick = () => {
   clearDrawing();
   redraw();
@@ -134,25 +130,19 @@ document.getElementById("undo").onclick = () => {
  * POINTER UTILS
  *************************************************/
 function getPos(e) {
-  const rect = canvas.getBoundingClientRect();
-  return {
-    x: e.clientX - rect.left,
-    y: e.clientY - rect.top
-  };
+  const r = canvas.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
 }
 
 /*************************************************
- * DRAWING – SINGLE TOUCH ONLY (BULLETPROOF)
+ * DRAWING – SINGLE TOUCH ONLY
  *************************************************/
 canvas.addEventListener("pointerdown", e => {
-  // Allow ONLY primary finger
-  if (!e.isPrimary) return;
-  if (activePointerId !== null) return;
-
+  if (!e.isPrimary || activePointerId !== null) return;
   e.preventDefault();
 
   activePointerId = e.pointerId;
-  canvas.setPointerCapture(e.pointerId); // 👈 VERY IMPORTANT
+  canvas.setPointerCapture(e.pointerId);
 
   drawing = true;
   const p = getPos(e);
@@ -161,10 +151,9 @@ canvas.addEventListener("pointerdown", e => {
 });
 
 canvas.addEventListener("pointermove", e => {
-  // Ignore non-active pointers
   if (!drawing || e.pointerId !== activePointerId) return;
-
   e.preventDefault();
+
   const p = getPos(e);
 
   if (mode === "erase") {
@@ -173,10 +162,7 @@ canvas.addEventListener("pointermove", e => {
   } else {
     drawCtx.globalCompositeOperation = "source-over";
     drawCtx.strokeStyle = color;
-    drawCtx.lineWidth = 10;
-
-    drawCtx.globalAlpha = 0.6;
-    drawCtx.lineWidth = 14;
+    drawCtx.lineWidth = 16; // crayon-like
   }
 
   drawCtx.lineCap = "round";
@@ -193,26 +179,14 @@ canvas.addEventListener("pointerleave", stopDraw);
 
 function stopDraw(e) {
   if (e.pointerId !== activePointerId) return;
-
   drawing = false;
   activePointerId = null;
-  drawCtx.globalAlpha = 1;
   drawCtx.globalCompositeOperation = "source-over";
-  
-
-
-  try {
-    canvas.releasePointerCapture(e.pointerId);
-  } catch {}
+  try { canvas.releasePointerCapture(e.pointerId); } catch {}
 }
 
-
-
-
-
-
 /*************************************************
- * SAFE GALLERY (RUNS ONLY ON CLICK)
+ * SAFE GALLERY (UNCHANGED, SAFE)
  *************************************************/
 window.addEventListener("DOMContentLoaded", () => {
   const galleryBtn = document.getElementById("galleryBtn");
@@ -220,29 +194,24 @@ window.addEventListener("DOMContentLoaded", () => {
   const galleryGrid = document.getElementById("galleryGrid");
   const closeGallery = document.getElementById("closeGallery");
 
-  if (!galleryBtn || !galleryOverlay || !galleryGrid) {
-    console.warn("Gallery elements not found – skipping gallery");
-    return;
-  }
+  if (!galleryBtn || !galleryOverlay || !galleryGrid) return;
 
-  galleryBtn.addEventListener("click", async () => {
+  galleryBtn.onclick = async () => {
     galleryGrid.innerHTML = "";
     galleryOverlay.hidden = false;
 
     try {
       const res = await fetch("100images/index.json");
-      if (!res.ok) throw new Error("Gallery index not found");
-
       const files = await res.json();
 
       files.forEach(file => {
         const img = document.createElement("img");
         img.src = `100images/${file}`;
         img.onclick = () => {
-          const image = new Image();
-          image.src = img.src;
-          image.onload = () => {
-            baseImage = image;
+          const im = new Image();
+          im.src = img.src;
+          im.onload = () => {
+            baseImage = im;
             clearDrawing();
             redraw();
             galleryOverlay.hidden = true;
@@ -250,26 +219,16 @@ window.addEventListener("DOMContentLoaded", () => {
         };
         galleryGrid.appendChild(img);
       });
-
-    } catch (err) {
-      console.error(err);
-      alert("Gallery images not available");
+    } catch {
       galleryOverlay.hidden = true;
     }
-  });
+  };
 
-  closeGallery.addEventListener("click", () => {
-    galleryOverlay.hidden = true;
-  });
+  closeGallery.onclick = () => galleryOverlay.hidden = true;
 });
 
-
-
-
-
-
 /*************************************************
- * iOS PINCH-ZOOM KILL SWITCH
+ * iOS GESTURE BLOCK
  *************************************************/
 document.addEventListener("gesturestart", e => e.preventDefault());
 document.addEventListener("gesturechange", e => e.preventDefault());
