@@ -18,7 +18,7 @@ let currentIndex = 0;
 let baseImage = null;
 
 /*************************************************
- * DRAWING LAYER (COLORS ONLY)
+ * OFFSCREEN DRAW LAYER (COLORS ONLY)
  *************************************************/
 const drawLayer = document.createElement("canvas");
 const drawCtx = drawLayer.getContext("2d");
@@ -35,7 +35,7 @@ function resizeCanvas() {
   drawLayer.width = rect.width;
   drawLayer.height = rect.height;
 
-  redraw();
+  redraw(); // always repaint after resize
 }
 window.addEventListener("resize", resizeCanvas);
 
@@ -62,12 +62,14 @@ function renderSidebar() {
 
 function loadImage(index) {
   currentIndex = index;
+
   const img = new Image();
   img.src = `images/${images[index]}`;
+
   img.onload = () => {
     baseImage = img;
-    clearDrawing();
-    redraw();
+    clearDrawing();   // remove old colors
+    redraw();         // 🔥 force paint immediately
     highlightActive();
   };
 }
@@ -79,25 +81,23 @@ function highlightActive() {
 }
 
 /*************************************************
- * DRAW STACK (🔥 FIXED ORDER)
+ * RENDER STACK (STABLE)
  *************************************************/
 function redraw() {
   if (!baseImage) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 1️⃣ Draw sketch FIRST
-  ctx.globalCompositeOperation = "source-over";
+  // 1️⃣ Draw sketch first
   ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
 
-  // 2️⃣ Draw colors using multiply (keeps lines visible)
-  ctx.globalCompositeOperation = "multiply";
+  // 2️⃣ Draw colors on top
   ctx.drawImage(drawLayer, 0, 0);
-
-  // 3️⃣ Reset
-  ctx.globalCompositeOperation = "source-over";
 }
 
+function clearDrawing() {
+  drawCtx.clearRect(0, 0, drawLayer.width, drawLayer.height);
+}
 
 /*************************************************
  * COLOR SELECTION
@@ -112,6 +112,7 @@ colorButtons.forEach(btn => {
     btn.classList.add("active");
   };
 });
+
 if (colorButtons.length) {
   colorButtons[0].classList.add("active");
   color = colorButtons[0].dataset.color;
@@ -120,7 +121,10 @@ if (colorButtons.length) {
 /*************************************************
  * ERASER & RESET
  *************************************************/
-document.getElementById("eraser").onclick = () => mode = "erase";
+document.getElementById("eraser").onclick = () => {
+  mode = "erase";
+};
+
 document.getElementById("undo").onclick = () => {
   clearDrawing();
   redraw();
@@ -131,11 +135,14 @@ document.getElementById("undo").onclick = () => {
  *************************************************/
 function getPos(e) {
   const r = canvas.getBoundingClientRect();
-  return { x: e.clientX - r.left, y: e.clientY - r.top };
+  return {
+    x: e.clientX - r.left,
+    y: e.clientY - r.top
+  };
 }
 
 /*************************************************
- * DRAWING – SINGLE TOUCH ONLY
+ * DRAWING (SINGLE TOUCH ONLY)
  *************************************************/
 canvas.addEventListener("pointerdown", e => {
   if (!e.isPrimary || activePointerId !== null) return;
@@ -158,11 +165,13 @@ canvas.addEventListener("pointermove", e => {
 
   if (mode === "erase") {
     drawCtx.globalCompositeOperation = "destination-out";
+    drawCtx.globalAlpha = 1;
     drawCtx.lineWidth = 30;
   } else {
     drawCtx.globalCompositeOperation = "source-over";
+    drawCtx.globalAlpha = 0.55; // keeps sketch visible
     drawCtx.strokeStyle = color;
-    drawCtx.lineWidth = 16; // crayon-like
+    drawCtx.lineWidth = 16;
   }
 
   drawCtx.lineCap = "round";
@@ -179,14 +188,19 @@ canvas.addEventListener("pointerleave", stopDraw);
 
 function stopDraw(e) {
   if (e.pointerId !== activePointerId) return;
+
   drawing = false;
   activePointerId = null;
+  drawCtx.globalAlpha = 1;
   drawCtx.globalCompositeOperation = "source-over";
-  try { canvas.releasePointerCapture(e.pointerId); } catch {}
+
+  try {
+    canvas.releasePointerCapture(e.pointerId);
+  } catch {}
 }
 
 /*************************************************
- * SAFE GALLERY (UNCHANGED, SAFE)
+ * SAFE GALLERY (OPTIONAL)
  *************************************************/
 window.addEventListener("DOMContentLoaded", () => {
   const galleryBtn = document.getElementById("galleryBtn");
@@ -224,7 +238,9 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  closeGallery.onclick = () => galleryOverlay.hidden = true;
+  closeGallery.onclick = () => {
+    galleryOverlay.hidden = true;
+  };
 });
 
 /*************************************************
