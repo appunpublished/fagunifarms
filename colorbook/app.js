@@ -173,6 +173,9 @@ canvas.addEventListener("pointermove", e => {
   } else {
     drawCtx.globalCompositeOperation = "source-over";
     drawCtx.strokeStyle = color;
+    drawCtx.lineWidth = 10;
+
+    drawCtx.globalAlpha = 0.6;
     drawCtx.lineWidth = 14;
   }
 
@@ -193,12 +196,19 @@ function stopDraw(e) {
 
   drawing = false;
   activePointerId = null;
+  drawCtx.globalAlpha = 1;
   drawCtx.globalCompositeOperation = "source-over";
+  
+
 
   try {
     canvas.releasePointerCapture(e.pointerId);
   } catch {}
 }
+
+
+
+
 
 
 /*************************************************
@@ -252,6 +262,9 @@ window.addEventListener("DOMContentLoaded", () => {
     galleryOverlay.hidden = true;
   });
 });
+
+
+
 
 
 
