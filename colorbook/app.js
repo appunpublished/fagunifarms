@@ -16,8 +16,38 @@ let color = "#FF3B30";
 let images = [];
 let currentIndex = 0;
 
+let labels = {};
+let currentFilename = null;   // ⭐ FIX: track current sketch filename
+
 let sourceImage = null;   // original JPG
 let lineMask = null;      // extracted line art
+
+/*************************************************
+ * LOAD LABELS
+ *************************************************/
+fetch("labels.json")
+  .then(r => r.json())
+  .then(data => {
+    labels = data;
+  });
+
+/*************************************************
+ * SPEAK FUNCTION (MANUAL ONLY)
+ *************************************************/
+function speakCurrentSketch() {
+  if (!currentFilename) return;
+  if (!labels[currentFilename]) return;
+
+  // Stop any ongoing speech
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(labels[currentFilename]);
+  utterance.lang = "en-US";
+  utterance.rate = 0.8;   // kid-friendly
+  utterance.pitch = 1.1;
+
+  window.speechSynthesis.speak(utterance);
+}
 
 /*************************************************
  * COLOR LAYER
@@ -67,6 +97,7 @@ function renderSidebar() {
  *************************************************/
 function loadImage(index) {
   currentIndex = index;
+  currentFilename = images[index]; // ⭐ FIX
 
   const img = new Image();
   img.src = `images/${images[index]}`;
@@ -81,7 +112,7 @@ function loadImage(index) {
 }
 
 /*************************************************
- * LINE EXTRACTION (KEY PART)
+ * LINE EXTRACTION (JPG SAFE)
  *************************************************/
 function extractLineMask(img) {
   const off = document.createElement("canvas");
@@ -95,21 +126,12 @@ function extractLineMask(img) {
   const d = data.data;
 
   for (let i = 0; i < d.length; i += 4) {
-    const r = d[i];
-    const g = d[i + 1];
-    const b = d[i + 2];
-
-    // brightness
-    const brightness = (r + g + b) / 3;
+    const brightness = (d[i] + d[i + 1] + d[i + 2]) / 3;
 
     if (brightness < 100) {
-      // keep dark lines
-      d[i] = 0;
-      d[i + 1] = 0;
-      d[i + 2] = 0;
+      d[i] = d[i + 1] = d[i + 2] = 0;
       d[i + 3] = 255;
     } else {
-      // make background transparent
       d[i + 3] = 0;
     }
   }
@@ -119,23 +141,16 @@ function extractLineMask(img) {
 }
 
 /*************************************************
- * RENDER STACK (PERFECT JPG MODEL)
+ * RENDER STACK
  *************************************************/
 function redraw() {
   if (!sourceImage || !lineMask) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 1️⃣ Draw full original image (keeps borders & colors)
   ctx.drawImage(sourceImage, 0, 0, canvas.width, canvas.height);
-
-  // 2️⃣ Draw child's coloring
   ctx.drawImage(colorLayer, 0, 0);
-
-  // 3️⃣ Draw extracted black lines on top
   ctx.drawImage(lineMask, 0, 0);
 }
-
 
 function clearColors() {
   colorCtx.clearRect(0, 0, colorLayer.width, colorLayer.height);
@@ -158,8 +173,11 @@ colorButtons.forEach(btn => {
     color = btn.dataset.color;
     colorButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
+
+    if ("vibrate" in navigator) navigator.vibrate(30);
   };
 });
+
 if (colorButtons.length) {
   colorButtons[0].classList.add("active");
   color = colorButtons[0].dataset.color;
@@ -172,6 +190,14 @@ document.getElementById("eraser").onclick = () => mode = "erase";
 document.getElementById("undo").onclick = () => {
   clearColors();
   redraw();
+};
+
+/*************************************************
+ * SPEAK BUTTON
+ *************************************************/
+document.getElementById("speakBtn").onclick = () => {
+  speakCurrentSketch();
+  if ("vibrate" in navigator) navigator.vibrate(40);
 };
 
 /*************************************************
@@ -233,10 +259,8 @@ function stopDraw(e) {
   try { canvas.releasePointerCapture(e.pointerId); } catch {}
 }
 
-
-
 /*************************************************
- * GALLERY (LOAD FROM 100images)
+ * GALLERY (100images)
  *************************************************/
 window.addEventListener("DOMContentLoaded", () => {
   const galleryBtn = document.getElementById("galleryBtn");
@@ -244,20 +268,14 @@ window.addEventListener("DOMContentLoaded", () => {
   const galleryGrid = document.getElementById("galleryGrid");
   const closeGallery = document.getElementById("closeGallery");
 
-  // If gallery UI not present, safely do nothing
-  if (!galleryBtn || !galleryOverlay || !galleryGrid || !closeGallery) {
-    console.warn("Gallery UI not found – skipping gallery");
-    return;
-  }
+  if (!galleryBtn || !galleryOverlay || !galleryGrid || !closeGallery) return;
 
-  galleryBtn.addEventListener("click", async () => {
+  galleryBtn.onclick = async () => {
     galleryGrid.innerHTML = "";
     galleryOverlay.hidden = false;
 
     try {
       const res = await fetch("100images/index.json");
-      if (!res.ok) throw new Error("Gallery index.json missing");
-
       const files = await res.json();
 
       files.forEach(file => {
@@ -270,6 +288,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
           img.onload = () => {
             sourceImage = img;
+            currentFilename = file; // ⭐ FIX
             extractLineMask(img);
             clearColors();
             redraw();
@@ -280,19 +299,16 @@ window.addEventListener("DOMContentLoaded", () => {
         galleryGrid.appendChild(thumb);
       });
 
-    } catch (err) {
-      console.error("Gallery load failed:", err);
+    } catch {
       galleryOverlay.hidden = true;
       alert("Gallery images not available");
     }
-  });
+  };
 
-  closeGallery.addEventListener("click", () => {
+  closeGallery.onclick = () => {
     galleryOverlay.hidden = true;
-  });
+  };
 });
-
-
 
 /*************************************************
  * iOS GESTURE BLOCK
