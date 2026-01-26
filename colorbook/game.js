@@ -33,12 +33,7 @@ loadSprite("fuel", "assets/items/fuel_can.png");
 /*************************************************
  * GAME STATES
  *************************************************/
-const STATE = {
-  PLAY: "play",
-  WIN: "win",
-  LOSE: "lose"
-};
-
+const STATE = { PLAY: "play", WIN: "win", LOSE: "lose" };
 let gameState = STATE.PLAY;
 let loseReason = "";
 
@@ -47,26 +42,37 @@ let loseReason = "";
  *************************************************/
 let obstacles = [];
 let fuels = [];
-
 let speed = 3;
 let fuel = 100;
 let timeAlive = 0;
 
 /*************************************************
- * CAR
+ * PLAYER CAR (VISUAL vs HITBOX)
  *************************************************/
 const car = {
   x: canvas.width / 2,
   y: canvas.height - 180,
+
+  // VISUAL sprite size
   w: 70,
   h: 120,
+
+  // HITBOX size (tight)
+  hitW: 36,
+  hitH: 80,
+
+  // HITBOX OFFSET (THIS FIXES PADDING)
+  hitOffsetX: 0,
+  hitOffsetY: 30, // pushes hitbox DOWN into actual car body
+
   tilt: 0
 };
+
 
 let targetX = car.x;
 
 /*************************************************
- * INPUT (BULLETPROOF)
+ * INPUT
  *************************************************/
 canvas.addEventListener("pointermove", e => {
   if (gameState !== STATE.PLAY) return;
@@ -75,22 +81,36 @@ canvas.addEventListener("pointermove", e => {
 
 canvas.addEventListener("pointerdown", e => {
   e.preventDefault();
-  if (gameState !== STATE.PLAY) {
-    resetGame();
-  }
+  if (gameState !== STATE.PLAY) resetGame();
 });
 
 /*************************************************
- * SPAWNERS (STATE-AWARE)
+ * HITBOX HELPER
+ *************************************************/
+function carHitbox() {
+  const left =
+    car.x - car.hitW / 2 + car.hitOffsetX;
+
+  const top =
+    car.y + car.hitOffsetY;
+
+  return {
+    left,
+    right: left + car.hitW,
+    top,
+    bottom: top + car.hitH
+  };
+}
+
+
+/*************************************************
+ * SPAWNERS
  *************************************************/
 function spawnObstacle() {
   if (gameState !== STATE.PLAY) return;
 
   const r = Math.random();
-  let type = "car";
-
-  if (r < 0.33) type = "bike";
-  else if (r < 0.66) type = "truck";
+  let type = r < 0.33 ? "bike" : r < 0.66 ? "truck" : "car";
 
   const sizes = {
     bike: { w: 40, h: 90 },
@@ -122,7 +142,7 @@ setInterval(spawnObstacle, 1500);
 setInterval(spawnFuel, 4200);
 
 /*************************************************
- * DRAW BACKGROUND
+ * BACKGROUND
  *************************************************/
 function drawBackground() {
   ctx.fillStyle = "#87CEEB";
@@ -162,7 +182,6 @@ function drawHUD() {
   const fc = fuel > 40 ? "#4CAF50" : fuel > 20 ? "#FFC107" : "#F44336";
   ctx.fillStyle = fc;
   ctx.fillRect(canvas.width - 160, 18, fuel * 1.3, 24);
-
   ctx.strokeStyle = "#fff";
   ctx.strokeRect(canvas.width - 160, 18, 130, 24);
 }
@@ -192,6 +211,21 @@ function drawCar() {
   ctx.restore();
 }
 
+
+/************************************************* * DEBUG HITBOX
+ *************************************************/
+function drawHitboxDebug() {
+  const hb = carHitbox();
+  ctx.strokeStyle = "red";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(
+    hb.left,
+    hb.top,
+    hb.right - hb.left,
+    hb.bottom - hb.top
+  );
+}
+
 /*************************************************
  * MAIN LOOP (NEVER STOPS)
  *************************************************/
@@ -210,9 +244,7 @@ function update() {
       loseReason = "fuel";
     }
 
-    if (timeAlive >= 60) {
-      gameState = STATE.WIN;
-    }
+    if (timeAlive >= 60) gameState = STATE.WIN;
 
     const dx = targetX - car.x;
     car.x += dx * 0.1;
@@ -220,6 +252,10 @@ function update() {
   }
 
   drawCar();
+  //drawHitboxDebug();
+
+
+  const hb = carHitbox();
 
   obstacles.forEach(o => {
     if (gameState === STATE.PLAY) o.y += speed;
@@ -231,17 +267,14 @@ function update() {
 
     if (img && img.complete) {
       ctx.drawImage(img, o.x, o.y, o.w, o.h);
-    } else {
-      ctx.fillStyle = "#2196F3";
-      ctx.fillRect(o.x, o.y, o.w, o.h);
     }
 
     if (
       gameState === STATE.PLAY &&
-      o.x < car.x + car.w / 2 &&
-      o.x + o.w > car.x - car.w / 2 &&
-      o.y < car.y + car.h &&
-      o.y + o.h > car.y
+      o.x < hb.right &&
+      o.x + o.w > hb.left &&
+      o.y < hb.bottom &&
+      o.y + o.h > hb.top
     ) {
       gameState = STATE.LOSE;
       loseReason = "crash";
@@ -259,17 +292,14 @@ function update() {
 
     if (img && img.complete) {
       ctx.drawImage(img, f.x, fy, f.w, f.h);
-    } else {
-      ctx.fillStyle = "#FFD600";
-      ctx.fillRect(f.x, fy, f.w, f.h);
     }
 
     if (
       gameState === STATE.PLAY &&
-      f.x < car.x + car.w / 2 &&
-      f.x + f.w > car.x - car.w / 2 &&
-      f.y < car.y + car.h &&
-      f.y + f.h > car.y
+      f.x < hb.right &&
+      f.x + f.w > hb.left &&
+      f.y < hb.bottom &&
+      f.y + f.h > hb.top
     ) {
       fuel = Math.min(100, fuel + 40);
       f.collected = true;
@@ -280,7 +310,6 @@ function update() {
   fuels = fuels.filter(f => f.y < canvas.height + 200 && !f.collected);
 
   if (gameState === STATE.PLAY) speed += 0.0005;
-
   if (gameState !== STATE.PLAY) drawEndScreen();
 
   requestAnimationFrame(update);
