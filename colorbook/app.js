@@ -200,6 +200,15 @@ document.getElementById("speakBtn").onclick = () => {
   if ("vibrate" in navigator) navigator.vibrate(40);
 };
 
+
+/*************************************************
+ * GAME BUTTON
+ *************************************************/
+document.getElementById("gameBtn").addEventListener("click", () => {
+  window.location.href = "game.html";
+});
+
+
 /*************************************************
  * POINTER UTILS
  *************************************************/
