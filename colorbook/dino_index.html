@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dino World Adventure</title>
+<link rel="stylesheet" href="styles.css" />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- SECTION 1 -->
+<section class="panel fire hidden">
+  <h1>Long, long ago…</h1>
+  <h2>The Earth was HOT! 🔥</h2>
+  <div class="lava"></div>
+</section>
+
+<!-- SECTION 2 -->
+<section class="panel forest hidden">
+  <h1>The First Dinosaurs</h1>
+  <h2>Small and FAST!</h2>
+
+  <!-- Small Dino SVG -->
+  <svg class="dino bounce" viewBox="0 0 200 150">
+    <ellipse cx="100" cy="100" rx="60" ry="30" fill="#4CAF50"/>
+    <circle cx="150" cy="80" r="20" fill="#4CAF50"/>
+    <circle cx="155" cy="75" r="4" fill="#000"/>
+    <rect x="70" y="110" width="20" height="30" fill="#4CAF50"/>
+    <rect x="110" y="110" width="20" height="30" fill="#4CAF50"/>
+  </svg>
+</section>
+
+<!-- SECTION 3 -->
+<section class="panel jungle hidden">
+  <h1>Meet Brachiosaurus</h1>
+  <h2>He had a LONG neck!</h2>
+
+  <!-- Brachiosaurus SVG -->
+  <svg class="dino sway" viewBox="0 0 300 200">
+    <ellipse cx="150" cy="130" rx="90" ry="40" fill="#66bb6a"/>
+    <rect x="190" y="40" width="20" height="100" fill="#66bb6a"/>
+    <circle cx="200" cy="30" r="25" fill="#66bb6a"/>
+    <circle cx="210" cy="25" r="5" fill="#000"/>
+    <rect x="100" y="150" width="20" height="50" fill="#66bb6a"/>
+    <rect x="160" y="150" width="20" height="50" fill="#66bb6a"/>
+  </svg>
+</section>
+
+<!-- SECTION 4 -->
+<section class="panel trex hidden">
+  <h1>Here comes T-Rex!</h1>
+  <h2>BIG teeth. BIG roar!</h2>
+
+  <!-- T-Rex SVG -->
+  <svg class="dino pulse" viewBox="0 0 250 200">
+    <ellipse cx="120" cy="120" rx="70" ry="40" fill="#e53935"/>
+    <circle cx="170" cy="90" r="30" fill="#e53935"/>
+    <polygon points="170,95 185,110 155,110" fill="#fff"/>
+    <circle cx="180" cy="85" r="6" fill="#000"/>
+    <rect x="90" y="150" width="20" height="40" fill="#e53935"/>
+  </svg>
+
+  <button onclick="playRoar()">Tap to ROAR!</button>
+</section>
+
+<!-- SECTION 5 -->
+<section class="panel space hidden">
+  <h1>One day…</h1>
+  <h2>BOOM! ☄️</h2>
+
+  <!-- Asteroid -->
+  <div class="asteroid"></div>
+</section>
+
+<!-- SECTION 6 -->
+<section class="panel sky hidden">
+  <h1>Are dinosaurs gone?</h1>
+  <h2>Nope!</h2>
+
+  <!-- Bird SVG -->
+  <svg class="bird fly" viewBox="0 0 200 100">
+    <path d="M20 60 Q 60 20, 100 60 T 180 60" stroke="#000" stroke-width="4" fill="none"/>
+  </svg>
+
+  <p>Birds are tiny dinosaurs! 🐦</p>
+</section>
+
+<audio id="roarSound" src="https://www.soundjay.com/nature/lion-roar-01.mp3"></audio>
+
+<script src="script.js"></script>
+</body>
+</html>

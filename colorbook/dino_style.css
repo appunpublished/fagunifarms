@@ -1,0 +1,120 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Fredoka', sans-serif;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+.panel {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  transition: all 1s ease;
+}
+
+.hidden {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+h1 { font-size: 3rem; margin-bottom: 15px; }
+h2 { font-size: 2rem; margin-bottom: 20px; }
+
+button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 30px;
+  background: #ff1744;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+button:hover { background: #d50000; }
+
+/* Backgrounds */
+.fire { background: linear-gradient(#ff9966,#ff5e62); color: white; }
+.forest { background: linear-gradient(#56ab2f,#a8e063); color: white; }
+.jungle { background: linear-gradient(#43cea2,#185a9d); color: white; }
+.trex { background: linear-gradient(#ff512f,#dd2476); color: white; }
+.space { background: linear-gradient(#000428,#004e92); color: white; }
+.sky { background: linear-gradient(#89f7fe,#66a6ff); color: black; }
+
+/* Animations */
+
+.bounce {
+  animation: bounce 2s infinite;
+}
+@keyframes bounce {
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-20px);}
+}
+
+.sway {
+  animation: sway 4s infinite ease-in-out;
+}
+@keyframes sway {
+  0%,100%{transform:rotate(0deg);}
+  50%{transform:rotate(2deg);}
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+}
+
+.asteroid {
+  width: 60px;
+  height: 60px;
+  background: gray;
+  border-radius: 50%;
+  animation: fall 3s infinite linear;
+}
+@keyframes fall {
+  0% { transform: translateY(-200px) translateX(-100px); }
+  100% { transform: translateY(200px) translateX(100px); }
+}
+
+.fly {
+  animation: fly 4s infinite ease-in-out;
+}
+@keyframes fly {
+  0%{transform:translateX(-50px);}
+  50%{transform:translateX(50px);}
+  100%{transform:translateX(-50px);}
+}
+
+/* Lava */
+.lava {
+  width: 200px;
+  height: 100px;
+  background: red;
+  border-radius: 50%;
+  animation: lavaMove 2s infinite alternate;
+}
+@keyframes lavaMove {
+  0%{transform:scale(1);}
+  100%{transform:scale(1.2);}
+}
+
+@media(max-width:768px){
+  h1{font-size:2rem;}
+  h2{font-size:1.4rem;}
+}
