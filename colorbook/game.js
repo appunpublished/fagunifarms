@@ -15,7 +15,6 @@ window.addEventListener("resize", resize);
  * SPRITES
  *************************************************/
 const sprites = {};
-
 function loadSprite(name, src) {
   const img = new Image();
   img.src = src;
@@ -40,48 +39,42 @@ engineSound.volume = 0.3;
 crashSound.volume = 0.6;
 fuelSound.volume = 0.5;
 
-function playCrashSound() {
-  crashSound.currentTime = 0;
-  crashSound.play();
-  if (navigator.vibrate) navigator.vibrate(200);
-}
-
-function playFuelSound() {
-  fuelSound.currentTime = 0;
-  fuelSound.play();
-}
-
 /*************************************************
- * GAME STATES
+ * GAME STATE
  *************************************************/
 const STATE = { PLAY: "play", WIN: "win", LOSE: "lose" };
 let gameState = STATE.PLAY;
 let loseReason = "";
 
 /*************************************************
- * GAME DATA
+ * GAME VARIABLES
  *************************************************/
 let obstacles = [];
 let fuels = [];
+let particles = [];
+
 let speed = 3;
 let fuel = 100;
 let timeAlive = 0;
 
+let score = 0;
+let combo = 1;
+let nearMissCooldown = 0;
+
+let shakeTime = 0;
+let shakeIntensity = 0;
+
 /*************************************************
- * PLAYER CAR
+ * PLAYER
  *************************************************/
 const car = {
   x: canvas.width / 2,
   y: canvas.height - 180,
-
   w: 70,
   h: 120,
-
   hitW: 36,
   hitH: 80,
-  hitOffsetX: 0,
   hitOffsetY: 30,
-
   tilt: 0
 };
 
@@ -97,22 +90,16 @@ canvas.addEventListener("pointermove", e => {
 
 canvas.addEventListener("pointerdown", e => {
   e.preventDefault();
-
-  // Start engine on first interaction
-  engineSound.play().catch(() => {});
-
-  if (gameState !== STATE.PLAY) {
-    resetGame();
-  }
+  engineSound.play().catch(()=>{});
+  if (gameState !== STATE.PLAY) resetGame();
 });
 
 /*************************************************
- * HITBOX HELPERS
+ * HELPERS
  *************************************************/
 function carHitbox() {
-  const left = car.x - car.hitW / 2 + car.hitOffsetX;
+  const left = car.x - car.hitW / 2;
   const top = car.y + car.hitOffsetY;
-
   return {
     left,
     right: left + car.hitW,
@@ -121,14 +108,32 @@ function carHitbox() {
   };
 }
 
+function startShake(intensity, duration) {
+  shakeIntensity = intensity;
+  shakeTime = duration;
+}
+
+function createExplosion(x, y) {
+  for (let i = 0; i < 30; i++) {
+    particles.push({
+      x,
+      y,
+      vx: (Math.random() - 0.5) * 8,
+      vy: (Math.random() - 0.5) * 8,
+      life: 30,
+      size: Math.random() * 6 + 2
+    });
+  }
+}
+
 /*************************************************
  * SPAWNERS
  *************************************************/
 function spawnObstacle() {
   if (gameState !== STATE.PLAY) return;
 
-  const r = Math.random();
-  let type = r < 0.33 ? "bike" : r < 0.66 ? "truck" : "car";
+  const types = ["bike", "car", "truck"];
+  const type = types[Math.floor(Math.random() * 3)];
 
   const sizes = {
     bike: { w: 40, h: 90 },
@@ -143,8 +148,6 @@ function spawnObstacle() {
     x: Math.random() * (canvas.width - 160) + 80,
     y: -200,
     ...base,
-
-    // Tight obstacle hitbox
     hitW: base.w * 0.7,
     hitH: base.h * 0.75
   });
@@ -163,10 +166,10 @@ function spawnFuel() {
 }
 
 setInterval(spawnObstacle, 1500);
-setInterval(spawnFuel, 4200);
+setInterval(spawnFuel, 4000);
 
 /*************************************************
- * BACKGROUND
+ * DRAWING
  *************************************************/
 function drawBackground() {
   ctx.fillStyle = "#87CEEB";
@@ -189,47 +192,22 @@ function drawBackground() {
   ctx.setLineDash([]);
 }
 
-/*************************************************
- * HUD
- *************************************************/
 function drawHUD() {
   ctx.fillStyle = "rgba(0,0,0,0.4)";
   ctx.fillRect(0, 0, canvas.width, 60);
 
   ctx.fillStyle = "#fff";
-  ctx.font = "22px system-ui";
-  ctx.fillText(`⏱️ ${Math.floor(timeAlive)}s`, 20, 38);
+  ctx.font = "20px system-ui";
+  ctx.fillText(`⏱ ${Math.floor(timeAlive)}s`, 20, 35);
+  ctx.fillText(`⭐ ${Math.floor(score)}`, canvas.width / 2 - 40, 35);
+  ctx.fillText(`🔥 x${combo}`, canvas.width / 2 + 50, 35);
 
   ctx.fillStyle = "#333";
-  ctx.fillRect(canvas.width - 160, 18, 130, 24);
+  ctx.fillRect(canvas.width - 160, 18, 130, 20);
 
   const fc = fuel > 40 ? "#4CAF50" : fuel > 20 ? "#FFC107" : "#F44336";
   ctx.fillStyle = fc;
-  ctx.fillRect(canvas.width - 160, 18, fuel * 1.3, 24);
-  ctx.strokeStyle = "#fff";
-  ctx.strokeRect(canvas.width - 160, 18, 130, 24);
-}
-
-/*************************************************
- * DRAW CAR
- *************************************************/
-function drawCar() {
-  const img = sprites.player;
-
-  ctx.save();
-  ctx.translate(car.x, car.y);
-  ctx.rotate(car.tilt);
-
-  ctx.fillStyle = "rgba(0,0,0,0.3)";
-  ctx.beginPath();
-  ctx.ellipse(0, car.h - 10, car.w / 2, 10, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  if (img && img.complete) {
-    ctx.drawImage(img, -car.w / 2, 0, car.w, car.h);
-  }
-
-  ctx.restore();
+  ctx.fillRect(canvas.width - 160, 18, fuel * 1.3, 20);
 }
 
 /*************************************************
@@ -237,6 +215,14 @@ function drawCar() {
  *************************************************/
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+
+  if (shakeTime > 0) {
+    const dx = (Math.random() - 0.5) * shakeIntensity;
+    const dy = (Math.random() - 0.5) * shakeIntensity;
+    ctx.translate(dx, dy);
+    shakeTime--;
+  }
 
   drawBackground();
   drawHUD();
@@ -244,6 +230,9 @@ function update() {
   if (gameState === STATE.PLAY) {
     timeAlive += 1 / 60;
     fuel -= speed * 0.03;
+    score += combo * 0.5;
+
+    if (nearMissCooldown > 0) nearMissCooldown--;
 
     if (fuel <= 0) {
       gameState = STATE.LOSE;
@@ -251,21 +240,40 @@ function update() {
       engineSound.pause();
     }
 
-    if (timeAlive >= 60) {
-      gameState = STATE.WIN;
-      engineSound.pause();
-    }
-
     const dx = targetX - car.x;
     car.x += dx * 0.1;
     car.tilt = dx * 0.002;
 
-    // Engine pitch increases slightly with speed
+    speed += 0.0008;
     engineSound.playbackRate = 1 + speed * 0.02;
   }
 
   drawCar();
+  handleObstacles();
+  handleFuel();
+  handleParticles();
+  drawSpeedLines();
 
+  if (gameState !== STATE.PLAY) drawEndScreen();
+
+  ctx.restore();
+  requestAnimationFrame(update);
+}
+
+/*************************************************
+ * SUB SYSTEMS
+ *************************************************/
+function drawCar() {
+  const img = sprites.player;
+  ctx.save();
+  ctx.translate(car.x, car.y);
+  ctx.rotate(car.tilt);
+  if (img && img.complete)
+    ctx.drawImage(img, -car.w / 2, 0, car.w, car.h);
+  ctx.restore();
+}
+
+function handleObstacles() {
   const hb = carHitbox();
 
   obstacles.forEach(o => {
@@ -276,11 +284,9 @@ function update() {
       o.type === "truck" ? sprites.obTruck :
       sprites.obCar;
 
-    if (img && img.complete) {
+    if (img && img.complete)
       ctx.drawImage(img, o.x, o.y, o.w, o.h);
-    }
 
-    // Accurate collision using obstacle hitbox
     const obLeft = o.x + (o.w - o.hitW) / 2;
     const obTop = o.y + (o.h - o.hitH) / 2;
     const obRight = obLeft + o.hitW;
@@ -296,9 +302,30 @@ function update() {
       gameState = STATE.LOSE;
       loseReason = "crash";
       engineSound.pause();
-      playCrashSound();
+      crashSound.play();
+      startShake(15, 25);
+      createExplosion(car.x, car.y);
+    }
+
+    // Near miss bonus
+    if (
+      gameState === STATE.PLAY &&
+      nearMissCooldown <= 0 &&
+      o.y > hb.bottom - 20 &&
+      o.y < hb.bottom + 20 &&
+      Math.abs(o.x - car.x) < 80
+    ) {
+      score += 50;
+      combo++;
+      nearMissCooldown = 60;
     }
   });
+
+  obstacles = obstacles.filter(o => o.y < canvas.height + 200);
+}
+
+function handleFuel() {
+  const hb = carHitbox();
 
   fuels.forEach(f => {
     if (gameState === STATE.PLAY) {
@@ -307,11 +334,8 @@ function update() {
     }
 
     const fy = f.y + Math.sin(f.bounce) * 6;
-    const img = sprites.fuel;
-
-    if (img && img.complete) {
-      ctx.drawImage(img, f.x, fy, f.w, f.h);
-    }
+    if (sprites.fuel.complete)
+      ctx.drawImage(sprites.fuel, f.x, fy, f.w, f.h);
 
     if (
       gameState === STATE.PLAY &&
@@ -322,22 +346,42 @@ function update() {
     ) {
       fuel = Math.min(100, fuel + 40);
       f.collected = true;
-      playFuelSound();
+      fuelSound.play();
     }
   });
 
-  obstacles = obstacles.filter(o => o.y < canvas.height + 200);
-  fuels = fuels.filter(f => f.y < canvas.height + 200 && !f.collected);
-
-  if (gameState === STATE.PLAY) speed += 0.0005;
-  if (gameState !== STATE.PLAY) drawEndScreen();
-
-  requestAnimationFrame(update);
+  fuels = fuels.filter(f => !f.collected && f.y < canvas.height + 200);
 }
 
-/*************************************************
- * END SCREEN
- *************************************************/
+function handleParticles() {
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+
+    ctx.fillStyle = `rgba(255, ${Math.random()*150}, 0, ${p.life/30})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  particles = particles.filter(p => p.life > 0);
+}
+
+function drawSpeedLines() {
+  if (gameState === STATE.PLAY && speed > 5) {
+    for (let i = 0; i < 5; i++) {
+      ctx.strokeStyle = "rgba(255,255,255,0.3)";
+      ctx.beginPath();
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, y + 20);
+      ctx.stroke();
+    }
+  }
+}
+
 function drawEndScreen() {
   ctx.fillStyle = "rgba(0,0,0,0.6)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -347,33 +391,29 @@ function drawEndScreen() {
   ctx.textAlign = "center";
 
   const msg =
-    gameState === STATE.WIN
-      ? "🏁 YOU WIN!"
-      : loseReason === "fuel"
-      ? "⛽ OUT OF FUEL"
-      : "💥 CRASHED";
+    loseReason === "fuel" ? "⛽ OUT OF FUEL" :
+    loseReason === "crash" ? "💥 CRASHED" :
+    "🏁 YOU WIN!";
 
   ctx.fillText(msg, canvas.width / 2, canvas.height / 2 - 20);
   ctx.font = "20px system-ui";
   ctx.fillText("Tap to play again", canvas.width / 2, canvas.height / 2 + 30);
 }
 
-/*************************************************
- * RESET
- *************************************************/
 function resetGame() {
   obstacles = [];
   fuels = [];
+  particles = [];
   speed = 3;
   fuel = 100;
   timeAlive = 0;
+  score = 0;
+  combo = 1;
+  nearMissCooldown = 0;
   loseReason = "";
   gameState = STATE.PLAY;
   engineSound.currentTime = 0;
-  engineSound.play().catch(() => {});
+  engineSound.play().catch(()=>{});
 }
 
-/*************************************************
- * START
- *************************************************/
 update();
