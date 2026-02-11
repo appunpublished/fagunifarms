@@ -19,8 +19,6 @@ const sprites = {};
 function loadSprite(name, src) {
   const img = new Image();
   img.src = src;
-  img.onload = () => console.log("Loaded:", src);
-  img.onerror = () => console.error("FAILED:", src);
   sprites[name] = img;
 }
 
@@ -29,6 +27,29 @@ loadSprite("obCar", "assets/obstacles/obstacle_car.png");
 loadSprite("obBike", "assets/obstacles/obstacle_bike.png");
 loadSprite("obTruck", "assets/obstacles/obstacle_truck.png");
 loadSprite("fuel", "assets/items/fuel_can.png");
+
+/*************************************************
+ * AUDIO
+ *************************************************/
+const engineSound = new Audio("assets/audio/engine.mp3");
+const crashSound = new Audio("assets/audio/crash.mp3");
+const fuelSound = new Audio("assets/audio/fuel.mp3");
+
+engineSound.loop = true;
+engineSound.volume = 0.3;
+crashSound.volume = 0.6;
+fuelSound.volume = 0.5;
+
+function playCrashSound() {
+  crashSound.currentTime = 0;
+  crashSound.play();
+  if (navigator.vibrate) navigator.vibrate(200);
+}
+
+function playFuelSound() {
+  fuelSound.currentTime = 0;
+  fuelSound.play();
+}
 
 /*************************************************
  * GAME STATES
@@ -47,27 +68,22 @@ let fuel = 100;
 let timeAlive = 0;
 
 /*************************************************
- * PLAYER CAR (VISUAL vs HITBOX)
+ * PLAYER CAR
  *************************************************/
 const car = {
   x: canvas.width / 2,
   y: canvas.height - 180,
 
-  // VISUAL sprite size
   w: 70,
   h: 120,
 
-  // HITBOX size (tight)
   hitW: 36,
   hitH: 80,
-
-  // HITBOX OFFSET (THIS FIXES PADDING)
   hitOffsetX: 0,
-  hitOffsetY: 30, // pushes hitbox DOWN into actual car body
+  hitOffsetY: 30,
 
   tilt: 0
 };
-
 
 let targetX = car.x;
 
@@ -81,18 +97,21 @@ canvas.addEventListener("pointermove", e => {
 
 canvas.addEventListener("pointerdown", e => {
   e.preventDefault();
-  if (gameState !== STATE.PLAY) resetGame();
+
+  // Start engine on first interaction
+  engineSound.play().catch(() => {});
+
+  if (gameState !== STATE.PLAY) {
+    resetGame();
+  }
 });
 
 /*************************************************
- * HITBOX HELPER
+ * HITBOX HELPERS
  *************************************************/
 function carHitbox() {
-  const left =
-    car.x - car.hitW / 2 + car.hitOffsetX;
-
-  const top =
-    car.y + car.hitOffsetY;
+  const left = car.x - car.hitW / 2 + car.hitOffsetX;
+  const top = car.y + car.hitOffsetY;
 
   return {
     left,
@@ -101,7 +120,6 @@ function carHitbox() {
     bottom: top + car.hitH
   };
 }
-
 
 /*************************************************
  * SPAWNERS
@@ -118,11 +136,17 @@ function spawnObstacle() {
     truck: { w: 100, h: 160 }
   };
 
+  const base = sizes[type];
+
   obstacles.push({
     type,
     x: Math.random() * (canvas.width - 160) + 80,
     y: -200,
-    ...sizes[type]
+    ...base,
+
+    // Tight obstacle hitbox
+    hitW: base.w * 0.7,
+    hitH: base.h * 0.75
   });
 }
 
@@ -203,31 +227,13 @@ function drawCar() {
 
   if (img && img.complete) {
     ctx.drawImage(img, -car.w / 2, 0, car.w, car.h);
-  } else {
-    ctx.fillStyle = "red";
-    ctx.fillRect(-car.w / 2, 0, car.w, car.h);
   }
 
   ctx.restore();
 }
 
-
-/************************************************* * DEBUG HITBOX
- *************************************************/
-function drawHitboxDebug() {
-  const hb = carHitbox();
-  ctx.strokeStyle = "red";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(
-    hb.left,
-    hb.top,
-    hb.right - hb.left,
-    hb.bottom - hb.top
-  );
-}
-
 /*************************************************
- * MAIN LOOP (NEVER STOPS)
+ * MAIN LOOP
  *************************************************/
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -242,18 +248,23 @@ function update() {
     if (fuel <= 0) {
       gameState = STATE.LOSE;
       loseReason = "fuel";
+      engineSound.pause();
     }
 
-    if (timeAlive >= 60) gameState = STATE.WIN;
+    if (timeAlive >= 60) {
+      gameState = STATE.WIN;
+      engineSound.pause();
+    }
 
     const dx = targetX - car.x;
     car.x += dx * 0.1;
     car.tilt = dx * 0.002;
+
+    // Engine pitch increases slightly with speed
+    engineSound.playbackRate = 1 + speed * 0.02;
   }
 
   drawCar();
-  //drawHitboxDebug();
-
 
   const hb = carHitbox();
 
@@ -269,15 +280,23 @@ function update() {
       ctx.drawImage(img, o.x, o.y, o.w, o.h);
     }
 
+    // Accurate collision using obstacle hitbox
+    const obLeft = o.x + (o.w - o.hitW) / 2;
+    const obTop = o.y + (o.h - o.hitH) / 2;
+    const obRight = obLeft + o.hitW;
+    const obBottom = obTop + o.hitH;
+
     if (
       gameState === STATE.PLAY &&
-      o.x < hb.right &&
-      o.x + o.w > hb.left &&
-      o.y < hb.bottom &&
-      o.y + o.h > hb.top
+      obLeft < hb.right &&
+      obRight > hb.left &&
+      obTop < hb.bottom &&
+      obBottom > hb.top
     ) {
       gameState = STATE.LOSE;
       loseReason = "crash";
+      engineSound.pause();
+      playCrashSound();
     }
   });
 
@@ -287,8 +306,8 @@ function update() {
       f.bounce += 0.1;
     }
 
-    const img = sprites.fuel;
     const fy = f.y + Math.sin(f.bounce) * 6;
+    const img = sprites.fuel;
 
     if (img && img.complete) {
       ctx.drawImage(img, f.x, fy, f.w, f.h);
@@ -303,6 +322,7 @@ function update() {
     ) {
       fuel = Math.min(100, fuel + 40);
       f.collected = true;
+      playFuelSound();
     }
   });
 
@@ -349,6 +369,8 @@ function resetGame() {
   timeAlive = 0;
   loseReason = "";
   gameState = STATE.PLAY;
+  engineSound.currentTime = 0;
+  engineSound.play().catch(() => {});
 }
 
 /*************************************************
