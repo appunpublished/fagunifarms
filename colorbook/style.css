@@ -10,41 +10,76 @@ body {
 /* ROOT GRID */
 .app {
   display: grid;
-  grid-template-rows: 56px 1fr 110px; /* top | canvas | bottom */
+  grid-template-rows: 64px 1fr 110px; /* Tighter top bar */
   height: 100svh; /* SAFE viewport height (mobile-first) */
 }
 
 /* TOP BAR */
 .top-bar {
   display: flex;
-  justify-content: center;
-  gap: 12px;
+  justify-content: flex-start;
+  gap: 8px;
   align-items: center;
-  border-bottom: 2px solid #eee;
+  border-bottom: 4px solid #eee;
+  overflow-x: auto;
+  padding: 0 8px;
+  background: #fafafa;
+  -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
 }
 
-/* Parent controls – big & clear for mobile */
+.top-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.divider {
+  width: 4px;
+  height: 32px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
 .top-bar button {
-  width: 72px;              /* BIG touch target */
-  height: 72px;
-  font-size: 34px;          /* Emoji visibility */
-  border-radius: 18px;      /* Softer than circle */
-  border: none;
-  background: #f4f4f4;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  border-radius: 14px;
+  border: 3px solid transparent;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy feel */
+}
+
+.top-bar button:active {
+  transform: scale(0.9);
+  background: #e0e0e0;
+}
+
+.top-bar button.active-tool {
+  background: #FFD500;
+  border-color: #fff;
+  transform: scale(1.15) translateY(-4px); /* Visually pops up */
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 10;
 }
 
 @media (min-width: 768px) {
   .top-bar button {
     width: 64px;
     height: 64px;
-    font-size: 30px;
+    font-size: 32px;
+    border-radius: 18px;
   }
-}
-
-/* Extra spacing between buttons */
-.top-bar {
-  gap: 20px;
+  .top-bar {
+    justify-content: center;
+    gap: 12px;
+  }
+  .app {
+    grid-template-rows: 84px 1fr 140px;
+  }
 }
 
 
@@ -52,33 +87,58 @@ body {
 /* WORKSPACE */
 .workspace {
   display: grid;
-  grid-template-columns: 72px 1fr;
+  grid-template-columns: 75px 1fr;
   height: 100%;
   overflow: hidden;
+  background: #f0f8ff; /* Soft background helps canvas pop out */
 }
 
 
 /* COLOR BAR */
 #colorBar {
-  background: #fafafa;
-  border-right: 2px solid #eee;
+  background: #fff;
+  border-right: 4px solid #eee;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  padding: 12px 0;
+  gap: 12px;
+  align-items: flex-start; /* Align left to anchor crayons to the wall */
 }
 
+#colorBar::-webkit-scrollbar { display: none; }
+
 #colorBar button {
-  width: 48px;
-  height: 48px;
-  margin: 10px auto;
-  border-radius: 50%;
-  border: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  width: 55px;
+  height: 36px;
+  margin: 0 0 0 -8px; /* Tucked slightly offscreen */
+  border-radius: 0 18px 18px 0; /* Crayon tip pointing right */
+  border: 2px solid rgba(0,0,0,0.05);
+  border-left: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Inner shading adds a 3D cylindrical look to any background color */
+  box-shadow: inset -6px 0 8px rgba(0,0,0,0.2), inset 0 6px 6px rgba(255,255,255,0.3), 2px 3px 5px rgba(0,0,0,0.1);
 }
 
 #colorBar button.active {
-  transform: scale(1.2);
-  box-shadow: 0 0 0 4px rgba(0,0,0,0.15);
+  transform: translateX(18px) scale(1.15); /* Crayon slides out */
+  box-shadow: inset -6px 0 8px rgba(0,0,0,0.2), inset 0 6px 6px rgba(255,255,255,0.3), -4px 6px 10px rgba(0,0,0,0.2);
+  border: 2px solid #fff;
+  border-left: none;
+  z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .workspace { grid-template-columns: 100px 1fr; }
+  #colorBar button {
+    width: 75px;
+    height: 48px;
+    border-radius: 0 24px 24px 0;
+  }
+  #colorBar button.active {
+    transform: translateX(24px) scale(1.15);
+  }
 }
 
 /* CANVAS */
@@ -88,27 +148,45 @@ canvas {
   display: block;
   touch-action: none;
   pointer-events: auto;
+  background: #fff; /* Keep the paper white */
 }
 
 /* IMAGE PICKER */
 #sidebar {
   display: flex;
   overflow-x: auto;
-  background: #f4f4f4;
-  border-top: 2px solid #eee;
+  background: #fff;
+  border-top: 4px solid #eee;
+  align-items: center;
+  padding: 0 12px;
 }
+
+#sidebar::-webkit-scrollbar { display: none; }
 
 #sidebar img {
   width: 80px;
-  margin: 10px;
-  border-radius: 10px;
-  border: 3px solid transparent;
+  height: 80px;
+  object-fit: contain;
+  margin: 0 8px;
+  border-radius: 16px;
+  border: 4px solid #eee;
+  transition: all 0.2s ease;
+  background: #fafafa;
 }
 
 #sidebar img.active {
   border-color: #007AFF;
+  transform: scale(1.1) translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0,122,255,0.3);
 }
 
+@media (min-width: 768px) {
+  #sidebar img {
+    width: 100px;
+    height: 100px;
+    margin: 0 12px;
+  }
+}
 
 canvas {
   pointer-events: auto;
@@ -164,4 +242,3 @@ canvas {
   border-radius: 12px;
   border: 2px solid #ddd;
 }
-

@@ -15,16 +15,21 @@
 <body>
   <div class="app">
 
-<!-- TOP BAR : Parent controls -->
+<!-- TOP BAR : Tools & Actions -->
 <div class="top-bar">
-  <button id="gameBtn">🎮</button>
+  <!-- Core Drawing Tools -->
+  <button id="drawBtn" title="Brush" aria-label="Brush" class="active-tool">🖌️</button>
+  <button id="bucketBtn" title="Paint Bucket" aria-label="Paint Bucket">🪣</button>
+  <button id="eraser" title="Eraser" aria-label="Eraser">🧽</button>
 
-  <button id="eraser">🧽</button>
-  <button id="undo">↩️</button>
-  <button id="galleryBtn">📚</button>
-  <button id="speakBtn">🔊</button>
+  <div class="divider"></div>
 
-
+  <!-- Actions -->
+  <button id="undo" title="Undo Last Stroke" aria-label="Undo">↩️</button>
+  <button id="clearAll" title="Clear Canvas" aria-label="Clear All">🗑️</button>
+  <button id="speakBtn" title="Read Aloud" aria-label="Read Aloud">🔊</button>
+  <button id="galleryBtn" title="Gallery" aria-label="Open Gallery">📚</button>
+  <button id="gameBtn" title="Play Game" aria-label="Play Game">🎮</button>
 </div>
 
 <!-- GALLERY OVERLAY -->
