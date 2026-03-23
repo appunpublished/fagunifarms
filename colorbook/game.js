@@ -11,6 +11,11 @@ function resize() {
 resize();
 window.addEventListener("resize", resize);
 
+// Prevent swipe-down refresh and gestures on mobile browsers globally
+document.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
+document.addEventListener("gesturestart", e => e.preventDefault());
+document.addEventListener("gesturechange", e => e.preventDefault());
+
 /*************************************************
  * SPRITES
  *************************************************/
@@ -90,6 +95,12 @@ canvas.addEventListener("pointermove", e => {
 
 canvas.addEventListener("pointerdown", e => {
   e.preventDefault();
+  
+  // Automatically enter fullscreen on first tap to hide notification/address bars
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(()=>{});
+  }
+  
   engineSound.play().catch(()=>{});
   if (gameState !== STATE.PLAY) resetGame();
 });
@@ -277,7 +288,7 @@ function handleObstacles() {
   const hb = carHitbox();
 
   obstacles.forEach(o => {
-    if (gameState === STATE.PLAY) o.y += speed;
+    if (gameState === STATE.PLAY) o.y += speed + o.vy;
 
     const img =
       o.type === "bike" ? sprites.obBike :
@@ -411,6 +422,8 @@ function resetGame() {
   combo = 1;
   nearMissCooldown = 0;
   loseReason = "";
+  roadOffset = 0;
+  keys = {};
   gameState = STATE.PLAY;
   engineSound.currentTime = 0;
   engineSound.play().catch(()=>{});

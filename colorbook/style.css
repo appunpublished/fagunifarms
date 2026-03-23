@@ -1,3 +1,7 @@
+html {
+  overscroll-behavior: none; /* Kills pull-to-refresh at the root level */
+}
+
 body {
   margin: 0;
   background: #fff;

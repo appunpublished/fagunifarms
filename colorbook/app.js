@@ -327,6 +327,20 @@ document.getElementById("gameBtn").addEventListener("click", () => {
 
 
 /*************************************************
+ * FULLSCREEN
+ *************************************************/
+const fullscreenBtn = document.getElementById("fullscreenBtn");
+if (fullscreenBtn) {
+  fullscreenBtn.onclick = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => console.log(err));
+    } else {
+      document.exitFullscreen().catch(err => console.log(err));
+    }
+  };
+}
+
+/*************************************************
  * POINTER UTILS
  *************************************************/
 function getPos(e) {
