@@ -242,6 +242,7 @@ function update() {
     timeAlive += 1 / 60;
     fuel -= speed * 0.03;
     score += combo * 0.5;
+    roadOffset += speed * 3;
 
     if (nearMissCooldown > 0) nearMissCooldown--;
 
@@ -250,6 +251,10 @@ function update() {
       loseReason = "fuel";
       engineSound.pause();
     }
+
+    if (keys["arrowleft"] || keys["a"]) targetX -= 7;
+    if (keys["arrowright"] || keys["d"]) targetX += 7;
+    targetX = Math.max(70 + car.w / 2, Math.min(canvas.width - 70 - car.w / 2, targetX));
 
     const dx = targetX - car.x;
     car.x += dx * 0.1;
