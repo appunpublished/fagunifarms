@@ -58,7 +58,7 @@ let obstacles = [];
 let fuels = [];
 let particles = [];
 
-let speed = 3;
+let speed = 1.5; // Start much slower
 let fuel = 100;
 let timeAlive = 0;
 
@@ -68,6 +68,10 @@ let nearMissCooldown = 0;
 
 let shakeTime = 0;
 let shakeIntensity = 0;
+
+let roadOffset = 0;
+let distSinceObstacle = 0;
+let distSinceFuel = 0;
 
 /*************************************************
  * PLAYER
@@ -88,6 +92,10 @@ let targetX = car.x;
 /*************************************************
  * INPUT
  *************************************************/
+let keys = {};
+window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
+window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+
 canvas.addEventListener("pointermove", e => {
   if (gameState !== STATE.PLAY) return;
   targetX = e.clientX;
@@ -140,7 +148,7 @@ function createExplosion(x, y) {
 /*************************************************
  * SPAWNERS
  *************************************************/
-function spawnObstacle() {
+function spawnObstacle(yOffset = 0) {
   if (gameState !== STATE.PLAY) return;
 
   const types = ["bike", "car", "truck"];
@@ -157,10 +165,11 @@ function spawnObstacle() {
   obstacles.push({
     type,
     x: Math.random() * (canvas.width - 160) + 80,
-    y: -200,
+    y: -200 - yOffset,
     ...base,
     hitW: base.w * 0.7,
-    hitH: base.h * 0.75
+    hitH: base.h * 0.75,
+    vy: Math.random() * 1.5 // Gives traffic slight speed variations
   });
 }
 
@@ -175,9 +184,6 @@ function spawnFuel() {
     bounce: 0
   });
 }
-
-setInterval(spawnObstacle, 1500);
-setInterval(spawnFuel, 4000);
 
 /*************************************************
  * DRAWING
@@ -244,6 +250,23 @@ function update() {
     score += combo * 0.5;
     roadOffset += speed * 3;
 
+    distSinceObstacle += speed;
+    distSinceFuel += speed;
+
+    // Dynamically spawn traffic based on speed and distance traveled
+    let obThreshold = Math.max(80, 200 - speed * 10);
+    if (distSinceObstacle > obThreshold) {
+      spawnObstacle();
+      // Spawn additional multiple lanes of traffic side-by-side at higher speeds
+      if (speed > 4 && Math.random() > 0.5) spawnObstacle(150);
+      distSinceObstacle = -Math.random() * 50;
+    }
+
+    if (distSinceFuel > 600) {
+      spawnFuel();
+      distSinceFuel = -Math.random() * 200;
+    }
+
     if (nearMissCooldown > 0) nearMissCooldown--;
 
     if (fuel <= 0) {
@@ -260,7 +283,7 @@ function update() {
     car.x += dx * 0.1;
     car.tilt = dx * 0.002;
 
-    speed += 0.0008;
+    speed += 0.0015; // Noticeable speed scaling as the game progresses
     engineSound.playbackRate = 1 + speed * 0.02;
   }
 
@@ -293,7 +316,7 @@ function handleObstacles() {
   const hb = carHitbox();
 
   obstacles.forEach(o => {
-    if (gameState === STATE.PLAY) o.y += speed + o.vy;
+    if (gameState === STATE.PLAY) o.y += speed + (o.vy || 0);
 
     const img =
       o.type === "bike" ? sprites.obBike :
@@ -420,7 +443,7 @@ function resetGame() {
   obstacles = [];
   fuels = [];
   particles = [];
-  speed = 3;
+  speed = 1.5; // Reset to slow starting speed
   fuel = 100;
   timeAlive = 0;
   score = 0;
@@ -428,6 +451,8 @@ function resetGame() {
   nearMissCooldown = 0;
   loseReason = "";
   roadOffset = 0;
+  distSinceObstacle = 0;
+  distSinceFuel = 0;
   keys = {};
   gameState = STATE.PLAY;
   engineSound.currentTime = 0;

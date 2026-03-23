@@ -322,7 +322,7 @@ document.getElementById("speakBtn").onclick = () => {
  * GAME BUTTON
  *************************************************/
 document.getElementById("gameBtn").addEventListener("click", () => {
-  window.location.href = "game.html";
+  window.location.href = "games.html";
 });
 
 

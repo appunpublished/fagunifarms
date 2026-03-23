@@ -14,9 +14,25 @@
     canvas {
       display: block;
     }
+    #backBtn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      padding: 8px 16px;
+      background: #fff;
+      color: #333;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      z-index: 10;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
+  <a id="backBtn" href="games.html">🔙 Back</a>
   <canvas id="game"></canvas>
   <script src="game.js"></script>
 </body>
