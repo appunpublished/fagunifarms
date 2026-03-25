@@ -30,6 +30,9 @@ let distSinceObstacle = 0;
 let stars = [];
 let obstacles = [];
 let particles = [];
+let lasers = [];
+let shootCooldown = 0;
+let isPointerDown = false;
 
 /*************************************************
  * PLAYER
@@ -58,10 +61,19 @@ canvas.addEventListener("pointermove", e => {
 
 canvas.addEventListener("pointerdown", e => {
   e.preventDefault();
+  isPointerDown = true;
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(() => {});
   }
   if (gameState !== STATE.PLAY) resetGame();
+});
+
+canvas.addEventListener("pointerup", e => {
+  isPointerDown = false;
+});
+
+canvas.addEventListener("pointercancel", e => {
+  isPointerDown = false;
 });
 
 /*************************************************
@@ -198,9 +210,16 @@ function update() {
     const dx = targetX - ship.x;
     ship.x += dx * 0.15;
     ship.tilt = dx * 0.005; // Tilt ship when moving sideways
+
+    // Shooting
+    if (keys[" "] || isPointerDown) {
+      if (shootCooldown <= 0) shoot();
+    }
+    if (shootCooldown > 0) shootCooldown--;
   }
 
   drawShip();
+  handleLasers();
   handleObstacles();
   handleParticles();
   drawHUD();
@@ -226,8 +245,52 @@ function drawShip() {
   ctx.restore();
 }
 
+function shoot() {
+  lasers.push({
+    x: ship.x,
+    y: ship.y - 20,
+    vy: -15,
+    width: 4,
+    height: 20,
+    color: "#00FF00"
+  });
+  shootCooldown = 15; // Fire rate cooldown
+}
+
+function handleLasers() {
+  lasers.forEach(l => {
+    if (gameState === STATE.PLAY) {
+      l.y += l.vy;
+    }
+
+    ctx.fillStyle = l.color;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = l.color;
+    ctx.fillRect(l.x - l.width / 2, l.y, l.width, l.height);
+    ctx.shadowBlur = 0;
+
+    // Collision detection with obstacles
+    if (gameState === STATE.PLAY) {
+      obstacles.forEach(o => {
+        if (o.dead) return;
+        const dist = Math.hypot(l.x - o.x, l.y - o.y);
+        if (dist < o.size / 2 + l.height / 2) {
+          o.dead = true;
+          l.dead = true;
+          createExplosion(o.x, o.y);
+          score += 50; // Bonus score for destroying obstacle
+        }
+      });
+    }
+  });
+
+  // Clean up off-screen and dead lasers
+  lasers = lasers.filter(l => !l.dead && l.y > -50);
+}
+
 function handleObstacles() {
   obstacles.forEach(o => {
+    if (o.dead) return;
     if (gameState === STATE.PLAY) {
       o.y += speed * 3 + o.vy;
       o.spin += o.spinSpeed;
@@ -252,8 +315,8 @@ function handleObstacles() {
     }
   });
 
-  // Clean up off-screen obstacles
-  obstacles = obstacles.filter(o => o.y < canvas.height + 100);
+  // Clean up off-screen and dead obstacles
+  obstacles = obstacles.filter(o => !o.dead && o.y < canvas.height + 100);
 }
 
 function handleParticles() {
@@ -276,6 +339,8 @@ function handleParticles() {
 function resetGame() {
   obstacles = [];
   particles = [];
+  lasers = [];
+  shootCooldown = 0;
   speed = 2;
   score = 0;
   distance = 0;

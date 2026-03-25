@@ -6,7 +6,11 @@ self.addEventListener("install", e => {
         "/index.html",
         "/style.css",
         "/app.js",
-        "/images.json"
+        "/images.json",
+        "/bubblepop.html",
+        "/bubblepop.js",
+        "/memorymatch.html",
+        "/memorymatch.js"
       ])
     )
   );
