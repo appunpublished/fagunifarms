@@ -19,6 +19,9 @@ let isDrawing = false;
 let currentX = 0;
 let currentY = 0;
 let isGameOver = false;
+let currentLevel = 0;
+const MAX_LEVELS = 14;
+let fillColor = "#FFD500";
 
 function initGame() {
   dots = [];
@@ -28,23 +31,122 @@ function initGame() {
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
   const radius = Math.min(canvas.width, canvas.height) * 0.35;
-  const numDots = 10;
 
-  // Generate a Star Shape
-  for (let i = 0; i < numDots; i++) {
-    const angle = (i * Math.PI * 2) / numDots - Math.PI / 2;
-    const r = i % 2 === 0 ? radius : radius * 0.4;
-    dots.push({
-      x: centerX + Math.cos(angle) * r,
-      y: centerY + Math.sin(angle) * r,
-      label: (i + 1).toString(),
-      connected: false
+  if (currentLevel === 0) {
+    // Star
+    fillColor = "#FFD500";
+    const numDots = 10;
+    for (let i = 0; i < numDots; i++) {
+      const angle = (i * Math.PI * 2) / numDots - Math.PI / 2;
+      const r = i % 2 === 0 ? radius : radius * 0.4;
+      dots.push({
+        x: centerX + Math.cos(angle) * r,
+        y: centerY + Math.sin(angle) * r,
+        label: (i + 1).toString(),
+        connected: false
+      });
+    }
+  } else if (currentLevel === 1) {
+    // House
+    fillColor = "#FF9500";
+    const s = radius * 0.8;
+    dots = [
+      { x: centerX, y: centerY - s, label: "1", connected: false },
+      { x: centerX + s, y: centerY - s * 0.2, label: "2", connected: false },
+      { x: centerX + s, y: centerY + s, label: "3", connected: false },
+      { x: centerX - s, y: centerY + s, label: "4", connected: false },
+      { x: centerX - s, y: centerY - s * 0.2, label: "5", connected: false }
+    ];
+  } else if (currentLevel === 2) {
+    // Hexagon
+    fillColor = "#34C759";
+    const numDots = 6;
+    for (let i = 0; i < numDots; i++) {
+      const angle = (i * Math.PI * 2) / numDots - Math.PI / 2;
+      dots.push({
+        x: centerX + Math.cos(angle) * radius,
+        y: centerY + Math.sin(angle) * radius,
+        label: (i + 1).toString(),
+        connected: false
+      });
+    }
+  } else if (currentLevel === 3) {
+    // Heart
+    fillColor = "#FF2D55";
+    const numDots = 12;
+    for (let i = 0; i < numDots; i++) {
+      const t = (i * Math.PI * 2) / numDots + Math.PI; // Start offset at bottom tip
+      const hx = 16 * Math.pow(Math.sin(t), 3);
+      const hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+      
+      dots.push({
+        x: centerX - hx * (radius / 18),
+        y: centerY + hy * (radius / 18),
+        label: (i + 1).toString(),
+        connected: false
+      });
+    }
+  } else {
+    // 10 Extra Custom Shapes
+    const shapeDefs = [
+      { // 4: Cat
+        color: "#AF52DE",
+        pts: [[-0.6, -0.8], [-0.2, -0.4], [0.2, -0.4], [0.6, -0.8], [0.8, -0.1], [0.5, 0.6], [0, 0.8], [-0.5, 0.6], [-0.8, -0.1]]
+      },
+      { // 5: Dog
+        color: "#8E6E53",
+        pts: [[-0.4, -0.6], [0.1, -0.6], [0.5, -0.2], [0.9, -0.1], [0.9, 0.2], [0.4, 0.4], [0.2, 0.8], [-0.3, 0.8], [-0.2, 0.2], [-0.6, 0.4], [-0.8, 0], [-0.5, -0.4]]
+      },
+      { // 6: Elephant
+        color: "#5AC8FA",
+        pts: [[-0.5, -0.4], [0.4, -0.4], [0.7, -0.1], [0.7, 0.3], [0.8, 0.7], [0.5, 0.7], [0.5, 0.3], [0.1, 0.3], [0.1, 0.7], [-0.2, 0.7], [-0.2, 0.3], [-0.5, 0.3], [-0.8, 0.6], [-0.9, 0.4], [-0.6, 0.1], [-0.6, -0.2]]
+      },
+      { // 7: Fish
+        color: "#FF9500",
+        pts: [[-0.8, 0], [-0.4, -0.5], [0.2, -0.6], [0.6, -0.2], [0.9, -0.6], [0.8, 0], [0.9, 0.6], [0.6, 0.2], [0.2, 0.6], [-0.4, 0.5]]
+      },
+      { // 8: Bird
+        color: "#007AFF",
+        pts: [[-0.6, -0.3], [-0.9, -0.2], [-0.7, 0], [-0.4, 0.4], [0.2, 0.5], [0.8, 0.6], [0.9, 0.3], [0.6, 0.2], [0.5, -0.1], [0.1, -0.5], [-0.3, -0.5]]
+      },
+      { // 9: Apple
+        color: "#FF3B30",
+        pts: [[0.1, -0.8], [0.1, -0.4], [0.6, -0.5], [0.9, -0.1], [0.6, 0.6], [0, 0.4], [-0.6, 0.6], [-0.9, -0.1], [-0.6, -0.5], [-0.1, -0.4], [-0.1, -0.8]]
+      },
+      { // 10: Moon
+        color: "#FFD500",
+        pts: [[0, -0.8], [0.4, -0.5], [0.6, 0], [0.4, 0.5], [0, 0.8], [0.2, 0.4], [0.3, 0], [0.2, -0.4]]
+      },
+      { // 11: Car
+        color: "#FF2D55",
+        pts: [[-0.8, 0.1], [-0.8, -0.2], [-0.4, -0.2], [-0.2, -0.6], [0.4, -0.6], [0.6, -0.2], [0.9, -0.1], [0.9, 0.3], [0.6, 0.3], [0.5, 0.1], [0.3, 0.1], [0.2, 0.3], [-0.3, 0.3], [-0.4, 0.1], [-0.6, 0.1], [-0.7, 0.3]]
+      },
+      { // 12: Tree
+        color: "#34C759",
+        pts: [[0, -0.8], [0.4, -0.5], [0.8, 0], [0.5, 0.3], [0.2, 0.3], [0.2, 0.8], [-0.2, 0.8], [-0.2, 0.3], [-0.5, 0.3], [-0.8, 0], [-0.4, -0.5]]
+      },
+      { // 13: Crown
+        color: "#FFCC00",
+        pts: [[-0.8, -0.5], [-0.4, 0.1], [0, -0.6], [0.4, 0.1], [0.8, -0.5], [0.6, 0.6], [-0.6, 0.6]]
+      }
+    ];
+
+    const def = shapeDefs[currentLevel - 4];
+    fillColor = def.color;
+    def.pts.forEach((p, i) => {
+      dots.push({
+        x: centerX + p[0] * radius,
+        y: centerY + p[1] * radius,
+        label: (i + 1).toString(),
+        connected: false
+      });
     });
   }
 }
 
 canvas.addEventListener("pointerdown", e => {
   if (isGameOver) {
+    currentLevel = (currentLevel + 1) % MAX_LEVELS;
     initGame();
     return;
   }
@@ -102,8 +204,15 @@ function update() {
   if (isGameOver) {
     ctx.lineTo(dots[0].x, dots[0].y); // Close shape
     ctx.stroke();
-    ctx.fillStyle = "#FFD500";
+    ctx.fillStyle = fillColor;
     ctx.fill();
+
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 40px system-ui";
+    ctx.textAlign = "center";
+    ctx.fillText("GREAT JOB!", canvas.width / 2, 80);
+    ctx.font = "20px system-ui";
+    ctx.fillText("Tap for next shape", canvas.width / 2, 120);
   } else {
     ctx.stroke();
     // Draw active drag line
