@@ -10,7 +10,11 @@ self.addEventListener("install", e => {
         "/bubblepop.html",
         "/bubblepop.js",
         "/memorymatch.html",
-        "/memorymatch.js"
+        "/memorymatch.js",
+        "/connectdots.html",
+        "/connectdots.js",
+        "/reaction.html",
+        "/reaction.js"
       ])
     )
   );
