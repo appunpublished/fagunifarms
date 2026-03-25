@@ -16,13 +16,18 @@ document.addEventListener("touchmove", e => e.preventDefault(), { passive: false
 /*************************************************
  * GAME LOGIC
  *************************************************/
-const STATE = { WAITING: 0, READY: 1, P1_WON: 2, P2_WON: 3, P1_EARLY: 4, P2_EARLY: 5 };
+const STATE = { WAITING: 0, READY: 1, P1_WON: 2, P2_WON: 3, P1_EARLY: 4, P2_EARLY: 5, GAME_OVER: 6 };
 let state = STATE.WAITING;
 let scoreP1 = 0; // Bottom player
 let scoreP2 = 0; // Top player
 let timer = null;
+const WIN_SCORE = 10;
 
 function resetRound() {
+  if (scoreP1 >= WIN_SCORE || scoreP2 >= WIN_SCORE) {
+    state = STATE.GAME_OVER;
+    return;
+  }
   state = STATE.WAITING;
   timer = setTimeout(() => {
     state = STATE.READY;
@@ -30,6 +35,12 @@ function resetRound() {
 }
 
 canvas.addEventListener("pointerdown", e => {
+  if (state === STATE.GAME_OVER) {
+    scoreP1 = 0;
+    scoreP2 = 0;
+    resetRound();
+    return;
+  }
   if (state !== STATE.WAITING && state !== STATE.READY) {
     resetRound();
     return;
@@ -91,6 +102,11 @@ function update() {
   } else if (state === STATE.P2_EARLY) {
     p1Color = "#34C759"; p2Color = "#FF3B30";
     p1Text = "POINT!"; p2Text = "TOO EARLY!";
+  } else if (state === STATE.GAME_OVER) {
+    p1Color = scoreP1 >= WIN_SCORE ? "#FFD500" : "#333";
+    p2Color = scoreP2 >= WIN_SCORE ? "#FFD500" : "#333";
+    p1Text = scoreP1 >= WIN_SCORE ? "👑 MATCH WINNER!" : "LOSER!";
+    p2Text = scoreP2 >= WIN_SCORE ? "👑 MATCH WINNER!" : "LOSER!";
   }
 
   // Draw halves
@@ -102,10 +118,16 @@ function update() {
   // Draw Text for P2 (Top, rotated upside down)
   drawRotatedText(p2Text, canvas.width / 2, canvas.height * 0.25, Math.PI, 40, "white");
   drawRotatedText(`Score: ${scoreP2}`, canvas.width / 2, canvas.height * 0.25 + 50, Math.PI, 20, "white");
+  if (state === STATE.GAME_OVER) {
+    drawRotatedText("Tap to restart", canvas.width / 2, canvas.height * 0.25 + 90, Math.PI, 16, "white");
+  }
 
   // Draw Text for P1 (Bottom, normal)
   drawRotatedText(p1Text, canvas.width / 2, canvas.height * 0.75, 0, 40, "white");
   drawRotatedText(`Score: ${scoreP1}`, canvas.width / 2, canvas.height * 0.75 + 50, 0, 20, "white");
+  if (state === STATE.GAME_OVER) {
+    drawRotatedText("Tap to restart", canvas.width / 2, canvas.height * 0.75 + 90, 0, 16, "white");
+  }
 }
 
 resetRound();
