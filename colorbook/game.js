@@ -57,6 +57,7 @@ let loseReason = "";
 let obstacles = [];
 let fuels = [];
 let particles = [];
+let speedLines = [];
 
 let speed = 1.5; // Start much slower
 let fuel = 100;
@@ -189,24 +190,59 @@ function spawnFuel() {
  * DRAWING
  *************************************************/
 function drawBackground() {
+  // Sky
   ctx.fillStyle = "#87CEEB";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // Grass
   ctx.fillStyle = "#4CAF50";
   ctx.fillRect(0, 0, 70, canvas.height);
   ctx.fillRect(canvas.width - 70, 0, 70, canvas.height);
 
+  // Road
   ctx.fillStyle = "#444";
   ctx.fillRect(70, 0, canvas.width - 140, canvas.height);
 
+  // --- Animated Road Markings ---
   ctx.strokeStyle = "#fff";
   ctx.lineWidth = 6;
-  ctx.setLineDash([30, 30]);
+  ctx.setLineDash([40, 60]); // dash length, gap length
+  const totalDashLength = 40 + 60;
+
+  // Use roadOffset to create the scrolling illusion
+  ctx.lineDashOffset = -(roadOffset % totalDashLength);
+
+  // Draw two lane dividers instead of one
+  const roadWidth = canvas.width - 140;
+  const lane1X = 70 + roadWidth / 3;
+  const lane2X = 70 + (roadWidth / 3) * 2;
+
   ctx.beginPath();
-  ctx.moveTo(canvas.width / 2, 0);
-  ctx.lineTo(canvas.width / 2, canvas.height);
+  ctx.moveTo(lane1X, 0);
+  ctx.lineTo(lane1X, canvas.height);
   ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(lane2X, 0);
+  ctx.lineTo(lane2X, canvas.height);
+  ctx.stroke();
+
+  // Reset line dash for other drawing operations
   ctx.setLineDash([]);
+  ctx.lineDashOffset = 0;
+
+  // --- Animated Grass Texture ---
+  ctx.strokeStyle = "rgba(0,0,0,0.1)";
+  ctx.lineWidth = 2;
+  const grassLineCount = 20;
+  for (let i = 0; i < grassLineCount; i++) {
+    // Use roadOffset to scroll the grass lines
+    const y = (roadOffset * 0.9 + (i * (canvas.height / grassLineCount))) % canvas.height;
+    // Left grass
+    ctx.beginPath(); ctx.moveTo(20, y); ctx.lineTo(50, y); ctx.stroke();
+    // Right grass
+    ctx.beginPath(); ctx.moveTo(canvas.width - 50, y); ctx.lineTo(canvas.width - 20, y); ctx.stroke();
+  }
 }
 
 function drawHUD() {
@@ -291,7 +327,7 @@ function update() {
   handleObstacles();
   handleFuel();
   handleParticles();
-  drawSpeedLines();
+  handleSpeedLines();
 
   if (gameState !== STATE.PLAY) drawEndScreen();
 
@@ -407,15 +443,38 @@ function handleParticles() {
   particles = particles.filter(p => p.life > 0);
 }
 
-function drawSpeedLines() {
-  if (gameState === STATE.PLAY && speed > 5) {
-    for (let i = 0; i < 5; i++) {
-      ctx.strokeStyle = "rgba(255,255,255,0.3)";
+function handleSpeedLines() {
+  // 1. Spawn new lines based on speed (appear earlier, more frequently)
+  if (gameState === STATE.PLAY && speed > 2.5) {
+    // Spawn chance increases with speed
+    if (Math.random() > 1 - (speed / 15)) {
+      speedLines.push({
+        x: Math.random() * canvas.width,
+        y: -40,
+        // 2. Lines are longer at higher speeds
+        h: Math.min(80, 20 + speed * 4)
+      });
+    }
+  }
+
+  // 3. Update, draw, and clean up existing lines
+  ctx.strokeStyle = "rgba(255,255,255,0.3)";
+  ctx.lineWidth = 2;
+
+  for (let i = speedLines.length - 1; i >= 0; i--) {
+    const line = speedLines[i];
+    
+    // Lines scroll downwards, faster than the road for parallax
+    if (gameState === STATE.PLAY) {
+      line.y += speed * 4;
+    }
+
+    if (line.y > canvas.height) {
+      speedLines.splice(i, 1); // Remove if off-screen
+    } else {
       ctx.beginPath();
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height;
-      ctx.moveTo(x, y);
-      ctx.lineTo(x, y + 20);
+      ctx.moveTo(line.x, line.y);
+      ctx.lineTo(line.x, line.y + line.h);
       ctx.stroke();
     }
   }
@@ -443,6 +502,7 @@ function resetGame() {
   obstacles = [];
   fuels = [];
   particles = [];
+  speedLines = [];
   speed = 1.5; // Reset to slow starting speed
   fuel = 100;
   timeAlive = 0;
