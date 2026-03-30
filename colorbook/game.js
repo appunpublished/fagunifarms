@@ -156,9 +156,9 @@ function spawnObstacle(yOffset = 0) {
   const type = types[Math.floor(Math.random() * 3)];
 
   const sizes = {
-    bike: { w: 40, h: 90 },
-    car: { w: 70, h: 120 },
-    truck: { w: 100, h: 160 }
+    bike: { w: 40, h: 90 },    // Remains small and easy to dodge.
+    car: { w: 65, h: 110 },  // Slightly smaller than the player's car.
+    truck: { w: 70, h: 150 } // Narrower to fit in lanes, but still long.
   };
 
   const base = sizes[type];
