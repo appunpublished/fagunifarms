@@ -6,6 +6,17 @@ self.addEventListener("install", e => {
         "/index.html",
         "/style.css",
         "/app.js",
+        "/games.html",
+        "/game.html",
+        "/game.js",
+        "/snake.html",
+        "/snake.js",
+        "/starwars.html",
+        "/starwars.js",
+        "/shapesorter.html",
+        "/shapesorter.js",
+        "/letterdrop.html",
+        "/letterdrop.js",
         "/images.json",
         "/bubblepop.html",
         "/bubblepop.js",
@@ -14,7 +25,11 @@ self.addEventListener("install", e => {
         "/connectdots.html",
         "/connectdots.js",
         "/reaction.html",
-        "/reaction.js"
+        "/reaction.js",
+        "/vocabmatch.html",
+        "/vocabmatch.js",
+        "/wordpuzzle.html",
+        "/wordpuzzle.js"
       ])
     )
   );

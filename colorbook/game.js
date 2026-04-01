@@ -163,9 +163,15 @@ function spawnObstacle(yOffset = 0) {
 
   const base = sizes[type];
 
+  // --- REFINED SPAWNING LOGIC ---
+  // This ensures obstacles always spawn fully within the road's boundaries.
+  const roadWidth = canvas.width - 140;
+  const spawnableWidth = roadWidth - base.w;
+  const x = 70 + Math.random() * spawnableWidth;
+
   obstacles.push({
     type,
-    x: Math.random() * (canvas.width - 160) + 80,
+    x,
     y: -200 - yOffset,
     ...base,
     hitW: base.w * 0.7,
@@ -177,8 +183,14 @@ function spawnObstacle(yOffset = 0) {
 function spawnFuel() {
   if (gameState !== STATE.PLAY) return;
 
+  // --- REFINED SPAWNING LOGIC ---
+  const fuelWidth = 40;
+  const roadWidth = canvas.width - 140;
+  const spawnableWidth = roadWidth - fuelWidth;
+  const x = 70 + Math.random() * spawnableWidth;
+
   fuels.push({
-    x: Math.random() * (canvas.width - 160) + 80,
+    x,
     y: -120,
     w: 40,
     h: 60,
@@ -319,8 +331,8 @@ function update() {
     car.x += dx * 0.1;
     car.tilt = dx * 0.002;
 
-    speed += 0.0015; // Noticeable speed scaling as the game progresses
-    engineSound.playbackRate = 1 + speed * 0.02;
+    speed += 0.0025; // More noticeable speed scaling as the game progresses
+    engineSound.playbackRate = 1 + speed * 0.05; // More responsive audio feedback
   }
 
   drawCar();

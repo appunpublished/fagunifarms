@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Word Puzzle</title>
+  <style>
+    body, html { margin: 0; padding: 0; overflow: hidden; background-color: #FFF3E0; touch-action: none; font-family: system-ui, sans-serif; }
+    canvas { display: block; }
+    #backBtn {
+      position: absolute; top: 16px; left: 16px; padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.9); color: #333; border: 2px solid #ccc;
+      border-radius: 8px; font-size: 16px; cursor: pointer; text-decoration: none; z-index: 10;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <a id="backBtn" href="games.html">🔙 Back</a>
+  <canvas id="gameCanvas"></canvas>
+  <script src="wordpuzzle.js"></script>
+</body>
+</html>

@@ -17,7 +17,10 @@ document.addEventListener("touchmove", e => e.preventDefault(), { passive: false
  * GAME STATE
  *************************************************/
 const SHAPE_TYPES = ["Circle", "Square", "Triangle", "Star", "Hexagon"];
-const COLORS = ["#FF3B30", "#34C759", "#007AFF", "#FFCC00", "#AF52DE"];
+const ALPHABETS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const NUMBERS = "0123456789".split("");
+const ALL_TYPES = [...SHAPE_TYPES, ...ALPHABETS, ...NUMBERS];
+const COLORS = ["#FF3B30", "#34C759", "#007AFF", "#FFCC00", "#AF52DE", "#FF9500", "#E91E63", "#00BCD4"];
 
 let targets = [];
 let draggables = [];
@@ -42,7 +45,7 @@ function initGame() {
   isWin = false;
   isPlaying = true;
 
-  let types = [...SHAPE_TYPES].sort(() => Math.random() - 0.5).slice(0, 3);
+  let types = [...ALL_TYPES].sort(() => Math.random() - 0.5).slice(0, 3);
   let colors = [...COLORS].sort(() => Math.random() - 0.5).slice(0, 3);
 
   const spacing = canvas.width / 4;
@@ -134,6 +137,27 @@ canvas.addEventListener("pointerup", e => {
  * DRAWING
  *************************************************/
 function drawShape(type, x, y, size, color, isOutline) {
+  // Handle letters and numbers
+  if (type.length === 1) {
+    ctx.font = `bold ${size * 2}px system-ui`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    if (isOutline) {
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "#aaa";
+      ctx.setLineDash([6, 6]);
+      ctx.strokeText(type, x, y);
+      ctx.setLineDash([]);
+    } else {
+      ctx.fillStyle = color;
+      ctx.fillText(type, x, y);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "rgba(0,0,0,0.2)";
+      ctx.strokeText(type, x, y);
+    }
+    return;
+  }
+
   ctx.beginPath();
   if (type === "Circle") {
     ctx.arc(x, y, size, 0, Math.PI * 2);
