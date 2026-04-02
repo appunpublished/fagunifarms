@@ -34,14 +34,10 @@ const DICTIONARY = [
   { emoji: "🍓", en: "Strawberry", es: "Fresa", fr: "Fraise", de: "Erdbeere" }
 ];
 
-const LANGUAGES = [
-  { code: "en-US", label: "🇬🇧 English", key: "en" },
-  { code: "es-ES", label: "🇪🇸 Español", key: "es" },
-  { code: "fr-FR", label: "🇫🇷 Français", key: "fr" },
-  { code: "de-DE", label: "🇩🇪 Deutsch", key: "de" }
-];
+const langMap = { "en": "en-US", "es": "es-ES", "fr": "fr-FR", "de": "de-DE" };
+function getLangKey() { return localStorage.getItem('appLang') || 'en'; }
+function getLangCode() { return langMap[getLangKey()]; }
 
-let currentLangIdx = 1; // Start with Spanish to highlight learning a new language
 let isPlaying = false;
 let score = 0;
 let options = [];
@@ -78,8 +74,7 @@ function startRound() {
     opt.baseY = opt.y; // For bouncing animation
   });
 
-  const lang = LANGUAGES[currentLangIdx];
-  speak(targetItem[lang.key], lang.code);
+  speak(targetItem[getLangKey()], getLangCode());
 }
 
 function initGame() {
@@ -110,24 +105,10 @@ canvas.addEventListener("pointerdown", e => {
   const px = e.clientX;
   const py = e.clientY;
 
-  // Check Language Switch Button
-  const btnW = 140;
-  const btnH = 40;
-  const btnX = canvas.width - btnW - 10;
-  const btnY = 10;
-  if (px >= btnX && px <= btnX + btnW && py >= btnY && py <= btnY + btnH) {
-    currentLangIdx = (currentLangIdx + 1) % LANGUAGES.length;
-    const lang = LANGUAGES[currentLangIdx];
-    if (targetItem) speak(targetItem[lang.key], lang.code);
-    if ("vibrate" in navigator) navigator.vibrate(20);
-    return;
-  }
-
   // Check Target Word (Speak again)
   const wordY = canvas.height * 0.35;
   if (py > wordY - 60 && py < wordY + 60 && !waitingForNext) {
-    const lang = LANGUAGES[currentLangIdx];
-    if (targetItem) speak(targetItem[lang.key], lang.code);
+    if (targetItem) speak(targetItem[getLangKey()], getLangCode());
     return;
   }
 
@@ -194,28 +175,12 @@ function update() {
   ctx.textAlign = "center";
   ctx.fillText(`Score: ${score}`, canvas.width / 2, 38);
 
-  const lang = LANGUAGES[currentLangIdx];
-  
-  // Language Button Frame
-  const btnW = 140; const btnH = 40;
-  const btnX = canvas.width - btnW - 10; const btnY = 10;
-  ctx.fillStyle = "#FF9500";
-  ctx.beginPath();
-  ctx.roundRect(btnX, btnY, btnW, btnH, 8);
-  ctx.fill();
-  
-  // Language Button Text
-  ctx.fillStyle = "white";
-  ctx.font = "bold 16px system-ui";
-  ctx.textAlign = "center";
-  ctx.fillText(lang.label, btnX + btnW / 2, btnY + 26);
-
   // Draw the Target Word
   if (targetItem) {
     ctx.fillStyle = "#007AFF"; // More colorful target word
     ctx.font = "bold 56px system-ui";
     ctx.textAlign = "center";
-    const word = targetItem[lang.key];
+    const word = targetItem[getLangKey()];
     ctx.fillText(`${word} 🔊`, canvas.width / 2, canvas.height * 0.35);
 
     ctx.font = "18px system-ui";

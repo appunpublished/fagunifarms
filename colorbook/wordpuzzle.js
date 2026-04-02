@@ -17,21 +17,25 @@ document.addEventListener("touchmove", e => e.preventDefault(), { passive: false
  * GAME STATE & DICTIONARY
  *************************************************/
 const DICTIONARY = [
-  { word: "CAT", emoji: "🐱" },
-  { word: "DOG", emoji: "🐶" },
-  { word: "SUN", emoji: "☀️" },
-  { word: "CAR", emoji: "🚗" },
-  { word: "COW", emoji: "🐄" },
-  { word: "PIG", emoji: "🐷" },
-  { word: "BUG", emoji: "🐛" },
-  { word: "ANT", emoji: "🐜" },
-  { word: "FOX", emoji: "🦊" },
-  { word: "OWL", emoji: "🦉" },
-  { word: "TREE", emoji: "🌳" },
-  { word: "FISH", emoji: "🐟" },
-  { word: "BIRD", emoji: "🐦" },
-  { word: "MOON", emoji: "🌙" }
+  { en: "CAT", es: "GATO", fr: "CHAT", de: "KATZE", emoji: "🐱" },
+  { en: "DOG", es: "PERRO", fr: "CHIEN", de: "HUND", emoji: "🐶" },
+  { en: "SUN", es: "SOL", fr: "SOLEIL", de: "SONNE", emoji: "☀️" },
+  { en: "CAR", es: "COCHE", fr: "AUTO", de: "AUTO", emoji: "🚗" },
+  { en: "COW", es: "VACA", fr: "VACHE", de: "KUH", emoji: "🐄" },
+  { en: "PIG", es: "CERDO", fr: "COCHON", de: "SCHWEIN", emoji: "🐷" },
+  { en: "BUG", es: "BICHO", fr: "INSECTE", de: "KÄFER", emoji: "🐛" },
+  { en: "ANT", es: "HORMIGA", fr: "FOURMI", de: "AMEISE", emoji: "🐜" },
+  { en: "FOX", es: "ZORRO", fr: "RENARD", de: "FUCHS", emoji: "🦊" },
+  { en: "OWL", es: "BÚHO", fr: "HIBOU", de: "EULE", emoji: "🦉" },
+  { en: "TREE", es: "ÁRBOL", fr: "ARBRE", de: "BAUM", emoji: "🌳" },
+  { en: "FISH", es: "PEZ", fr: "POISSON", de: "FISCH", emoji: "🐟" },
+  { en: "BIRD", es: "PÁJARO", fr: "OISEAU", de: "VOGEL", emoji: "🐦" },
+  { en: "MOON", es: "LUNA", fr: "LUNE", de: "MOND", emoji: "🌙" }
 ];
+
+const langMap = { "en": "en-US", "es": "es-ES", "fr": "fr-FR", "de": "de-DE" };
+function getLangKey() { return localStorage.getItem('appLang') || 'en'; }
+function getLangCode() { return langMap[getLangKey()]; }
 
 let targets = [];
 let draggables = [];
@@ -41,10 +45,11 @@ let isWin = false;
 let isPlaying = false;
 let currentItem = null;
 
-function speak(text) {
+function speak(text, langCode = getLangCode()) {
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
     const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = langCode;
     msg.rate = 0.85; 
     msg.pitch = 1.2;
     window.speechSynthesis.speak(msg);
@@ -60,7 +65,8 @@ function initGame() {
 
   // Pick a random word
   currentItem = DICTIONARY[Math.floor(Math.random() * DICTIONARY.length)];
-  const chars = currentItem.word.split("");
+  const currentWord = currentItem[getLangKey()].toUpperCase();
+  const chars = currentWord.split("");
 
   const spacing = canvas.width / (chars.length + 1);
   const targetY = canvas.height * 0.50;
@@ -87,7 +93,7 @@ function initGame() {
     });
   });
 
-  setTimeout(() => speak(`Spell... ${currentItem.word}`), 500);
+  setTimeout(() => speak(currentWord), 500);
 }
 
 function createPop(x, y, color) {
@@ -111,7 +117,7 @@ canvas.addEventListener("pointerdown", e => {
 
   // Click Emoji to repeat word
   if (py < canvas.height * 0.35) {
-    if (currentItem) speak(currentItem.word);
+    if (currentItem) speak(currentItem[getLangKey()]);
     return;
   }
 
@@ -176,7 +182,7 @@ canvas.addEventListener("pointerup", e => {
   // Check Win Condition
   if (targets.every(t => t.matched)) {
     isWin = true;
-    setTimeout(() => speak(`${currentItem.word}! Good job!`), 800);
+    setTimeout(() => speak(currentItem[getLangKey()]), 800);
     setTimeout(initGame, 2500);
   }
 });

@@ -112,6 +112,21 @@
 </head>
 <body>
   <a id="backBtn" href="index.html">🔙 Home</a>
+  
+  <div style="position: fixed; top: 16px; right: 16px; z-index: 10;">
+    <select id="globalLangSelect" style="padding: 8px 12px; border-radius: 8px; font-size: 16px; border: 2px solid #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: white; cursor: pointer;">
+      <option value="en">🇬🇧 English</option>
+      <option value="es">🇪🇸 Español</option>
+      <option value="fr">🇫🇷 Français</option>
+      <option value="de">🇩🇪 Deutsch</option>
+    </select>
+  </div>
+  <script>
+    const ls = document.getElementById('globalLangSelect');
+    ls.value = localStorage.getItem('appLang') || 'en';
+    ls.addEventListener('change', e => localStorage.setItem('appLang', e.target.value));
+  </script>
+
   <h1>Choose a Game!</h1>
   <div class="container">
     <a href="game.html" class="game-btn car">🏎️ Car Game</a>

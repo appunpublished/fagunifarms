@@ -37,6 +37,10 @@ const pairs = [
   { a: "G", b: "g" }, { a: "H", b: "h" }
 ];
 
+const langMap = { "en": "en-US", "es": "es-ES", "fr": "fr-FR", "de": "de-DE" };
+function getLangKey() { return localStorage.getItem('appLang') || 'en'; }
+function getLangCode() { return langMap[getLangKey()]; }
+
 function initGame() {
   cards = [];
   flippedCards = [];
@@ -118,6 +122,7 @@ canvas.addEventListener("pointerdown", e => {
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(card.text);
+        utterance.lang = getLangCode();
         utterance.rate = 0.9;
         window.speechSynthesis.speak(utterance);
       }

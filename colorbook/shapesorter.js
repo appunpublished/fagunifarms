@@ -22,6 +22,18 @@ const NUMBERS = "0123456789".split("");
 const ALL_TYPES = [...SHAPE_TYPES, ...ALPHABETS, ...NUMBERS];
 const COLORS = ["#FF3B30", "#34C759", "#007AFF", "#FFCC00", "#AF52DE", "#FF9500", "#E91E63", "#00BCD4"];
 
+const langMap = { "en": "en-US", "es": "es-ES", "fr": "fr-FR", "de": "de-DE" };
+function getLangKey() { return localStorage.getItem('appLang') || 'en'; }
+function getLangCode() { return langMap[getLangKey()]; }
+
+const SHAPE_NAMES = {
+  "Circle": { en: "Circle", es: "Círculo", fr: "Cercle", de: "Kreis" },
+  "Square": { en: "Square", es: "Cuadrado", fr: "Carré", de: "Quadrat" },
+  "Triangle": { en: "Triangle", es: "Triángulo", fr: "Triangle", de: "Dreieck" },
+  "Star": { en: "Star", es: "Estrella", fr: "Étoile", de: "Stern" },
+  "Hexagon": { en: "Hexagon", es: "Hexágono", fr: "Hexagone", de: "Sechseck" }
+};
+
 let targets = [];
 let draggables = [];
 let particles = [];
@@ -33,6 +45,7 @@ function speak(text) {
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
     const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = getLangCode();
     msg.rate = 0.85; msg.pitch = 1.1;
     window.speechSynthesis.speak(msg);
   }
@@ -68,7 +81,8 @@ function initGame() {
     });
   });
 
-  speak("Match the shapes!");
+  const INTRO = { en: "Match the shapes!", es: "¡Empareja las formas!", fr: "Associez les formes!", de: "Ordne die Formen zu!" };
+  speak(INTRO[getLangKey()]);
 }
 
 /*************************************************
@@ -116,7 +130,8 @@ canvas.addEventListener("pointerup", e => {
     draggedItem.matched = true;
     target.matched = true;
     createPop(target.x, target.y, draggedItem.color);
-    speak(draggedItem.type);
+    const shapeName = SHAPE_NAMES[draggedItem.type] ? SHAPE_NAMES[draggedItem.type][getLangKey()] : draggedItem.type;
+    speak(shapeName);
     if ("vibrate" in navigator) navigator.vibrate(50);
   } else {
     // Return to starting tray
@@ -128,7 +143,8 @@ canvas.addEventListener("pointerup", e => {
 
   if (targets.every(t => t.matched)) {
     isWin = true;
-    speak("Great job!");
+    const WIN_MSG = { en: "Great job!", es: "¡Buen trabajo!", fr: "Bon travail!", de: "Gut gemacht!" };
+    speak(WIN_MSG[getLangKey()]);
     setTimeout(initGame, 2000);
   }
 });

@@ -29,10 +29,15 @@ let speedMult = 1;
 
 const basket = { x: canvas.width / 2, y: canvas.height - 80, w: 100, h: 50 };
 
+const langMap = { "en": "en-US", "es": "es-ES", "fr": "fr-FR", "de": "de-DE" };
+function getLangKey() { return localStorage.getItem('appLang') || 'en'; }
+function getLangCode() { return langMap[getLangKey()]; }
+
 function speak(text) {
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
     const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = getLangCode();
     msg.rate = 0.85; msg.pitch = 1.2;
     window.speechSynthesis.speak(msg);
   }
@@ -40,8 +45,7 @@ function speak(text) {
 
 function pickTarget() {
   targetChar = possibleChars[Math.floor(Math.random() * possibleChars.length)];
-  const isNum = !isNaN(targetChar);
-  speak(`Catch the ${isNum ? 'number' : 'letter'} ${targetChar}`);
+  speak(targetChar);
 }
 
 function spawnItem() {
@@ -184,7 +188,8 @@ function update(time) {
           score += 10;
           speedMult += 0.05;
           createPop(item.x, item.y, item.color);
-          speak("Good!");
+          const PRAISE = { en: "Good!", es: "¡Bien!", fr: "Bien!", de: "Gut!" };
+          speak(PRAISE[getLangKey()]);
           if ("vibrate" in navigator) navigator.vibrate(30);
           pickTarget();
         } else {

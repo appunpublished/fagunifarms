@@ -341,6 +341,15 @@ if (fullscreenBtn) {
 }
 
 /*************************************************
+ * GLOBAL LANGUAGE SELECTOR
+ *************************************************/
+const langSelect = document.getElementById("globalLangSelect");
+if (langSelect) {
+  langSelect.value = localStorage.getItem("appLang") || "en";
+  langSelect.addEventListener("change", (e) => localStorage.setItem("appLang", e.target.value));
+}
+
+/*************************************************
  * POINTER UTILS
  *************************************************/
 function getPos(e) {

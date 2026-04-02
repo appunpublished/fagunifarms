@@ -32,11 +32,15 @@ let lives = 3;
 /*************************************************
  * SPEECH UTILS
  *************************************************/
+const langMap = { "en": "en-US", "es": "es-ES", "fr": "fr-FR", "de": "de-DE" };
+function getLangKey() { return localStorage.getItem('appLang') || 'en'; }
+function getLangCode() { return langMap[getLangKey()]; }
+
 function speakPrompt(text) {
   if (!("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
+  utterance.lang = getLangCode();
   utterance.rate = 0.85;
   utterance.pitch = 1.2;
   window.speechSynthesis.speak(utterance);
@@ -50,7 +54,7 @@ function pickNewTarget() {
   } else {
     targetCharacter = possibleCharacters[Math.floor(Math.random() * possibleCharacters.length)];
   }
-  speakPrompt(`Pop the ${targetCharacter}`);
+  speakPrompt(targetCharacter); // Removed "Pop the" to be language agnostic
 }
 
 /*************************************************
