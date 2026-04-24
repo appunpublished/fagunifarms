@@ -13,6 +13,8 @@ const urlsToCache = [
   './snake.js',
   './letterdrop.js',
   './solar.js',
+  './instruments.html',
+  './instruments.js',
   './wordpuzzle.js',
   './shapesorter.js',
   './images.json',

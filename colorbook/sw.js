@@ -13,6 +13,8 @@ self.addEventListener("install", e => {
         "/snake.js",
         "/starwars.html",
         "/starwars.js",
+        "/instruments.html",
+        "/instruments.js",
         "/shapesorter.html",
         "/shapesorter.js",
         "/letterdrop.html",
