@@ -262,6 +262,14 @@ function speak(text) {
   }
 }
 
+function instrumentName(instrument) {
+  return instrument.word[getLangKey()] || instrument.word.en;
+}
+
+function speakInstrumentName(instrument) {
+  speak(instrumentName(instrument));
+}
+
 /*************************************************
  * INPUT
  *************************************************/
@@ -275,7 +283,7 @@ canvas.addEventListener("pointerdown", e => {
       selectedIndex = i;
       buildPlayZones();
       activeZone = "";
-      speak(pad.word[getLangKey()] || pad.word.en);
+      speakInstrumentName(pad);
       createSparkle(pad.x + pad.w / 2, pad.y + pad.h / 2, pad.accent);
       if ("vibrate" in navigator) navigator.vibrate(20);
       return;
@@ -287,6 +295,11 @@ canvas.addEventListener("pointerdown", e => {
       playZone(zone);
       return;
     }
+  }
+
+  if (inRect(px, py, stage)) {
+    speakInstrumentName(selectedInstrument());
+    createSparkle(px, py, selectedInstrument().accent);
   }
 });
 
@@ -429,13 +442,13 @@ function drawSelector() {
     ctx.stroke();
 
     drawInstrumentIcon(pad, pad.x + pad.w / 2, pad.y + pad.h * 0.38, Math.min(pad.w, pad.h) * 0.42);
-    drawTextFit(pad.word[getLangKey()] || pad.word.en, pad.x + pad.w / 2, pad.y + pad.h - 12, pad.w - 8, 13, "#263238");
+    drawTextFit(instrumentName(pad), pad.x + pad.w / 2, pad.y + pad.h - 12, pad.w - 8, 13, "#263238");
   });
 }
 
 function drawPlayableInstrument() {
   const instrument = selectedInstrument();
-  drawTextFit(instrument.word[getLangKey()] || instrument.word.en, canvas.width / 2, stage.y - 14, canvas.width - 32, 20, "#263238");
+  drawTextFit(instrumentName(instrument), canvas.width / 2, stage.y - 14, canvas.width - 32, 20, "#263238");
   if (instrument.key === "xylophone") drawPlayableXylophone();
   else if (instrument.key === "piano") drawPlayablePiano();
   else if (instrument.key === "drum") drawPlayableDrums();

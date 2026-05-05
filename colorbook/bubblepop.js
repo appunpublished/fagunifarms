@@ -25,9 +25,18 @@ let score = 0;
 let targetCharacter = "";
 let possibleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
 let lastSpawnTime = 0;
+let lastTargetSpawnTime = 0;
 let isPlaying = false;
 let isGameOver = false;
 let lives = 3;
+
+function getTargetPanelHeight() {
+  return Math.max(86, Math.min(118, canvas.height * 0.14));
+}
+
+function getPlayBottom() {
+  return canvas.height - getTargetPanelHeight();
+}
 
 /*************************************************
  * SPEECH UTILS
@@ -60,12 +69,12 @@ function pickNewTarget() {
 /*************************************************
  * ENTITIES
  *************************************************/
-function spawnBubble() {
+function spawnBubble(charOverride = "") {
   const radius = Math.random() * 20 + 35; // Size between 35 and 55
   const baseX = Math.random() * (canvas.width - radius * 2) + radius;
-  const y = canvas.height + radius;
+  const y = getPlayBottom() + radius;
   
-  const char = possibleCharacters[Math.floor(Math.random() * possibleCharacters.length)];
+  const char = charOverride || possibleCharacters[Math.floor(Math.random() * possibleCharacters.length)];
   const colors = ["#FF3B30", "#FF9500", "#FFCC00", "#4CAF50", "#5AC8FA", "#007AFF", "#5856D6", "#FF2D55"];
   const color = colors[Math.floor(Math.random() * colors.length)];
 
@@ -104,6 +113,7 @@ canvas.addEventListener("pointerdown", e => {
     lives = 3;
     bubbles = [];
     particles = [];
+    lastTargetSpawnTime = 0;
     pickNewTarget();
     return;
   }
@@ -168,21 +178,6 @@ function update(time) {
     lastSpawnTime = time;
   }
 
-  // Draw HUD
-  ctx.fillStyle = "rgba(0,0,0,0.4)";
-  ctx.fillRect(0, 0, canvas.width, 60);
-
-  ctx.fillStyle = "white";
-  ctx.font = "bold 20px system-ui";
-  ctx.textAlign = "left";
-  ctx.fillText(`Score: ${score}`, 20, 38);
-
-  ctx.textAlign = "center";
-  ctx.fillText(`Find: ${targetCharacter}`, canvas.width / 2, 38);
-
-  ctx.textAlign = "right";
-  ctx.fillText(`Lives: ${lives}`, canvas.width - 20, 38);
-
   // Update & Draw Bubbles
   bubbles.forEach(b => {
     b.y += b.vy;
@@ -211,6 +206,41 @@ function update(time) {
     ctx.fillText(b.char, b.x, b.y + 4);
   });
 
+  // Draw top HUD
+  ctx.fillStyle = "rgba(0,0,0,0.4)";
+  ctx.fillRect(0, 0, canvas.width, 56);
+
+  ctx.fillStyle = "white";
+  ctx.font = "bold 20px system-ui";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  ctx.fillText(`Score: ${score}`, 20, 36);
+
+  ctx.textAlign = "right";
+  ctx.fillText(`Lives: ${lives}`, canvas.width - 20, 36);
+
+  // Draw bottom target panel so the target character stays out of the bubble area
+  const panelHeight = getTargetPanelHeight();
+  const panelY = canvas.height - panelHeight;
+  ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
+  ctx.fillRect(0, panelY, canvas.width, panelHeight);
+  ctx.strokeStyle = "rgba(0, 122, 255, 0.45)";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(0, panelY);
+  ctx.lineTo(canvas.width, panelY);
+  ctx.stroke();
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#333";
+  ctx.font = "bold 18px system-ui";
+  ctx.fillText("Find this character", canvas.width / 2, panelY + 24);
+
+  ctx.fillStyle = "#007AFF";
+  ctx.font = `bold ${Math.min(58, panelHeight * 0.48)}px system-ui`;
+  ctx.fillText(targetCharacter, canvas.width / 2, panelY + panelHeight * 0.66);
+
   // Clean up offscreen bubbles & check for misses
   bubbles = bubbles.filter(b => {
     if (b.y < -b.radius * 2) {
@@ -226,9 +256,11 @@ function update(time) {
     return true;
   });
 
-  // Occasionally force the target character to spawn if it's missing
-  if (bubbles.length > 4 && !bubbles.some(b => b.char === targetCharacter)) {
-    bubbles[Math.floor(Math.random() * bubbles.length)].char = targetCharacter;
+  // If the target is missing, add a new target bubble from the bottom.
+  // Do not rewrite a bubble already on screen; that makes the target appear midway.
+  if (bubbles.length > 4 && !bubbles.some(b => b.char === targetCharacter) && time - lastTargetSpawnTime > 1800) {
+    spawnBubble(targetCharacter);
+    lastTargetSpawnTime = time;
   }
 
   // Draw Particles
