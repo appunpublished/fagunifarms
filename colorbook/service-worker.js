@@ -15,6 +15,8 @@ const urlsToCache = [
   './solar.js',
   './instruments.html',
   './instruments.js',
+  './carwash.html',
+  './carwash.js',
   './wordpuzzle.js',
   './shapesorter.js',
   './images.json',
