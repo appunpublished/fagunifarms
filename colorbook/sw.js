@@ -31,7 +31,9 @@ self.addEventListener("install", e => {
         "/vocabmatch.html",
         "/vocabmatch.js",
         "/wordpuzzle.html",
-        "/wordpuzzle.js"
+        "/wordpuzzle.js",
+        "/stickman.html",
+        "/stickman.js"
       ])
     )
   );

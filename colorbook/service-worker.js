@@ -17,6 +17,8 @@ const urlsToCache = [
   './instruments.js',
   './carwash.html',
   './carwash.js',
+  './stickman.html',
+  './stickman.js',
   './wordpuzzle.js',
   './shapesorter.js',
   './images.json',
