@@ -13,7 +13,8 @@ const held = {
   up: false,
   down: false,
   run: false,
-  block: false
+  block: false,
+  kick: false
 };
 
 let player;
@@ -33,6 +34,9 @@ let shake = 0;
 let announceTimer = 0;
 let announceText = "";
 let roundResetTimer = 0;
+let playerKickCount = 0;
+let kickRepeatTimer = 0;
+let toastTimerId = null;
 
 function resize() {
   const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -91,6 +95,8 @@ function resetRound() {
   roundWon = false;
   gameOver = false;
   roundResetTimer = 0;
+  playerKickCount = 0;
+  kickRepeatTimer = 0;
   announce("Round " + round, 90);
   updateHud();
 }
@@ -99,13 +105,24 @@ function startGame() {
   score = 0;
   round = 1;
   running = true;
+  document.body.classList.add("is-playing");
   resetRound();
-  tipText.textContent = "One-on-one fight. Move close, block when the rival swings, and use kick or special for easier hits.";
+  showToast("Every third held kick becomes a jump kick.");
 }
 
 function announce(text, time) {
   announceText = text;
   announceTimer = time;
+}
+
+function showToast(text, duration = 1600) {
+  if (!tipText) return;
+  window.clearTimeout(toastTimerId);
+  tipText.textContent = text;
+  tipText.classList.add("is-visible");
+  toastTimerId = window.setTimeout(() => {
+    tipText.classList.remove("is-visible");
+  }, duration);
 }
 
 function updateHud() {
@@ -117,6 +134,10 @@ function updateHud() {
 function setHeld(name, value) {
   if (name in held) {
     held[name] = value;
+    if (name === "kick" && value) {
+      pendingMove = "kick";
+      kickRepeatTimer = 0;
+    }
   } else if (value) {
     pendingMove = name;
   }
@@ -130,7 +151,6 @@ controlButtons.forEach(button => {
     button.classList.add("is-held");
     if (!running || gameOver) {
       startGame();
-      return;
     }
     setHeld(name, true);
   };
@@ -152,12 +172,17 @@ window.addEventListener("keydown", event => {
   keys[key] = true;
   if (!running || gameOver) startGame();
   if (key === "j") pendingMove = "punch";
-  if (key === "k") pendingMove = "kick";
+  if (key === "k") {
+    held.kick = true;
+    pendingMove = "kick";
+  }
   if (key === "l") pendingMove = "special";
 });
 
 window.addEventListener("keyup", event => {
-  keys[event.key.toLowerCase()] = false;
+  const key = event.key.toLowerCase();
+  keys[key] = false;
+  if (key === "k") held.kick = false;
 });
 
 canvas.addEventListener("pointerdown", () => {
@@ -210,6 +235,7 @@ function update() {
 
 function updatePlayer() {
   tickFighter(player);
+  updateHeldKick();
   player.facing = opponent.x >= player.x ? 1 : -1;
   player.ducking = isDown("down") && player.grounded;
   player.blocking = isDown("block") && !player.attack && player.grounded;
@@ -228,6 +254,15 @@ function updatePlayer() {
   const move = consumeMove();
   if (move) startAttack(player, move);
   if (player.attack) updateAttack(player, opponent);
+}
+
+function updateHeldKick() {
+  if (!held.kick) return;
+  kickRepeatTimer = Math.max(0, kickRepeatTimer - 1);
+  if (!pendingMove && !player.attack && player.attackCooldown <= 0 && kickRepeatTimer <= 0) {
+    pendingMove = "kick";
+    kickRepeatTimer = playerKickCount % 3 === 2 ? 8 : 12;
+  }
 }
 
 function updateOpponent() {
@@ -315,10 +350,27 @@ function startAttack(fighter, kind) {
 
   const attack = attacks[kind];
   if (!attack || fighter.energy < attack.energy) return;
+  const activeAttack = { ...attack };
+  if (fighter.isPlayer && kind === "kick") {
+    playerKickCount++;
+    if (playerKickCount % 3 === 0) {
+      activeAttack.range = 136;
+      activeAttack.damage = 23;
+      activeAttack.hitFrame = 10;
+      activeAttack.total = 23;
+      activeAttack.stun = 18;
+      activeAttack.jumpKick = true;
+      if (fighter.grounded) {
+        jump(fighter, -10.8, 12);
+      }
+      fighter.vx = fighter.facing * 6.2;
+      announce("Jump kick", 34);
+    }
+  }
   fighter.energy -= attack.energy;
-  fighter.attack = attack;
-  fighter.attackTimer = attack.total;
-  fighter.attackCooldown = Math.max(7, Math.round(attack.total * 0.48));
+  fighter.attack = activeAttack;
+  fighter.attackTimer = activeAttack.total;
+  fighter.attackCooldown = Math.max(7, Math.round(activeAttack.total * 0.48));
 }
 
 function updateAttack(attacker, target) {
@@ -358,15 +410,16 @@ function resolveRound() {
     roundWon = true;
     score += 500;
     announce("You win", 120);
-    tipText.textContent = "Nice. Next round starts in a moment.";
+    showToast("Nice. Next round starts soon.", 1500);
     roundResetTimer = 84;
   }
 
   if (player.hp <= 0) {
     gameOver = true;
     running = false;
+    document.body.classList.remove("is-playing");
     announce("You lost", 140);
-    tipText.textContent = "Game over. Tap any control to try again.";
+    showToast("Game over. Tap any control to retry.", 2200);
   }
 }
 
@@ -511,7 +564,8 @@ function drawFighter(fighter) {
   const hipY = fighter.y - 30;
   const walk = Math.sin(fighter.footstep) * Math.min(9, Math.abs(fighter.vx) * 1.8);
   const color = fighter.hurtTimer > 0 ? "#ef4444" : fighter.color;
-  const attack = fighter.attack ? fighter.attack.name : null;
+  const attack = fighter.attack;
+  const attackName = attack ? attack.name : null;
 
   ctx.save();
   ctx.translate(fighter.x, fighter.y);
@@ -540,7 +594,9 @@ function drawFighter(fighter) {
     ctx.stroke();
   }
 
-  if (attack) drawAttackPose(attack, fighter.attackTimer, fighter.attack.total, fighter.accent);
+  if (attackName === "special") {
+    drawAttackPose(attackName, fighter.attackTimer, fighter.attack.total, fighter.accent);
+  }
   ctx.restore();
 
   drawNameTag(fighter);
@@ -548,9 +604,14 @@ function drawFighter(fighter) {
 
 function drawSkeleton(headY, chestY, hipY, walk, fighter, attack, outline) {
   const fy = fighter.y;
-  const armReach = attack ? 10 : 0;
+  const attackName = attack ? attack.name : null;
+  const punchProgress = attackName === "punch" ? 1 - fighter.attackTimer / attack.total : 0;
   const rearArm = fighter.blocking ? -4 : -28 - walk * 0.6;
-  const frontArm = fighter.blocking ? 25 : 28 + walk * 0.6 + armReach;
+  const frontArm = fighter.blocking ? 25 : attackName === "punch" ? 48 + punchProgress * 24 : 28 + walk * 0.6;
+  const frontHand = fighter.blocking ? 41 : attackName === "punch" ? 78 + punchProgress * 8 : frontArm + 16;
+  const frontY = attackName === "punch" ? -49 : chestY + 9 - fy;
+  const frontHandY = attackName === "punch" ? -47 : chestY + 26 - fy;
+  const hip = hipY - fy;
 
   ctx.beginPath();
   ctx.arc(0, headY - fy, 13, 0, Math.PI * 2);
@@ -561,10 +622,20 @@ function drawSkeleton(headY, chestY, hipY, walk, fighter, attack, outline) {
   ctx.lineTo(0, hipY - fy);
   ctx.stroke();
 
-  drawLimb(0, chestY - fy, frontArm, chestY + 9 - fy, frontArm + 16, chestY + 26 - fy);
+  drawLimb(0, chestY - fy, frontArm, frontY, frontHand, frontHandY);
   drawLimb(0, chestY - fy, rearArm, chestY + 9 - fy, rearArm - 14, chestY + 25 - fy);
-  drawLimb(0, hipY - fy, 21 + walk, -12, 35 + walk, 0);
-  drawLimb(0, hipY - fy, -21 - walk, -12, -35 - walk, 0);
+
+  if (attackName === "kick") {
+    const progress = 1 - fighter.attackTimer / attack.total;
+    const snap = Math.sin(progress * Math.PI);
+    const footX = 62 + progress * 30;
+    const footY = -29 - snap * 12;
+    drawLimb(0, hip, 28 + progress * 22, -19 - snap * 8, footX, footY);
+    drawLimb(0, hip, -24 - walk * 0.25, -10, -38 - walk * 0.25, 0);
+  } else {
+    drawLimb(0, hip, 21 + walk, -12, 35 + walk, 0);
+    drawLimb(0, hip, -21 - walk, -12, -35 - walk, 0);
+  }
 
   if (!outline) {
     ctx.fillStyle = fighter.accent;
@@ -582,17 +653,11 @@ function drawLimb(x1, y1, x2, y2, x3, y3) {
 
 function drawAttackPose(name, timer, total, accent) {
   const progress = 1 - timer / total;
-  ctx.strokeStyle = name === "special" ? "#f59f00" : accent;
-  ctx.lineWidth = name === "special" ? 8 : 6;
-  if (name === "punch") {
-    drawLimb(0, -50, 48 + progress * 18, -49, 76 + progress * 9, -47);
-  } else if (name === "kick") {
-    drawLimb(0, -31, 38 + progress * 19, -18, 88, -25);
-  } else {
-    ctx.beginPath();
-    ctx.arc(54, -49, 44 + Math.sin(progress * Math.PI) * 13, -0.95, 0.95);
-    ctx.stroke();
-  }
+  ctx.strokeStyle = "#f59f00";
+  ctx.lineWidth = 8;
+  ctx.beginPath();
+  ctx.arc(54, -49, 44 + Math.sin(progress * Math.PI) * 13, -0.95, 0.95);
+  ctx.stroke();
 }
 
 function drawNameTag(fighter) {

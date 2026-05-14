@@ -133,45 +133,81 @@
     .tip {
       position: fixed;
       left: 50%;
-      bottom: 176px;
+      top: 78px;
       z-index: 14;
       width: min(520px, calc(100vw - 28px));
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateY(-8px);
       padding: 9px 12px;
       color: #263044;
-      background: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.9);
       border: 2px solid rgba(23, 32, 51, 0.14);
       border-radius: 8px;
+      opacity: 0;
+      pointer-events: none;
       font-size: 14px;
       font-weight: 800;
       text-align: center;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .tip.is-visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     @media (max-width: 720px) {
+      #backBtn {
+        top: 8px;
+        left: 8px;
+        padding: 7px 10px;
+        font-size: 13px;
+      }
+
+      .hud {
+        top: 8px;
+        right: 8px;
+        gap: 4px;
+        max-width: calc(100vw - 76px);
+        padding: 6px;
+        font-size: 11px;
+        border-width: 1px;
+      }
+
+      .hud span {
+        min-width: 0;
+        padding: 0 4px;
+      }
+
       .controls {
-        padding: 8px;
-        gap: 8px;
+        padding: 6px;
+        gap: 6px;
       }
 
       .pad {
-        grid-template-columns: repeat(3, 48px);
-        grid-template-rows: repeat(3, 44px);
-        gap: 6px;
+        grid-template-columns: repeat(3, 44px);
+        grid-template-rows: repeat(3, 40px);
+        gap: 5px;
       }
 
       .moves {
-        grid-template-columns: repeat(2, minmax(54px, 62px));
-        gap: 6px;
+        grid-template-columns: repeat(2, minmax(50px, 58px));
+        gap: 5px;
       }
 
       button.control {
-        min-height: 44px;
-        font-size: 12px;
+        min-height: 40px;
+        font-size: 11px;
       }
 
       .tip {
-        bottom: 150px;
-        font-size: 12px;
+        top: 48px;
+        width: min(280px, calc(100vw - 92px));
+        padding: 7px 9px;
+        font-size: 11px;
+        line-height: 1.25;
+        background: rgba(255, 255, 255, 0.88);
+        border-width: 1px;
+        box-shadow: 0 4px 12px rgba(23, 32, 51, 0.12);
       }
     }
   </style>
@@ -186,7 +222,7 @@
 
   <canvas id="gameCanvas"></canvas>
 
-  <div class="tip" id="tipText">Tap the screen to start. One-on-one fight: move, run, jump, duck, block, punch, kick, and special attack.</div>
+  <div class="tip" id="tipText" role="status" aria-live="polite"></div>
 
   <div class="controls" aria-label="Game controls">
     <div class="pad">
