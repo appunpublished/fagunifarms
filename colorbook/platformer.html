@@ -3,36 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Platform Adventure</title>
+  <title>Platform Quest</title>
   <style>
-    body, html {
+    body,
+    html {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: #87CEEB;
+      background: #78d8ff;
       touch-action: none;
       font-family: system-ui, sans-serif;
     }
-    canvas { display: block; }
+
+    canvas {
+      display: block;
+    }
+
     #backBtn {
       position: absolute;
       top: 16px;
       left: 16px;
-      padding: 8px 16px;
+      padding: 8px 14px;
       background: rgba(255, 255, 255, 0.9);
-      color: #333;
-      border: 2px solid #ccc;
+      color: #223047;
+      border: 2px solid rgba(34, 48, 71, 0.16);
       border-radius: 8px;
       font-size: 16px;
+      font-weight: 700;
       cursor: pointer;
       text-decoration: none;
       z-index: 10;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 5px 16px rgba(25, 37, 57, 0.15);
+      backdrop-filter: blur(8px);
     }
   </style>
 </head>
 <body>
-  <a id="backBtn" href="games.html">🔙 Back</a>
+  <a id="backBtn" href="games.html">&larr; Back</a>
   <canvas id="gameCanvas"></canvas>
   <script src="platformer.js"></script>
 </body>

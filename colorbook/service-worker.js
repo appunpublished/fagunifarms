@@ -1,10 +1,12 @@
-const CACHE_NAME = 'fagunifarms-cache-v4';
+const CACHE_NAME = 'fagunifarms-cache-v6';
 
 // Add all the files you want to be available offline
 const urlsToCache = [
   './',
   './index.html',
   './games.html',
+  './dinosaur.html',
+  './dinosaur.js',
   './app.js',
   './game.js',
   './memorymatch.js',
@@ -20,10 +22,17 @@ const urlsToCache = [
   './stickman.html',
   './stickman.js',
   './wordpuzzle.js',
+  './shapesorter.html',
   './shapesorter.js',
   './images.json',
   './labels.json',
-  './100images/index.json'
+  './100images/index.json',
+  './assets/dinosaurs/trex.jpg',
+  './assets/dinosaurs/triceratops.jpg',
+  './assets/dinosaurs/stegosaurus.jpg',
+  './assets/dinosaurs/brachiosaurus.jpg',
+  './assets/dinosaurs/pteranodon.jpg',
+  './assets/dinosaurs/ankylosaurus.jpg'
   // IMPORTANT: Add all your assets here! 
   // e.g., './assets/cars/car_yellow.png', './assets/audio/engine.mp3', etc.
 ];
