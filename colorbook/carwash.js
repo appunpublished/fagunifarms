@@ -8,6 +8,7 @@ const toolButtons = {
   soap: document.getElementById("soapTool"),
   scrub: document.getElementById("scrubTool")
 };
+const musicToggle = document.getElementById("musicToggle");
 
 function resize() {
   canvas.width = window.innerWidth;
@@ -24,15 +25,25 @@ document.addEventListener("gesturechange", e => e.preventDefault());
  * GAME DATA
  *************************************************/
 const LEVELS = [
-  { name: "Tiny Taxi", body: "#ffca3a", accent: "#fb8500", kind: "car", spots: 18, grime: ["mud", "dust"], requiredClean: 0.88, message: "Wash the tiny taxi!" },
-  { name: "Family Car", body: "#06d6a0", accent: "#118ab2", kind: "car", spots: 24, grime: ["mud", "dust", "pollen"], requiredClean: 0.9, message: "The family car needs a shiny wash!" },
-  { name: "Delivery Van", body: "#4cc9f0", accent: "#4361ee", kind: "van", spots: 30, grime: ["mud", "dust", "sticky"], requiredClean: 0.91, message: "The delivery van is extra dusty!" },
-  { name: "Beach Jeep", body: "#f15bb5", accent: "#fee440", kind: "jeep", spots: 36, grime: ["sand", "dust", "sticky"], requiredClean: 0.92, message: "Rinse the sandy beach jeep!" },
-  { name: "Farm Truck", body: "#57cc99", accent: "#386641", kind: "truck", spots: 42, grime: ["mud", "mud", "leaf", "sticky"], requiredClean: 0.93, message: "Use soap and scrub for farm grime!" },
-  { name: "City Bus", body: "#ffd166", accent: "#ef476f", kind: "bus", spots: 48, grime: ["dust", "sticky", "tar", "pollen"], requiredClean: 0.94, message: "The city bus has big dirty windows!" },
-  { name: "Monster Truck", body: "#8338ec", accent: "#3a0ca3", kind: "monster", spots: 54, grime: ["mud", "mud", "tar", "leaf"], requiredClean: 0.95, message: "Scrub the monster truck!" },
-  { name: "Race Car", body: "#ff595e", accent: "#1982c4", kind: "race", spots: 60, grime: ["mud", "dust", "sticky", "tar", "pollen"], requiredClean: 0.96, message: "Final wash! Make it shine!" }
+  { name: "Tiny Taxi", body: "#ffca3a", accent: "#fb8500", kind: "car", spots: 22, grime: ["mud", "dust"], requiredClean: 0.88, message: "Wash the tiny taxi!" },
+  { name: "Family Car", body: "#06d6a0", accent: "#118ab2", kind: "car", spots: 28, grime: ["mud", "dust", "pollen"], requiredClean: 0.9, message: "The family car needs a shiny wash!" },
+  { name: "Delivery Van", body: "#4cc9f0", accent: "#4361ee", kind: "van", spots: 36, grime: ["mud", "dust", "sticky"], requiredClean: 0.91, message: "The delivery van is extra dusty!" },
+  { name: "Beach Jeep", body: "#f15bb5", accent: "#fee440", kind: "jeep", spots: 42, grime: ["sand", "dust", "sticky"], requiredClean: 0.92, message: "Rinse the sandy beach jeep!" },
+  { name: "Farm Truck", body: "#57cc99", accent: "#386641", kind: "truck", spots: 50, grime: ["mud", "mud", "leaf", "sticky"], requiredClean: 0.93, message: "Use soap and scrub for farm grime!" },
+  { name: "City Bus", body: "#ffd166", accent: "#ef476f", kind: "bus", spots: 58, grime: ["dust", "sticky", "tar", "pollen"], requiredClean: 0.94, message: "The city bus has big dirty windows!" },
+  { name: "Monster Truck", body: "#8338ec", accent: "#3a0ca3", kind: "monster", spots: 66, grime: ["mud", "mud", "tar", "leaf"], requiredClean: 0.95, message: "Scrub the monster truck!" },
+  { name: "Race Car", body: "#ff595e", accent: "#1982c4", kind: "race", spots: 72, grime: ["mud", "dust", "sticky", "tar", "pollen"], requiredClean: 0.96, message: "Final wash! Make it shine!" }
 ];
+
+const OPTIONAL_VEHICLE_IMAGES = {
+  car: "assets/carwash/car.png",
+  van: "assets/carwash/van.png",
+  jeep: "assets/carwash/jeep.png",
+  truck: "assets/carwash/truck.png",
+  bus: "assets/carwash/bus.png",
+  monster: "assets/carwash/monster_truck.png",
+  race: "assets/carwash/race_car.png"
+};
 
 const DIRT_STYLE = {
   mud: { color: "#7f4f24", toughness: 2.1, label: "mud" },
@@ -63,16 +74,29 @@ let lastBrushTime = 0;
 let levelComplete = false;
 let started = false;
 let bannerTimer = 180;
+let roadOffset = 0;
+let audioCtx = null;
+let musicTimer = null;
+let musicEnabled = true;
+let masterGain = null;
+const vehicleImages = {};
+
+Object.keys(OPTIONAL_VEHICLE_IMAGES).forEach(kind => {
+  const img = new Image();
+  img.onload = () => { vehicleImages[kind] = img; };
+  img.onerror = () => {};
+  img.src = OPTIONAL_VEHICLE_IMAGES[kind];
+});
 
 function layoutCar() {
   const bottomPad = canvas.width < 520 ? 116 : 126;
-  const w = Math.min(canvas.width * 0.76, 560);
-  const h = Math.min(canvas.height * 0.34, w * 0.45);
+  const w = Math.min(canvas.width * 0.9, 780);
+  const h = Math.min(canvas.height * 0.43, w * 0.5);
   car = {
     x: (canvas.width - w) / 2,
-    y: Math.max(135, canvas.height * 0.42 - h * 0.5),
+    y: Math.max(130, canvas.height * 0.47 - h * 0.5),
     w,
-    h: Math.max(150, h),
+    h: Math.max(canvas.width < 520 ? 185 : 230, h),
     groundY: canvas.height - bottomPad
   };
 }
@@ -88,6 +112,70 @@ function setTool(tool) {
 Object.keys(toolButtons).forEach(tool => {
   toolButtons[tool].addEventListener("click", () => setTool(tool));
 });
+
+if (musicToggle) {
+  musicToggle.addEventListener("click", () => {
+    musicEnabled = !musicEnabled;
+    musicToggle.textContent = musicEnabled ? "MUSIC" : "MUTE";
+    musicToggle.setAttribute("aria-label", musicEnabled ? "Turn music off" : "Turn music on");
+    if (musicEnabled) startMusic();
+    else stopMusic();
+  });
+}
+
+function getAudio() {
+  if (!window.AudioContext && !window.webkitAudioContext) return null;
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.18;
+    masterGain.connect(audioCtx.destination);
+  }
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+
+function playTone(freq, duration, type = "sine", volume = 0.12) {
+  if (!musicEnabled && type !== "noise") return;
+  const audio = getAudio();
+  if (!audio) return;
+  const osc = audio.createOscillator();
+  const gain = audio.createGain();
+  osc.type = type === "noise" ? "triangle" : type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(volume, audio.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(masterGain);
+  osc.start();
+  osc.stop(audio.currentTime + duration);
+}
+
+function playToolSound() {
+  if (!audioCtx) return;
+  if (selectedTool === "water") playTone(520 + Math.random() * 120, 0.08, "sine", 0.04);
+  else if (selectedTool === "soap") playTone(720 + Math.random() * 90, 0.11, "triangle", 0.035);
+  else playTone(170 + Math.random() * 40, 0.06, "sawtooth", 0.03);
+}
+
+function startMusic() {
+  if (!musicEnabled || musicTimer) return;
+  getAudio();
+  const melody = [392, 440, 523, 440, 349, 392, 330, 392];
+  let beat = 0;
+  musicTimer = setInterval(() => {
+    if (!musicEnabled || !audioCtx) return;
+    const note = melody[beat % melody.length];
+    playTone(note, 0.18, "sine", 0.035);
+    if (beat % 2 === 0) playTone(note / 2, 0.22, "triangle", 0.022);
+    beat++;
+  }, 420);
+}
+
+function stopMusic() {
+  clearInterval(musicTimer);
+  musicTimer = null;
+}
 
 function speak(text) {
   if (!("speechSynthesis" in window)) return;
@@ -105,11 +193,13 @@ function rand(min, max) {
 
 function carContains(x, y) {
   if (!car) return false;
-  const bodyTop = car.y + car.h * 0.34;
+  const level = LEVELS[levelIndex] || LEVELS[0];
+  const bodyTop = car.y + car.h * (level.kind === "bus" || level.kind === "van" ? 0.23 : 0.34);
   const bodyBottom = car.y + car.h * 0.82;
-  const hood = x > car.x + car.w * 0.08 && x < car.x + car.w * 0.92 && y > bodyTop && y < bodyBottom;
-  const cabin = x > car.x + car.w * 0.27 && x < car.x + car.w * 0.72 && y > car.y + car.h * 0.08 && y < bodyTop + car.h * 0.18;
-  return hood || cabin;
+  const body = x > car.x + car.w * 0.05 && x < car.x + car.w * 0.95 && y > bodyTop && y < bodyBottom;
+  const cabin = x > car.x + car.w * 0.22 && x < car.x + car.w * 0.77 && y > car.y + car.h * 0.07 && y < bodyTop + car.h * 0.22;
+  const bed = level.kind === "truck" && x > car.x + car.w * 0.56 && x < car.x + car.w * 0.92 && y > car.y + car.h * 0.28 && y < bodyBottom;
+  return body || cabin || bed;
 }
 
 function makeSpot(type) {
@@ -196,6 +286,7 @@ function useTool(x, y) {
     started = true;
     initLevel(0);
   }
+  startMusic();
   if (levelComplete) return;
 
   const now = performance.now();
@@ -204,6 +295,7 @@ function useTool(x, y) {
   brush.x = x;
   brush.y = y;
   addBrushEffects(x, y);
+  playToolSound();
 
   dirtSpots.forEach(spot => {
     const distance = Math.hypot(x - spot.x, y - spot.y);
@@ -290,14 +382,14 @@ function roundRect(x, y, w, h, r) {
 
 function drawBackground() {
   const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  sky.addColorStop(0, "#9be7ff");
-  sky.addColorStop(0.48, "#edfaff");
-  sky.addColorStop(1, "#c8f3dd");
+  sky.addColorStop(0, "#8bd7f7");
+  sky.addColorStop(0.5, "#eefbff");
+  sky.addColorStop(1, "#d9efe7");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = "#ffffff";
-  ctx.globalAlpha = 0.36;
+  ctx.globalAlpha = 0.42;
   for (let x = 0; x < canvas.width; x += 58) {
     for (let y = 120; y < car.groundY; y += 58) {
       roundRect(x + 6, y + 6, 46, 46, 6);
@@ -306,16 +398,25 @@ function drawBackground() {
   }
   ctx.globalAlpha = 1;
 
-  ctx.fillStyle = "#53c67a";
-  ctx.fillRect(0, car.groundY, canvas.width, canvas.height - car.groundY);
-  ctx.fillStyle = "rgba(31, 113, 88, 0.2)";
-  for (let x = -40; x < canvas.width; x += 72) {
-    ctx.beginPath();
-    ctx.ellipse(x, car.groundY + 21, 55, 8, -0.12, 0, Math.PI * 2);
-    ctx.fill();
+  ctx.fillStyle = "#d7eef3";
+  ctx.fillRect(0, car.y - 78, canvas.width, car.groundY - car.y + 78);
+  ctx.fillStyle = "rgba(45, 99, 119, 0.12)";
+  for (let x = -40; x < canvas.width; x += 110) {
+    ctx.fillRect(x, car.y - 78, 12, car.groundY - car.y + 78);
   }
 
-  ctx.fillStyle = "#ffd166";
+  ctx.fillStyle = "#64748b";
+  ctx.fillRect(0, car.groundY, canvas.width, canvas.height - car.groundY);
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.34)";
+  ctx.lineWidth = 3;
+  for (let x = -80 + (roadOffset % 80); x < canvas.width + 80; x += 80) {
+    ctx.beginPath();
+    ctx.moveTo(x, car.groundY + 18);
+    ctx.lineTo(x + 36, car.groundY + 5);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "#f8d568";
   ctx.beginPath();
   ctx.arc(canvas.width - 72, 72, 34, 0, Math.PI * 2);
   ctx.fill();
@@ -329,28 +430,55 @@ function drawBackground() {
     ctx.fill();
   }
 
-  ctx.strokeStyle = "rgba(0, 122, 255, 0.22)";
-  ctx.lineWidth = 7;
-  for (let i = 0; i < 5; i++) {
+  ctx.strokeStyle = "rgba(0, 122, 255, 0.28)";
+  ctx.lineWidth = 8;
+  for (let i = 0; i < 6; i++) {
     const x = car.x + car.w * (0.16 + i * 0.17);
     ctx.beginPath();
-    ctx.moveTo(x, 110);
-    ctx.quadraticCurveTo(x + 18, car.y - 34, x - 10, car.y + 28);
+    ctx.moveTo(x, 102);
+    ctx.quadraticCurveTo(x + 22, car.y - 42, x - 14, car.y + 32);
     ctx.stroke();
   }
 
-  ctx.fillStyle = "#e9fbff";
-  roundRect(car.x - 52, car.y - 46, car.w + 104, 34, 8);
+  ctx.fillStyle = "#edf9fb";
+  roundRect(car.x - 64, car.y - 58, car.w + 128, 42, 8);
   ctx.fill();
+  ctx.strokeStyle = "#8ec8d8";
+  ctx.lineWidth = 3;
+  ctx.stroke();
   ctx.fillStyle = "#118ab2";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.font = "900 18px system-ui";
-  ctx.fillText("SUPER SHINE WASH", car.x + car.w / 2, car.y - 29);
+  ctx.font = "900 20px system-ui";
+  ctx.fillText("SUPER SHINE WASH", car.x + car.w / 2, car.y - 37);
 
-  ctx.fillStyle = "#77c7d7";
-  roundRect(car.x - 34, car.groundY - 24, car.w + 68, 26, 8);
+  ctx.fillStyle = "#7ec4d4";
+  roundRect(car.x - 46, car.groundY - 28, car.w + 92, 30, 8);
   ctx.fill();
+}
+
+function drawWheel(cx, cy, r) {
+  ctx.fillStyle = "#15191d";
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#2d343a";
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.76, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#cfd8dc";
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.42, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#90a4ae";
+  ctx.lineWidth = Math.max(2, r * 0.09);
+  for (let i = 0; i < 8; i++) {
+    const a = (Math.PI * 2 * i) / 8;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a) * r * 0.55, cy + Math.sin(a) * r * 0.55);
+    ctx.stroke();
+  }
 }
 
 function drawCar() {
@@ -359,89 +487,109 @@ function drawCar() {
   const y = car.y;
   const w = car.w;
   const h = car.h;
+  const optionalImage = vehicleImages[level.kind];
+
+  ctx.save();
+  ctx.shadowColor = "rgba(0, 0, 0, 0.22)";
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 11;
+  ctx.fillStyle = "rgba(0, 0, 0, 0.18)";
+  ctx.beginPath();
+  ctx.ellipse(x + w * 0.5, y + h * 0.88, w * 0.44, h * 0.09, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  if (optionalImage) {
+    ctx.save();
+    ctx.drawImage(optionalImage, x, y, w, h);
+    ctx.globalCompositeOperation = "source-atop";
+    const shine = ctx.createLinearGradient(x, y, x + w, y + h);
+    shine.addColorStop(0, "rgba(255,255,255,0.24)");
+    shine.addColorStop(0.45, "rgba(255,255,255,0)");
+    shine.addColorStop(0.72, "rgba(255,255,255,0.18)");
+    ctx.fillStyle = shine;
+    ctx.fillRect(x, y, w, h);
+    ctx.restore();
+    return;
+  }
 
   const bodyGradient = ctx.createLinearGradient(x, y, x, y + h);
-  bodyGradient.addColorStop(0, "#ffffff");
-  bodyGradient.addColorStop(0.12, level.body);
+  bodyGradient.addColorStop(0, "#f8ffff");
+  bodyGradient.addColorStop(0.18, level.body);
+  bodyGradient.addColorStop(0.64, level.body);
   bodyGradient.addColorStop(1, level.accent);
 
   ctx.save();
-  ctx.shadowColor = "rgba(0, 0, 0, 0.18)";
-  ctx.shadowBlur = 14;
+  ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+  ctx.shadowBlur = 16;
   ctx.shadowOffsetY = 8;
   ctx.fillStyle = bodyGradient;
-  const bodyTop = level.kind === "bus" || level.kind === "van" ? h * 0.24 : h * 0.34;
-  const bodyHeight = level.kind === "monster" ? h * 0.5 : h * 0.45;
-  roundRect(x + w * 0.06, y + bodyTop, w * 0.88, bodyHeight, 20);
+  const isTall = level.kind === "bus" || level.kind === "van";
+  const bodyTop = isTall ? h * 0.22 : h * 0.36;
+  const bodyHeight = level.kind === "monster" ? h * 0.48 : isTall ? h * 0.55 : h * 0.42;
+  roundRect(x + w * 0.04, y + bodyTop, w * 0.92, bodyHeight, 24);
   ctx.fill();
 
-  if (level.kind !== "bus" && level.kind !== "van") {
+  if (level.kind === "truck") {
+    roundRect(x + w * 0.56, y + h * 0.31, w * 0.34, h * 0.3, 10);
+    ctx.fill();
+    ctx.fillStyle = "rgba(38, 50, 56, 0.16)";
+    roundRect(x + w * 0.6, y + h * 0.34, w * 0.26, h * 0.2, 8);
+    ctx.fill();
+    ctx.fillStyle = bodyGradient;
+  }
+
+  if (!isTall) {
     ctx.fillStyle = bodyGradient;
     ctx.beginPath();
-    ctx.moveTo(x + w * 0.22, y + h * 0.39);
-    ctx.lineTo(x + w * 0.35, y + h * 0.09);
-    ctx.lineTo(x + w * 0.66, y + h * 0.09);
-    ctx.lineTo(x + w * 0.8, y + h * 0.39);
+    ctx.moveTo(x + w * 0.19, y + h * 0.39);
+    ctx.lineTo(x + w * 0.34, y + h * 0.08);
+    ctx.lineTo(x + w * 0.66, y + h * 0.08);
+    ctx.lineTo(x + w * 0.82, y + h * 0.39);
     ctx.closePath();
     ctx.fill();
   }
   ctx.restore();
 
   ctx.fillStyle = level.accent;
-  roundRect(x + w * 0.13, y + h * 0.59, w * 0.72, h * 0.08, 8);
+  roundRect(x + w * 0.12, y + h * 0.62, w * 0.76, h * 0.075, 8);
   ctx.fill();
 
-  ctx.fillStyle = "#b8ecff";
-  ctx.strokeStyle = "rgba(255,255,255,0.9)";
-  ctx.lineWidth = 4;
-  if (level.kind === "bus" || level.kind === "van") {
-    for (let i = 0; i < 4; i++) {
-      roundRect(x + w * (0.18 + i * 0.15), y + h * 0.3, w * 0.1, h * 0.16, 6);
+  ctx.fillStyle = "#b9ecff";
+  ctx.strokeStyle = "rgba(255,255,255,0.95)";
+  ctx.lineWidth = Math.max(3, h * 0.018);
+  if (isTall) {
+    const count = level.kind === "bus" ? 5 : 3;
+    for (let i = 0; i < count; i++) {
+      roundRect(x + w * (0.16 + i * 0.135), y + h * 0.29, w * 0.1, h * 0.17, 6);
       ctx.fill();
       ctx.stroke();
     }
   } else {
-    roundRect(x + w * 0.36, y + h * 0.15, w * 0.13, h * 0.2, 6);
+    roundRect(x + w * 0.34, y + h * 0.15, w * 0.14, h * 0.2, 6);
     ctx.fill();
     ctx.stroke();
-    roundRect(x + w * 0.52, y + h * 0.15, w * 0.13, h * 0.2, 6);
+    roundRect(x + w * 0.52, y + h * 0.15, w * 0.14, h * 0.2, 6);
     ctx.fill();
     ctx.stroke();
   }
 
-  ctx.fillStyle = "#263238";
-  ctx.beginPath();
-  const wheelSize = level.kind === "monster" ? h * 0.2 : h * 0.14;
-  ctx.arc(x + w * 0.25, y + h * 0.79, wheelSize, 0, Math.PI * 2);
-  ctx.arc(x + w * 0.75, y + h * 0.79, wheelSize, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = "#d9f3f7";
-  ctx.beginPath();
-  ctx.arc(x + w * 0.25, y + h * 0.79, wheelSize * 0.48, 0, Math.PI * 2);
-  ctx.arc(x + w * 0.75, y + h * 0.79, wheelSize * 0.48, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = "#90a4ae";
-  ctx.lineWidth = 3;
-  for (const wheelX of [x + w * 0.25, x + w * 0.75]) {
-    for (let i = 0; i < 6; i++) {
-      const a = (Math.PI * 2 * i) / 6;
-      ctx.beginPath();
-      ctx.moveTo(wheelX, y + h * 0.79);
-      ctx.lineTo(wheelX + Math.cos(a) * wheelSize * 0.45, y + h * 0.79 + Math.sin(a) * wheelSize * 0.45);
-      ctx.stroke();
-    }
-  }
+  const wheelSize = level.kind === "monster" ? h * 0.19 : h * 0.135;
+  const wheelY = y + h * 0.8;
+  drawWheel(x + w * 0.24, wheelY, wheelSize);
+  drawWheel(x + w * 0.76, wheelY, wheelSize);
+  if (level.kind === "bus") drawWheel(x + w * 0.52, wheelY, wheelSize * 0.85);
 
   ctx.fillStyle = "#fff7a8";
-  roundRect(x + w * 0.11, y + h * 0.52, w * 0.08, h * 0.08, 6);
+  roundRect(x + w * 0.08, y + h * 0.54, w * 0.075, h * 0.07, 6);
   ctx.fill();
-  roundRect(x + w * 0.81, y + h * 0.52, w * 0.08, h * 0.08, 6);
+  roundRect(x + w * 0.845, y + h * 0.54, w * 0.075, h * 0.07, 6);
   ctx.fill();
 
   ctx.fillStyle = "#263238";
-  roundRect(x + w * 0.06, y + h * 0.66, w * 0.1, h * 0.05, 6);
+  roundRect(x + w * 0.045, y + h * 0.68, w * 0.11, h * 0.05, 6);
   ctx.fill();
-  roundRect(x + w * 0.84, y + h * 0.66, w * 0.1, h * 0.05, 6);
+  roundRect(x + w * 0.845, y + h * 0.68, w * 0.11, h * 0.05, 6);
   ctx.fill();
 
   ctx.strokeStyle = "rgba(38, 50, 56, 0.28)";
@@ -459,8 +607,11 @@ function drawCar() {
     ctx.fillText("7", x + w * 0.5, y + h * 0.55);
   }
 
-  ctx.fillStyle = "rgba(255, 255, 255, 0.26)";
-  roundRect(x + w * 0.16, y + h * 0.42, w * 0.66, h * 0.07, 8);
+  ctx.fillStyle = "rgba(255, 255, 255, 0.28)";
+  roundRect(x + w * 0.13, y + h * 0.43, w * 0.7, h * 0.07, 8);
+  ctx.fill();
+  ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+  roundRect(x + w * 0.2, y + h * 0.25, w * 0.42, h * 0.045, 8);
   ctx.fill();
 }
 
@@ -643,6 +794,7 @@ function drawHud() {
 }
 
 function updateEffects() {
+  roadOffset += 0.28;
   droplets.forEach(drop => {
     drop.x += drop.vx;
     drop.y += drop.vy;
