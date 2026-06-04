@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fagunifarms-cache-v6';
+const CACHE_NAME = 'fagunifarms-cache-v7';
 
 // Add all the files you want to be available offline
 const urlsToCache = [
@@ -21,6 +21,8 @@ const urlsToCache = [
   './carwash.js',
   './stickman.html',
   './stickman.js',
+  './punchout.html',
+  './punchout.js',
   './wordpuzzle.js',
   './shapesorter.html',
   './shapesorter.js',

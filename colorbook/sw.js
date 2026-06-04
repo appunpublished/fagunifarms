@@ -1,6 +1,6 @@
 self.addEventListener("install", e => {
   e.waitUntil(
-    caches.open("coloring-book-v2").then(cache =>
+    caches.open("coloring-book-v3").then(cache =>
       cache.addAll([
         "/",
         "/index.html",
@@ -36,6 +36,8 @@ self.addEventListener("install", e => {
         "/wordpuzzle.js",
         "/stickman.html",
         "/stickman.js",
+        "/punchout.html",
+        "/punchout.js",
         "/assets/dinosaurs/trex.jpg",
         "/assets/dinosaurs/triceratops.jpg",
         "/assets/dinosaurs/stegosaurus.jpg",

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Punch Parade</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      touch-action: none;
+      background: #9fd8ff;
+      color: #1b2738;
+      font-family: system-ui, sans-serif;
+    }
+
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #backBtn {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 20;
+      padding: 8px 14px;
+      color: #1f2937;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba(27, 39, 56, 0.18);
+      border-radius: 8px;
+      box-shadow: 0 6px 16px rgba(27, 39, 56, 0.14);
+      font-size: 16px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .hud {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 18;
+      display: flex;
+      gap: 8px;
+      max-width: calc(100vw - 120px);
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba(27, 39, 56, 0.18);
+      border-radius: 8px;
+      box-shadow: 0 6px 16px rgba(27, 39, 56, 0.14);
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .hud span {
+      min-width: 62px;
+      text-align: center;
+    }
+
+    .controls {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 15;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px;
+      pointer-events: none;
+    }
+
+    .move-pad,
+    .action-pad {
+      display: flex;
+      gap: 8px;
+      align-items: end;
+      pointer-events: auto;
+    }
+
+    button.control {
+      min-width: 64px;
+      min-height: 54px;
+      padding: 0 12px;
+      border: 2px solid rgba(27, 39, 56, 0.22);
+      border-radius: 8px;
+      color: #1b2738;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 7px 15px rgba(27, 39, 56, 0.18);
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0;
+      touch-action: none;
+    }
+
+    button.control:active,
+    button.control.is-held {
+      transform: translateY(2px);
+      background: #fff1a8;
+      box-shadow: 0 3px 8px rgba(27, 39, 56, 0.2);
+    }
+
+    .punch {
+      min-width: 102px;
+      background: #ffe0d4;
+    }
+
+    .dash {
+      background: #d9f9ea;
+    }
+
+    .tip {
+      position: fixed;
+      left: 50%;
+      top: 78px;
+      z-index: 16;
+      width: min(520px, calc(100vw - 28px));
+      transform: translateX(-50%) translateY(-8px);
+      padding: 9px 12px;
+      color: #263044;
+      background: rgba(255, 255, 255, 0.92);
+      border: 2px solid rgba(27, 39, 56, 0.14);
+      border-radius: 8px;
+      opacity: 0;
+      pointer-events: none;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .tip.is-visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 720px) {
+      #backBtn {
+        top: 8px;
+        left: 8px;
+        padding: 7px 10px;
+        font-size: 13px;
+      }
+
+      .hud {
+        top: 8px;
+        right: 8px;
+        gap: 4px;
+        max-width: calc(100vw - 74px);
+        padding: 6px;
+        border-width: 1px;
+        font-size: 11px;
+      }
+
+      .hud span {
+        min-width: 0;
+        padding: 0 4px;
+      }
+
+      .controls {
+        padding: 7px;
+        gap: 6px;
+      }
+
+      .move-pad,
+      .action-pad {
+        gap: 5px;
+      }
+
+      button.control {
+        min-width: 46px;
+        min-height: 42px;
+        padding: 0 8px;
+        font-size: 11px;
+      }
+
+      .punch {
+        min-width: 78px;
+      }
+
+      .tip {
+        top: 48px;
+        width: min(300px, calc(100vw - 88px));
+        padding: 7px 9px;
+        border-width: 1px;
+        font-size: 11px;
+        line-height: 1.25;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a id="backBtn" href="games.html">Back</a>
+  <div class="hud" aria-live="polite">
+    <span id="scoreText">Score 0</span>
+    <span id="levelText">Level 1</span>
+    <span id="comboText">Combo 0</span>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+  <div class="tip" id="tipText" role="status" aria-live="polite"></div>
+
+  <div class="controls" aria-label="Game controls">
+    <div class="move-pad">
+      <button class="control" data-control="left" aria-label="Move left">LEFT</button>
+      <button class="control dash" data-control="dash" aria-label="Dash">DASH</button>
+      <button class="control" data-control="right" aria-label="Move right">RIGHT</button>
+    </div>
+    <div class="action-pad">
+      <button class="control punch" data-control="punch" aria-label="Punch">PUNCH</button>
+    </div>
+  </div>
+
+  <script src="punchout.js"></script>
+</body>
+</html>

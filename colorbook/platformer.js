@@ -4,11 +4,11 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const GRAVITY = 0.62;
-const MAX_FALL = 16;
-const FRICTION = 0.82;
-const JUMP_BUFFER = 9;
-const COYOTE_TIME = 8;
+const GRAVITY = 0.54;
+const MAX_FALL = 15;
+const FRICTION = 0.84;
+const JUMP_BUFFER = 12;
+const COYOTE_TIME = 12;
 
 let state = "title";
 let levelIndex = 0;
@@ -43,11 +43,11 @@ const levels = [
       { x: 1780, y: 0, w: 520, h: 90 },
       { x: 2460, y: 0, w: 650, h: 90 },
       { x: 430, y: -140, w: 140, h: 26 },
-      { x: 780, y: -220, w: 130, h: 26 },
+      { x: 760, y: -205, w: 150, h: 26 },
       { x: 1120, y: -150, w: 130, h: 26 },
-      { x: 1550, y: -210, w: 150, h: 26 },
+      { x: 1540, y: -195, w: 165, h: 26 },
       { x: 2060, y: -170, w: 150, h: 26 },
-      { x: 2350, y: -270, w: 150, h: 26 }
+      { x: 2350, y: -245, w: 165, h: 26 }
     ],
     moving: [
       { x: 1680, y: -95, w: 120, h: 24, axis: "x", range: 150, speed: 1.2 }
@@ -61,8 +61,8 @@ const levels = [
       { x: 1910, y: 0, kind: "beetle", min: 1800, max: 2280, speed: 1.45 }
     ],
     hazards: [
-      { x: 1120, y: -16, w: 120, h: 16 },
-      { x: 2300, y: -16, w: 120, h: 16 }
+      { x: 1140, y: -16, w: 80, h: 16 },
+      { x: 2320, y: -16, w: 80, h: 16 }
     ]
   },
   {
@@ -83,12 +83,12 @@ const levels = [
       { x: 2320, y: 0, w: 320, h: 90 },
       { x: 2930, y: 0, w: 680, h: 90 },
       { x: 360, y: -155, w: 130, h: 26 },
-      { x: 670, y: -245, w: 120, h: 26 },
+      { x: 650, y: -220, w: 145, h: 26 },
       { x: 980, y: -165, w: 130, h: 26 },
-      { x: 1420, y: -230, w: 135, h: 26 },
+      { x: 1400, y: -205, w: 155, h: 26 },
       { x: 2170, y: -175, w: 130, h: 26 },
       { x: 2700, y: -225, w: 130, h: 26 },
-      { x: 3080, y: -310, w: 160, h: 26 }
+      { x: 3080, y: -275, w: 175, h: 26 }
     ],
     moving: [
       { x: 1510, y: -95, w: 120, h: 24, axis: "y", range: 110, speed: 1.1 },
@@ -104,9 +104,9 @@ const levels = [
       { x: 3050, y: 0, kind: "beetle", min: 2960, max: 3500, speed: 1.65 }
     ],
     hazards: [
-      { x: 900, y: -16, w: 180, h: 16 },
-      { x: 2080, y: -16, w: 240, h: 16 },
-      { x: 2640, y: -16, w: 160, h: 16 }
+      { x: 930, y: -16, w: 120, h: 16 },
+      { x: 2110, y: -16, w: 170, h: 16 },
+      { x: 2670, y: -16, w: 105, h: 16 }
     ]
   },
   {
@@ -128,12 +128,12 @@ const levels = [
       { x: 2760, y: 0, w: 360, h: 90 },
       { x: 3580, y: 0, w: 650, h: 90 },
       { x: 285, y: -170, w: 125, h: 26 },
-      { x: 820, y: -190, w: 130, h: 26 },
-      { x: 1390, y: -230, w: 130, h: 26 },
+      { x: 800, y: -175, w: 150, h: 26 },
+      { x: 1375, y: -205, w: 155, h: 26 },
       { x: 1950, y: -190, w: 130, h: 26 },
-      { x: 2510, y: -250, w: 140, h: 26 },
+      { x: 2500, y: -220, w: 165, h: 26 },
       { x: 3230, y: -220, w: 130, h: 26 },
-      { x: 3740, y: -300, w: 160, h: 26 }
+      { x: 3730, y: -265, w: 180, h: 26 }
     ],
     moving: [
       { x: 620, y: -110, w: 120, h: 24, axis: "x", range: 210, speed: 1.45 },
@@ -152,12 +152,12 @@ const levels = [
       { x: 3680, y: 0, kind: "beetle", min: 3600, max: 4180, speed: 1.9 }
     ],
     hazards: [
-      { x: 220, y: -16, w: 250, h: 16 },
-      { x: 770, y: -16, w: 260, h: 16 },
-      { x: 1330, y: -16, w: 250, h: 16 },
-      { x: 1870, y: -16, w: 260, h: 16 },
-      { x: 2450, y: -16, w: 310, h: 16 },
-      { x: 3120, y: -16, w: 460, h: 16 }
+      { x: 250, y: -16, w: 190, h: 16 },
+      { x: 800, y: -16, w: 200, h: 16 },
+      { x: 1360, y: -16, w: 190, h: 16 },
+      { x: 1900, y: -16, w: 200, h: 16 },
+      { x: 2495, y: -16, w: 225, h: 16 },
+      { x: 3185, y: -16, w: 330, h: 16 }
     ]
   }
 ];
@@ -185,7 +185,7 @@ document.addEventListener("gesturechange", e => e.preventDefault());
 window.addEventListener("keydown", e => {
   const key = e.key.toLowerCase();
   keys[key] = true;
-  if (state === "playing" && ["arrowup", "w", " "].includes(key)) queueJump();
+  if (state === "playing" && !e.repeat && ["arrowup", "w", " "].includes(key)) queueJump();
   if (["enter", " "].includes(key) && state !== "playing") advanceFromOverlay();
   if (key === "r") startLevel(levelIndex);
 });
@@ -213,16 +213,21 @@ canvas.addEventListener("pointerup", e => {
 });
 
 function handleTouch(e) {
+  e.preventDefault();
   if (state !== "playing") {
     if (e.type === "touchstart") advanceFromOverlay();
     return;
   }
-  touchControls.left = false;
-  touchControls.right = false;
-  touchControls.jump = false;
+  const wasJumping = touchControls.jump;
+  const nextControls = { left: false, right: false, jump: false };
   for (let i = 0; i < e.touches.length; i++) {
-    updatePointerButtons(e.touches[i].clientX, e.touches[i].clientY, true);
+    const touch = e.touches[i];
+    if (pointInRect(touch.clientX, touch.clientY, btnLeft)) nextControls.left = true;
+    if (pointInRect(touch.clientX, touch.clientY, btnRight)) nextControls.right = true;
+    if (pointInRect(touch.clientX, touch.clientY, btnJump)) nextControls.jump = true;
   }
+  if (nextControls.jump && !wasJumping) queueJump();
+  touchControls = nextControls;
 }
 
 function updatePointerButtons(x, y, active) {
@@ -279,8 +284,10 @@ function startLevel(index) {
     h: 46,
     vx: 0,
     vy: 0,
-    maxSpeed: 6.2,
-    jumpPower: -13.2,
+    maxSpeed: 6.8,
+    jumpPower: -15.8,
+    airJumps: 1,
+    maxAirJumps: 1,
     grounded: false,
     coyote: 0,
     jumpBuffer: 0,
@@ -355,11 +362,11 @@ function handleInput() {
   const jumpHeld = keys.arrowup || keys.w || keys[" "] || touchControls.jump;
 
   if (left) {
-    player.vx -= 0.72;
+    player.vx -= 0.78;
     player.facing = -1;
   }
   if (right) {
-    player.vx += 0.72;
+    player.vx += 0.78;
     player.facing = 1;
   }
   if (!left && !right) player.vx *= FRICTION;
@@ -367,15 +374,17 @@ function handleInput() {
 
   if (player.jumpBuffer > 0) player.jumpBuffer--;
   if (player.coyote > 0) player.coyote--;
-  if (player.jumpBuffer > 0 && player.coyote > 0) {
-    player.vy = player.jumpPower;
+  if (player.jumpBuffer > 0 && (player.coyote > 0 || player.airJumps > 0)) {
+    const groundJump = player.coyote > 0;
+    player.vy = groundJump ? player.jumpPower : player.jumpPower * 0.9;
     player.grounded = false;
+    if (!groundJump) player.airJumps--;
     player.coyote = 0;
     player.jumpBuffer = 0;
-    burst(player.x + player.w / 2, player.y + player.h, "#ffffff", 9, 4);
+    burst(player.x + player.w / 2, player.y + player.h, groundJump ? "#ffffff" : level.accent, groundJump ? 9 : 16, groundJump ? 4 : 5);
     vibrate(18);
   }
-  if (!jumpHeld && player.vy < -4) player.vy *= 0.86;
+  if (!jumpHeld && player.vy < -5.5) player.vy *= 0.9;
 }
 
 function applyPhysics() {
@@ -397,6 +406,7 @@ function applyPhysics() {
       player.y = hit.y - player.h;
       player.vy = 0;
       player.grounded = true;
+      player.airJumps = player.maxAirJumps;
       player.coyote = COYOTE_TIME;
       if (hit.dx) player.x += hit.dx;
     } else if (player.vy < 0) {
@@ -801,7 +811,7 @@ function drawOverlay() {
     ctx.font = "800 38px system-ui";
     ctx.fillText("Platform Quest", canvas.width / 2, y + 58);
     ctx.font = "600 18px system-ui";
-    wrapText("Run, jump, collect color seeds, and bring the farm story back to life.", canvas.width / 2, y + 112, boxW - 70, 25);
+    wrapText("Run, double-jump, collect color seeds, and bring the farm story back to life.", canvas.width / 2, y + 112, boxW - 70, 25);
     ctx.font = "700 17px system-ui";
     ctx.fillText("Tap, Space, or Enter to start", canvas.width / 2, y + 205);
     return;
@@ -818,7 +828,7 @@ function drawOverlay() {
     ctx.font = "800 34px system-ui";
     ctx.fillText("Try Again", canvas.width / 2, y + 65);
     ctx.font = "600 18px system-ui";
-    wrapText("Watch the spikes and bounce on enemies from above.", canvas.width / 2, y + 120, boxW - 70, 28);
+    wrapText("Watch the spikes, double-jump across gaps, and bounce on enemies from above.", canvas.width / 2, y + 120, boxW - 70, 28);
     ctx.font = "700 16px system-ui";
     ctx.fillText("Tap to restart this level", canvas.width / 2, y + 195);
   } else if (state === "levelComplete") {
